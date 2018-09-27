@@ -25,4 +25,7 @@ display.o:	display.c display.h
 	gcc -c display.c
 
 simple_renderer.o:	simple_renderer.c simple_renderer.h
-	gcc -c simple_renderer.c
+	gcc -o simple_renderer.o -c simple_renderer.c
+
+3d_model.o:	3d_model.c 3d_model.h
+	gcc -o 3d_model.o -c 3d_model.c

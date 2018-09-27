@@ -1,3 +1,4 @@
+#include "defs.h"
 #include "display.h"
 #include "vector.h"
 #include "matrix.h"
@@ -6,8 +7,6 @@
 #include "simple_renderer.h"
 #include <stdio.h>
 #include <math.h>
-
-#define countof(x) (sizeof(x) / sizeof(x[0]))
 
 // Need vertices to be arranged in anti-clockwise order from the perspective of
 // someone sitting inside the form, if we are to use the backface culling algo.
