@@ -29,7 +29,11 @@ void camera_calc_transforms(Camera* self)
                             &self->_camera_location);
   matrix_tf_camera_look(&self->_camera_look_transform,
                         &self->_camera_location,
+                        &self->_up_vector,
                         &self->_look_point);
+  vector_subtract(&self->_look_vector,
+                  &self->_look_point,
+                  &self->_camera_location);
 }
 
 /*
@@ -45,6 +49,11 @@ void camera_set_look_point(Camera* self, float x, float y, float z)
   vector_init(&self->_look_point, x, y, z, 1.0);
 }
 
+void camera_set_up_vector(Camera* self, float x, float y, float z)
+{
+  vector_init(&self->_up_vector, x, y, z, 1.0);
+}
+
 const Matrix* camera_get_location_transform(Camera* self)
 {
   return &self->_camera_location_transform;
@@ -53,4 +62,9 @@ const Matrix* camera_get_location_transform(Camera* self)
 const Matrix* camera_get_look_transform(Camera* self)
 {
   return &self->_camera_look_transform;
+}
+
+const Vector* camera_get_look_vector(Camera* self)
+{
+  return &self->_look_vector;
 }

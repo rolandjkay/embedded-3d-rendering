@@ -31,7 +31,9 @@ void run_event_loop(Display* display, UpdateFunc* update_func);
  */
 void display_cls(Display* self);
 void display_draw_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
+void display_draw_col_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
 void display_draw_pixel(Display* self, int16_t x, int16_t y);
+void display_draw_col_pixel(Display* self, int16_t x, int16_t y);
 uint8_t display_pixel_colour(Display* self, int16_t x, int16_t y);
 
 #endif

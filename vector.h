@@ -17,6 +17,7 @@ void vector_scale_is(Vector* vector, float factor);
 void vector_normalize_is(Vector* vector);
 void vector_copy_is(Vector* dst, const Vector* src);
 void vector_cross_product(Vector* dst, const Vector* u, const Vector* v);
+float vector_dot_product(const Vector* u, const Vector* v);
 void vector_subtract(Vector* dst, const Vector* u, const Vector* v);
 
 const char* vector_to_str(Vector* self);

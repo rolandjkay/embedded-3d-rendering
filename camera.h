@@ -8,6 +8,8 @@ typedef struct
 {
   Vector _camera_location;
   Vector _look_point;
+  Vector _up_vector;
+  Vector _look_vector; // = look_point - camera_location
   Matrix _camera_location_transform;
   Matrix _camera_look_transform;
 } Camera;
@@ -35,7 +37,9 @@ void camera_calc_transforms(Camera* self);
  */
 void camera_set_location(Camera* self, float x, float y, float z);
 void camera_set_look_point(Camera* self, float x, float y, float z);
-const Matrix* camera_get_location_transform(Camera* camera);
-const Matrix* camera_get_look_transform(Camera* camera);
+void camera_set_up_vector(Camera* self, float x, float y, float z);
+const Matrix* camera_get_location_transform(Camera* self);
+const Matrix* camera_get_look_transform(Camera* self);
+const Vector* camera_get_look_vector(Camera* self);
 
 #endif

@@ -70,6 +70,12 @@ void vector_cross_product(Vector* dst, const Vector* u, const Vector* v)
   dst->w = 1;
 }
 
+float vector_dot_product(const Vector* u, const Vector* v)
+{
+  return u->x * v->x  +  u->y * v->y  +  u->z * v->z;
+}
+
+
 void vector_subtract(Vector* dst, const Vector* u, const Vector* v)
 {
   dst->x = u->x - v->x;

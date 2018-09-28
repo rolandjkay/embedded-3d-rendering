@@ -193,15 +193,19 @@ void matrix_tf_camera_location(Matrix* dst, const Vector* camera_location)
 
 void matrix_tf_camera_look(Matrix* dst,
                            const Vector* camera_location,
+                           const Vector* up_vector,
                            const Vector* look_point)
 {
-  const Vector up = {0, 1, 0, 1};
   Vector u, v, n;
 
   vector_subtract(&n, look_point, camera_location);
   vector_normalize_is(&n);
-  vector_cross_product(&u, &up, &n);
+  vector_cross_product(&u, up_vector, &n);
   vector_cross_product(&v, &n, &u);
+
+  printf("U=%f,%f,%f,%f\n", u.x, u.y, u.z, u.w);
+  printf("V=%f,%f,%f,%f\n", v.x, v.y, v.z, v.w);
+  printf("N=%f,%f,%f,%f\n", n.x, n.y, n.z, n.w);
 
   matrix_tf_change_of_basis(dst, &u, &v, &n);
 }

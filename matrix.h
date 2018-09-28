@@ -53,6 +53,7 @@ void matrix_tf_camera_location(Matrix* dst, const Vector* camera_location);
 
 void matrix_tf_camera_look(Matrix* dst,
                            const Vector* camera_location,
+                           const Vector* up_vector,
                            const Vector* look_point);
 
 void matrix_tf_perspective(Matrix* dst,
