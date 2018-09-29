@@ -114,7 +114,7 @@ char* matrix_to_str(const Matrix* m)
 void matrix_tf_rotation(Matrix* dst, float xangle, float yangle, float zangle)
 {
   dst->data[0] = cos(yangle) * cos(zangle);
-  dst->data[1] = -cos(yangle) * sin(yangle);
+  dst->data[1] = -cos(yangle) * sin(zangle);
   dst->data[2] = sin(yangle);
   dst->data[3] = 0.0;
 
