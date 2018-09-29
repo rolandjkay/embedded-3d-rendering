@@ -39,7 +39,7 @@ typedef struct
   const Vector* normals;
 } Object;
 
-extern const Object cobra, viper;
+extern const Object cobra, viper, missile;
 
 /************************************************************************
  ** Scene object
