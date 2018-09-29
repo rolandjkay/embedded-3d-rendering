@@ -39,7 +39,13 @@ typedef struct
   const Vector* normals;
 } Object;
 
-extern const Object cobra, viper, missile;
+extern const Object *cobra, *cobra1, *viper, *gecko, *orbit, *transp, *pythona;
+extern const Object *boa, *anaconda, *sidewnd, *mamba, *krait, *adder, *asp2;
+extern const Object *ferdlce, *moray, *thargoid, *thargon, *constrct, *cougar;
+extern const Object *missile;
+
+extern const Object* ships[20];
+extern const Object* misc[1];
 
 /************************************************************************
  ** Scene object

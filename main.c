@@ -20,15 +20,15 @@ static float far_plane = -160.0;
 static SimpleRenderer renderer;
 static Scene scene = SCENE_INIT;
 
-static const Object* ships[] = {
-  &viper, &cobra, &missile
-};
+//static const Object* ships[] = {
+//  &viper, &cobra1, &cobra, &gecko, &missile
+//};
 
 void update(Display* display, uint32_t clock)
 {
   // Move the camera
   float clock_ = 0.0;
-  camera_set_location(&camera, 50 * sin(clock_ / 1000.), 50 * cos(clock_ / 1000.), 230.0);
+  camera_set_location(&camera, 50 * sin(clock_ / 1000.), 50 * cos(clock_ / 1000.), 257.0);
   camera_set_up_vector(&camera, 0.0, 1.0, 0.0);
 
   //camera_set_location(&camera, 0., 200.0, 0.0);
@@ -55,7 +55,7 @@ int main( int argc, char* args[] )
       return 0;
   }
 
-  scene.scene_objects[0].object = &viper;
+  scene.scene_objects[0].object = viper;
   vector_init(&scene.scene_objects[0].location, 0.0, 0.0, 0.0, 1.0);
   matrix_identity(&scene.scene_objects[0].rotation_matrix);
 
