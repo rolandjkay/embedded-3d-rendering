@@ -34,6 +34,6 @@ typedef struct
   Vector* normals;
 } Object;
 
-extern Object cobra;
+extern Object cobra, viper;
 
 #endif
