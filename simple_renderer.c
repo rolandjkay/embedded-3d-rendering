@@ -148,7 +148,7 @@ void sr_render_object(SimpleRenderer* self,
       vector_normalize_is(&normal);
 
       cos_angle = vector_dot_product(&normal, &unit_look_vector);
-      visible[face_index] = (cos_angle < -0.2);
+      visible[face_index] = (cos_angle < -0.08);
     }
   }
 
