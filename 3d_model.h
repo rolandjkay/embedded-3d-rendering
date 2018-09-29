@@ -34,24 +34,27 @@ typedef struct
   int num_points;
   int num_lines;
   int num_faces;
-  Point* points;
-  Line* lines;
-  Vector* normals;
+  const Point* points;
+  const Line* lines;
+  const Vector* normals;
 } Object;
 
-extern Object cobra, viper;
+extern const Object cobra, viper;
 
 /************************************************************************
- ** Transformed object
- ** - The object data gives a fixed orientation. We additionally need a
- **   rotation matrix to represent a real object in the scene.
+ ** Scene object
+ ** - An object in the scene, including position and rotation.
+ ** - The object data gives a fixed orientation & position. We additionally
+ **   need a rotation matrix and a position to represent an object
+ **   in the scene.
  ************************************************************************/
 
  typedef struct
  {
    Matrix rotation_matrix;
-   Object* object;
- } TObject;
+   Vector location;
+   const Object* object;
+ } SceneObject;
 
  /************************************************************************
   ** Scene
@@ -59,7 +62,7 @@ extern Object cobra, viper;
 
 typedef struct
 {
-  TObject tobjects[100];
+  SceneObject scene_objects[100];
 } Scene;
 
 #define SCENE_INIT {0};

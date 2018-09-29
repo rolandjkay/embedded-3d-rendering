@@ -10,7 +10,7 @@
  ** Cobra MK III
  ***************************************************************************/
 
-static Point cobra_points[] = {
+static const Point cobra_points[] = {
   //  x,    y,   z,dist, f1, f2, f3, f4
   {  32,    0,   76, 31, 15, 15, 15, 15}, // 0
   { -32,    0,   76, 31, 15, 15, 15, 15}, // 1
@@ -42,7 +42,7 @@ static Point cobra_points[] = {
   {  80,   -6,  -40,  8,  9,  9,  9,  9}, // 27
 };
 
-Line cobra_lines[] =
+static const Line cobra_lines[] =
 {
 //dist,f1, f2, start_point, end_point
   {31, 11,  0,  0,  1}, // 0
@@ -85,7 +85,7 @@ Line cobra_lines[] =
   { 8,  9,  9, 25, 27}, // 37
 };
 
-Vector cobra_face_normals[] =
+static const Vector cobra_face_normals[] =
 {
   {   0,   62,   31}, // 0
   { -18,   55,   16}, // 1
@@ -102,7 +102,7 @@ Vector cobra_face_normals[] =
   {   7,  -42,    9}, // 12
 };
 
-Object cobra = {
+const Object cobra = {
  countof(cobra_points),
  countof(cobra_lines),
  countof(cobra_face_normals),
@@ -116,7 +116,7 @@ Object cobra = {
  ** Viper
  ***************************************************************************/
 
-Point viper_points[] =
+static const Point viper_points[] =
 {
   {   0,    0,   72, 31,  2,  1,  4,  3},
   {   0,   16,   24, 30,  1,  0,  2,  2},
@@ -135,7 +135,7 @@ Point viper_points[] =
   {   8,   -8,  -24, 18,  6,  6,  6,  6},
 };
 
-Line viper_lines[] =
+static const Line viper_lines[] =
 {
   {31,  4,  2,  0,  3},
   {30,  2,  1,  0,  1},
@@ -159,7 +159,7 @@ Line viper_lines[] =
   {16,  6,  6, 12, 13},
 };
 
-Vector viper_face_normals[] =
+static const Vector viper_face_normals[] =
 {
   {    0,   32,    0},
   {  -22,   33,   11},
@@ -170,7 +170,7 @@ Vector viper_face_normals[] =
   {    0,    0,  -48},
 };
 
-Object viper = {
+const Object viper = {
  countof(viper_points),
  countof(viper_lines),
  countof(viper_face_normals),

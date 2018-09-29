@@ -45,11 +45,16 @@ int main( int argc, char* args[] )
   }
 
   Scene scene = SCENE_INIT;
-  scene.tobjects[0].object = &viper;
-  matrix_identity(&scene.tobjects[0].rotation_matrix);
+  scene.scene_objects[0].object = &viper;
+  vector_init(&scene.scene_objects[0].location, 0.0, 40.0, 0.0, 1.0);
+  matrix_identity(&scene.scene_objects[0].rotation_matrix);
 
-  scene.tobjects[1].object = &cobra;
-  matrix_identity(&scene.tobjects[1].rotation_matrix);
+  scene.scene_objects[1].object = &cobra;
+  vector_init(&scene.scene_objects[1].location, 0.0, -20.0, 0.0, 1.0);
+  matrix_tf_rotation(&scene.scene_objects[1].rotation_matrix,
+                     0.0, PI, 0.0);
+
+  printf("%s\n", matrix_to_str(&scene.scene_objects[1].rotation_matrix));
 
   sr_init(&renderer, &scene, near_plane, far_plane, near_plane_width);
 

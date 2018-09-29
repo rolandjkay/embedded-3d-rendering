@@ -94,25 +94,24 @@ void sr_init(SimpleRenderer* self,
 
 void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display)
 {
-  for (const TObject* tobject = &self->_scene->tobjects[0];
-       tobject->object != NULL;
-       ++tobject)
+  for (const SceneObject* scene_object = &self->_scene->scene_objects[0];
+       scene_object->object != NULL;
+       ++scene_object)
   {
-    sr_render_object(self, tobject->object,
-                           &tobject->rotation_matrix,
-                           camera,
-                           display);
+    sr_render_object(self, scene_object, camera, display);
   }
 }
 
 
 void sr_render_object(SimpleRenderer* self,
-                      const Object* object,
-                      const Matrix* rotation_matrix,
+                      const SceneObject* scene_object,
                       Camera* camera,
                       Display* display)
 {
-  Vector prev_vertex, first_vertex;
+  const Object* object = scene_object->object;
+  const Matrix* rotation_matrix = &scene_object->rotation_matrix;
+  const Vector* location = &scene_object->location;
+
   int w = display_get_width(display);
   int h = display_get_height(display);
   Vector vertices[100];
@@ -163,6 +162,11 @@ void sr_render_object(SimpleRenderer* self,
 
     // Apply rotation
     matrix_left_multiply_vector(rotation_matrix, &vertices[vertex_index]);
+
+    // Apply translation
+    vertices[vertex_index].x += location->x;
+    vertices[vertex_index].y += location->y;
+    vertices[vertex_index].z += location->z;
 
     _project_vertex(self, &vertices[vertex_index], camera, w, h);
   }

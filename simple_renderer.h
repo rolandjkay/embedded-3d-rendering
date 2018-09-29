@@ -30,8 +30,7 @@ void sr_init(SimpleRenderer* self,
 
 void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display);
 void sr_render_object(SimpleRenderer* self,
-                      const Object* object,
-                      const Matrix* rotation_matrix,
+                      const SceneObject* object,
                       Camera* camera,
                       Display* display);
 

@@ -125,7 +125,7 @@ void matrix_tf_rotation(Matrix* dst, float xangle, float yangle, float zangle)
 
   dst->data[8] = -cos(xangle) * sin(yangle) * cos(zangle) + sin(xangle) * sin(zangle);
   dst->data[9] = cos(xangle) * sin(yangle) * sin(zangle) + sin(xangle) * cos(zangle);
-  dst->data[10] = cos(xangle) * cos(zangle);
+  dst->data[10] = cos(xangle) * cos(yangle);
   dst->data[11] = 0.0;
 
   dst->data[12] = 0.0;
