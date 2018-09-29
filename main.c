@@ -11,76 +11,6 @@
 
 // http://www.kmjn.org/notes/3d_rendering_intro.html
 
-// Need vertices to be arranged in anti-clockwise order from the perspective of
-// someone sitting inside the form, if we are to use the backface culling algo.
-static const Polygon cube[] = {
-  {
-    // Top plane
-    {
-      {-30, 30, -30, 1},
-      {30, 30, -30, 1},
-      {30, 30, 30, 1},
-      {-30, 30, 30, 1}
-    },
-    4
-  },
-  // Bottom plane
-  {
-    {
-      {-30, -30, -30, 1},
-      {-30, -30, 30, 1},
-      {30, -30, 30, 1},
-      {30, -30, -30, 1}
-    },
-    4
-  },
-  {
-    // Front plane
-    {
-      {-30, -30, -30, 1},
-      {-30, 30, -30, 1},
-      {30, 30, -30, 1},
-      {30, -30, -30, 1}
-    },
-    4
-  },
-  {
-    // Back plane
-    {
-      {-30, -30, 30, 1},
-      {30, -30, 30, 1},
-      {30, 30, 30, 1},
-      {-30, 30, 30, 1}
-    },
-    4
-  },
-};
-
-static const Polygon tunnel[] = {
-  {
-    {
-      {30.0, 0.0,  50.0, 1.0},
-      {15.0, 26.0, 50.0, 1.0},
-      {-15.0, 26.0, 50.0, 1.0},
-      {-30.0, 0.0, 50.0, 1.0},
-      {-15.0, -25.6, 50.0, 1.0},
-      {15.0 ,-25.6, 50.0, 1.0}
-    },
-    6
-  },
-  {
-    {
-      {30.0, 0.0,  -30.0, 1.0},
-      {15.0, 26.0, -30.0, 1.0},
-      {-15.0, 26.0, -30.0, 1.0},
-      {-30.0, 0.0, -30.0, 1.0},
-      {-15.0, -25.6, -30.0, 1.0},
-      {15.0 ,-25.6, -30.0, 1.0}
-    },
-    6
-  }
-};
-
 static Camera camera = CAMERA_INIT;
 
 static const Vector look_point = VECTOR_INIT(0.0, 0.0, 0.0);
@@ -101,13 +31,8 @@ void update(Display* display, uint32_t clock)
   camera_set_look_point(&camera, 0.0, 0.0, 0.0);
   camera_calc_transforms(&camera);
 
-  printf("AAAA\n");
-  printf("%s\n", matrix_to_str(&camera._camera_location_transform));
-  printf("%s\n", matrix_to_str(&camera._camera_look_transform));
-  printf("BBBB\n");
-
   display_cls(display);
-  sr_render(&renderer, &camera, display);
+  sr_render_scene(&renderer, &camera, display);
 }
 
 int main( int argc, char* args[] )
@@ -119,7 +44,14 @@ int main( int argc, char* args[] )
       return 0;
   }
 
-  sr_init(&renderer, &cobra, near_plane, far_plane, near_plane_width);
+  Scene scene = SCENE_INIT;
+  scene.tobjects[0].object = &viper;
+  matrix_identity(&scene.tobjects[0].rotation_matrix);
+
+  scene.tobjects[1].object = &cobra;
+  matrix_identity(&scene.tobjects[1].rotation_matrix);
+
+  sr_init(&renderer, &scene, near_plane, far_plane, near_plane_width);
 
   run_event_loop(display, update);
 

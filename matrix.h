@@ -13,25 +13,18 @@ typedef struct
 
 #define MATRIX_ZERO {0};
 
-/*
- * Ctors
- */
-Matrix* matrix_zero();
-
-/*
- * Dtor
- */
- void matrix_free(Matrix* m);
+void matrix_zero(Matrix* dst);
+void matrix_identity(Matrix* dst);
 
 /*
  * Operations
  */
+void matrix_multiply(Matrix* dst, const Matrix* m1, const Matrix* m2);
 
-Matrix* matrix_multiply(const Matrix* m1, const Matrix* m2);
-
-Matrix* matrix_combine(const Matrix* m1,
-                       const Matrix* m2,
-                       const Matrix* m3);
+/*void matrix_combine(Matrix* dst,
+                    const Matrix* m1,
+                    const Matrix* m2,
+                    const Matrix* m3);*/
 
 void matrix_left_multiply_vector(const Matrix*, Vector* Vector);
 
@@ -45,6 +38,8 @@ char* matrix_to_str(const Matrix* m);
  * Transforms
  */
 void matrix_tf_translation(Matrix* dst, const Vector* vector);
+void matrix_tf_rotation(Matrix* dst, float xangle, float yangle, float zangle);
+
 void matrix_tf_change_of_basis(Matrix* dst,
                                 const Vector* i,
                                 const Vector* j,

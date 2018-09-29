@@ -1,2 +1,4 @@
 *.o
 demo
+*.xlsx
+*.bak

@@ -57,7 +57,7 @@ void _calc_normal(Vector* normal_out, const Polygon* polygon)
  * Initialize the renderer with an array of polygons that make up the form.
  */
 void sr_init(SimpleRenderer* self,
-             const Object* object,
+             const Scene* scene,
              //const Polygon* polygons,
              //size_t n,
              float near_plane,
@@ -66,9 +66,7 @@ void sr_init(SimpleRenderer* self,
 {
   self->_near_plane = near_plane;
   self->_far_plane = far_plane;
-  //self->_polygons = polygons;
-  //self->_num_polygons = n;
-  self->_object = object;
+  self->_scene = scene;
 
   /*
    * Calculate normal vectors for backface culling algo.
@@ -94,7 +92,25 @@ void sr_init(SimpleRenderer* self,
                         near_plane_width);
 }
 
-void sr_render(SimpleRenderer* self, Camera* camera, Display* display)
+void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display)
+{
+  for (const TObject* tobject = &self->_scene->tobjects[0];
+       tobject->object != NULL;
+       ++tobject)
+  {
+    sr_render_object(self, tobject->object,
+                           &tobject->rotation_matrix,
+                           camera,
+                           display);
+  }
+}
+
+
+void sr_render_object(SimpleRenderer* self,
+                      const Object* object,
+                      const Matrix* rotation_matrix,
+                      Camera* camera,
+                      Display* display)
 {
   Vector prev_vertex, first_vertex;
   int w = display_get_width(display);
@@ -109,11 +125,14 @@ void sr_render(SimpleRenderer* self, Camera* camera, Display* display)
   /*
    * Check the visibility of all faces.
    */
-  for (int face_index = 0; face_index < self->_object->num_faces; face_index++)
+  for (int face_index = 0; face_index < object->num_faces; face_index++)
   {
     Vector normal;
 
-    vector_copy_is(&normal, &self->_object->normals[face_index]);
+    vector_copy_is(&normal, &object->normals[face_index]);
+
+    // Apply rotation
+    matrix_left_multiply_vector(rotation_matrix, &normal);
 
     // Is this so that we an force a face to be visible?
     if ((normal.x == 0) && (normal.y == 0) && (normal.z == 0))
@@ -130,88 +149,42 @@ void sr_render(SimpleRenderer* self, Camera* camera, Display* display)
       vector_normalize_is(&normal);
 
       cos_angle = vector_dot_product(&normal, &unit_look_vector);
-      if (face_index == 9)
-      {
-        printf("%f,%f,%f // %f,%f,%f // %f\n",
-               normal.x, normal.y, normal.z,
-               unit_look_vector.x, unit_look_vector.y, unit_look_vector.z,
-               cos_angle
-             );
-      }
       visible[face_index] = (cos_angle < -0.2);
     }
   }
 
-  for (int vertex_index = 0;
-       vertex_index < self->_object->num_points;
-       ++vertex_index)
+  for (int vertex_index = 0; vertex_index < object->num_points; ++vertex_index)
   {
     //vector_copy_is(&vertices[vertex_index], self->_object->points[vertex_index]);
-    vertices[vertex_index].x = self->_object->points[vertex_index].x;
-    vertices[vertex_index].y = self->_object->points[vertex_index].y;
-    vertices[vertex_index].z = self->_object->points[vertex_index].z;
+    vertices[vertex_index].x = object->points[vertex_index].x;
+    vertices[vertex_index].y = object->points[vertex_index].y;
+    vertices[vertex_index].z = object->points[vertex_index].z;
     vertices[vertex_index].w = 1.0;
 
-    //if (vertex_index == 0)
-    {
-      Vector foo;
-      vector_copy_is(&foo, &vertices[vertex_index]);
-      printf("---> %f/%f/%f/%f\n", foo.x, foo.y, foo.z, foo.w);
-      matrix_left_multiply_vector(camera_get_location_transform(camera), &foo);
-      printf("-/-> %f/%f/%f/%f\n", foo.x, foo.y, foo.z, foo.w);
-    }
+    // Apply rotation
+    matrix_left_multiply_vector(rotation_matrix, &vertices[vertex_index]);
 
     _project_vertex(self, &vertices[vertex_index], camera, w, h);
-
-    printf("-//-> %f/%f/%f/%f\n", vertices[vertex_index].x, vertices[vertex_index].y, vertices[vertex_index].z, vertices[vertex_index].w);
   }
 
-  for (int line_index = 0;
-       line_index < self->_object->num_lines;
-       ++line_index)
+  for (int line_index = 0; line_index < object->num_lines; ++line_index)
   {
-    Vector* start_vertex = &vertices[self->_object->lines[line_index].start_point];
-    Vector* end_vertex = &vertices[self->_object->lines[line_index].end_point];
+    Vector* start_vertex = &vertices[object->lines[line_index].start_point];
+    Vector* end_vertex = &vertices[object->lines[line_index].end_point];
 
     // If either of the faces that the lines join is visible, then draw it.
-    if (visible[self->_object->lines[line_index].face1]
-        || visible[self->_object->lines[line_index].face2])
+    if (visible[object->lines[line_index].face1]
+        || visible[object->lines[line_index].face2])
     {
       display_draw_line(display, start_vertex->x, start_vertex->y,
                                  end_vertex->x, end_vertex->y);
 
-     if (self->_object->lines[line_index].face1 == 9
+/*     if (self->_object->lines[line_index].face1 == 9
          || self->_object->lines[line_index].face2 == 9)
      {
        display_draw_col_line(display, start_vertex->x, start_vertex->y,
                                       end_vertex->x, end_vertex->y);
-     }
-    }
+     } */
+   }
   }
-
-
-  /*for (int poly_index = 0; poly_index < self->_num_polygons; ++poly_index)
-  {
-    const Polygon* poly = &self->_polygons[poly_index];
-
-    first_vertex = poly->vertices[0];
-
-    _project_vertex(self, &first_vertex, camera, w, h);
-
-    vector_copy_is(&prev_vertex, &first_vertex);
-
-    for (int vertex_index = 1; vertex_index < poly->n; ++vertex_index)
-    {
-      Vector vertex = poly->vertices[vertex_index];
-
-      _project_vertex(self, &vertex, camera, w, h);
-
-      display_draw_line(display, prev_vertex.x, prev_vertex.y,
-                                 vertex.x, vertex.y);
-      vector_copy_is(&prev_vertex, &vertex);
-    }
-
-    display_draw_line(display, prev_vertex.x, prev_vertex.y,
-                               first_vertex.x, first_vertex.y);
-  }*/
 }

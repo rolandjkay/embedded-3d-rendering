@@ -6,25 +6,19 @@
 #include <math.h>
 
 
-
-void matrix_free(Matrix* m)
+void matrix_zero(Matrix* self)
 {
-  free(m);
+  memset(self, 0, sizeof(Matrix));
 }
 
-/*
- * Translation matrix ctor
- */
- Matrix* matrix_zero()
- {
-   Matrix* matrix = malloc(sizeof(Matrix));
-   // XXX handle OOM
-
-   memset(matrix, 0, sizeof(Matrix));
-
-   return matrix;
- }
-
+void matrix_identity(Matrix* self)
+{
+  memset(self, 0, sizeof(Matrix));
+  self->data[0] = 1.0;
+  self->data[5] = 1.0;
+  self->data[10] = 1.0;
+  self->data[15] = 1.0;
+}
 
 /*
  * In-situ matrix multiplication.
@@ -42,42 +36,28 @@ void matrix_left_multiply_vector(const Matrix* m, Vector* Vector)
  * Operations
  */
 
- Matrix* matrix_multiply(const Matrix* m1, const Matrix* m2)
- {
-   Matrix* m = matrix_zero();
-
-   if (m == NULL)
-     return NULL;
-
-   for (int i = 0; i < 4; ++i) {
-     for (int j = 0; j < 4; ++j) {
-         float x = 0.0;
-         for (int k = 0; k < 4; ++k)
-         {
-           x += m1->data[4 * i + k] * m2->data[4 * k + j];
-         }
-         m->data[4 * i + j] = x;
-     }
-   }
-
-   return m;
- }
-
-Matrix* matrix_combine(const Matrix* m1,
-                       const Matrix* m2,
-                       const Matrix* m3)
+void matrix_multiply(Matrix* dst, const Matrix* m1, const Matrix* m2)
 {
-  Matrix* m = matrix_multiply(m1, m2);
-  if (m == NULL)
-    return NULL;
-
-  Matrix* n = matrix_multiply(m, m3);
-  // If 'n' is NULL, we will free 'm' & return NULL; which is what we want.
-
-  matrix_free(m);
-
-  return n;
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+        float x = 0.0;
+        for (int k = 0; k < 4; ++k)
+        {
+          x += m1->data[4 * i + k] * m2->data[4 * k + j];
+        }
+        dst->data[4 * i + j] = x;
+    }
+  }
 }
+
+/*void matrix_combine(Matrix* dst,
+                    const Matrix* m1,
+                    const Matrix* m2,
+                    const Matrix* m3)
+{
+  matrix_multiply(dst, m1, m2);
+  matrix_multiply(dst, dst, m3);
+}*/
 
 /*
  * Display
@@ -113,7 +93,7 @@ char* matrix_to_str(const Matrix* m)
  */
 
  /*
-  * Translation matrix ctor
+  * Translation matrix
   */
   void matrix_tf_translation(Matrix* dst, const Vector* Vector)
   {
@@ -126,6 +106,34 @@ char* matrix_to_str(const Matrix* m)
     dst->data[11] = Vector->z;
     dst->data[15] = 1.0;
   }
+
+
+/*
+ * Rotation matrix
+ */
+void matrix_tf_rotation(Matrix* dst, float xangle, float yangle, float zangle)
+{
+  dst->data[0] = cos(yangle) * cos(zangle);
+  dst->data[1] = -cos(yangle) * sin(yangle);
+  dst->data[2] = sin(yangle);
+  dst->data[3] = 0.0;
+
+  dst->data[4] = sin(xangle) * sin(yangle) * cos(zangle) + cos(xangle) * sin(zangle);
+  dst->data[5] = -sin(xangle) * sin(yangle) * sin(zangle) + cos(xangle) * cos(zangle);
+  dst->data[6] = -sin(xangle) * cos(yangle);
+  dst->data[7] = 0.0;
+
+  dst->data[8] = -cos(xangle) * sin(yangle) * cos(zangle) + sin(xangle) * sin(zangle);
+  dst->data[9] = cos(xangle) * sin(yangle) * sin(zangle) + sin(xangle) * cos(zangle);
+  dst->data[10] = cos(xangle) * cos(zangle);
+  dst->data[11] = 0.0;
+
+  dst->data[12] = 0.0;
+  dst->data[13] = 0.0;
+  dst->data[14] = 0.0;
+  dst->data[15] = 1.0;
+}
+
 
  void matrix_tf_change_of_basis(Matrix* dst,
                                 const Vector* i,
@@ -202,10 +210,6 @@ void matrix_tf_camera_look(Matrix* dst,
   vector_normalize_is(&n);
   vector_cross_product(&u, up_vector, &n);
   vector_cross_product(&v, &n, &u);
-
-  printf("U=%f,%f,%f,%f\n", u.x, u.y, u.z, u.w);
-  printf("V=%f,%f,%f,%f\n", v.x, v.y, v.z, v.w);
-  printf("N=%f,%f,%f,%f\n", n.x, n.y, n.z, n.w);
 
   matrix_tf_change_of_basis(dst, &u, &v, &n);
 }
