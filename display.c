@@ -1,26 +1,12 @@
 #include "display.h"
+#include "defs.h"
 #include <sys/time.h>
-#include <SDL2/SDL.h>
-
-
-typedef struct _Display  {
-  SDL_Window* window;
-  SDL_Renderer* renderer;
-  SDL_Surface* screen;
-  SDL_Texture * texture;
-  uint8_t* pixels;
-  int width;
-  int height;
-} Display;
 
 enum Error {
   DISPLAY_ERROR_OK,
   DISPLAY_ERROR_SDL,
   DISPLAY_ERROR_OOM,
 } error;
-
-int display_get_width(Display* display) { return display->width; }
-int display_get_height(Display* display) { return display->height; }
 
 const char* get_display_error()
 {
@@ -53,18 +39,19 @@ Display* display_new(Uint32 width, Uint32 height)
     return NULL;
   }
 
-  display->window = NULL;
-  display->renderer = NULL;
-  display->screen = NULL;
-  display->texture = NULL;
-  display->pixels = NULL;
-  display->width = width;
-  display->height = height;
+  display->_window = NULL;
+  display->_renderer = NULL;
+  display->_screen = NULL;
+  display->_texture = NULL;
+  display->_pixels = NULL;
+  display->_width = width;
+  display->_height = height;
+  memset(display->_buffer, 0, sizeof(display->_buffer));
 
   SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_SHOWN,
-                              &display->window, &display->renderer);
+                              &display->_window, &display->_renderer);
 
-  if (!display->window || !display->renderer) {
+  if (!display->_window || !display->_renderer) {
     error = DISPLAY_ERROR_SDL;
     return NULL;
   }
@@ -74,11 +61,11 @@ Display* display_new(Uint32 width, Uint32 height)
    * So, we use RGB332, which is at least one byte per pixel, and write 0xff
    * for white and 0x00 for black.
    */
-  display->texture = SDL_CreateTexture(display->renderer,
+  display->_texture = SDL_CreateTexture(display->_renderer,
                                        SDL_PIXELFORMAT_RGB332,
                                        SDL_TEXTUREACCESS_STATIC,
                                        width, height);
-  if (!display->texture) {
+  if (!display->_texture) {
     error = DISPLAY_ERROR_SDL;
     return NULL;
   }
@@ -86,8 +73,8 @@ Display* display_new(Uint32 width, Uint32 height)
   /*
    * Allocate display buffer
    */
-  display->pixels = malloc(width * height);
-  if (display->pixels == NULL) {
+  display->_pixels = malloc(width * height);
+  if (display->_pixels == NULL) {
     error = DISPLAY_ERROR_OOM;
     return NULL;
   }
@@ -100,8 +87,8 @@ Display* display_new(Uint32 width, Uint32 height)
 
 void free_display(Display* display)
 {
-  if (display->pixels) {
-    free(display->pixels);
+  if (display->_pixels) {
+    free(display->_pixels);
   }
   free(display);
 }
@@ -178,10 +165,11 @@ void run_event_loop(Display* display, UpdateFunc* update_func)
 
          update_func(display, clock);
 
-         SDL_UpdateTexture(display->texture, NULL, display->pixels, display->width);
-         SDL_RenderClear(display->renderer);
-         SDL_RenderCopy(display->renderer, display->texture, NULL, NULL);
-         SDL_RenderPresent(display->renderer);
+         SDL_UpdateTexture(display->_texture, NULL,
+                           display->_pixels, display->_width);
+         SDL_RenderClear(display->_renderer);
+         SDL_RenderCopy(display->_renderer, display->_texture, NULL, NULL);
+         SDL_RenderPresent(display->_renderer);
        }
        break;
     }
@@ -203,9 +191,9 @@ void run_event_loop(Display* display, UpdateFunc* update_func)
 void display_cls(Display* self)
 {
   // Blank display
-  memset(self->pixels, 0, self->width * self->height);
+  memset(self->_pixels, 0, self->_width * self->_height);
 
-  SDL_UpdateTexture(self->texture, NULL, self->pixels, self->width);
+  SDL_UpdateTexture(self->_texture, NULL, self->_pixels, self->_width);
 }
 
 /**************************************************************************/
@@ -259,9 +247,9 @@ void display_draw_line(Display* display, int16_t x0, int16_t y0, int16_t x1, int
 
 void display_draw_pixel(Display* display, int16_t x, int16_t y)
 {
-  if (x < display->width && x >= 0 && y < display->height && y >= 0)
+  if (x < display->_width && x >= 0 && y < display->_height && y >= 0)
   {
-    *(display->pixels + y * display->width + x) = display_pixel_colour(display, x, y);
+    *(display->_pixels + y * display->_width + x) = display_pixel_colour(display, x, y);
   }
 }
 
@@ -315,8 +303,45 @@ void display_draw_col_line(Display* display, int16_t x0, int16_t y0, int16_t x1,
 
 void display_draw_col_pixel(Display* display, int16_t x, int16_t y)
 {
-  if (x < display->width && x >= 0 && y < display->height && y >= 0)
+  if (x < display->_width && x >= 0 && y < display->_height && y >= 0)
   {
-    *(display->pixels + y * display->width + x) = 0xf0;
+    *(display->_pixels + y * display->_width + x) = 0xf0;
+  }
+}
+
+/*
+ *  Translate 1 byte pp layout to 1 bit pp layout of virtual screen buffer.
+ */
+uint8_t* display_get_buffer(Display* display)
+{
+  uint8_t* pixels_ptr = display->_pixels;
+  for (int i = 0; i < countof(display->_buffer); ++i, pixels_ptr += 8)
+  {
+    display->_buffer[i] = (*(pixels_ptr + 0) ? 0b10000000 : 0 )
+                        | (*(pixels_ptr + 1) ? 0b01000000 : 0 )
+                        | (*(pixels_ptr + 2) ? 0b00100000 : 0 )
+                        | (*(pixels_ptr + 3) ? 0b00010000 : 0 )
+                        | (*(pixels_ptr + 4) ? 0b00001000 : 0 )
+                        | (*(pixels_ptr + 5) ? 0b00000100 : 0 )
+                        | (*(pixels_ptr + 6) ? 0b00000010 : 0 )
+                        | (*(pixels_ptr + 7) ? 0b00000001 : 0 );
+  }
+
+  return display->_buffer;
+}
+
+/*
+ * Translate 1 bit pp layout to 1 byte pp layout of actual screen buffer.
+ */
+void display_release_buffer(Display* display)
+{
+  uint8_t* pixels_ptr = display->_pixels;
+  for (int i = 0; i < countof(display->_buffer); ++i)
+  {
+    uint8_t byte = display->_buffer[i];
+    for (int j = 0; j < 8; ++j, ++pixels_ptr)
+    {
+      *pixels_ptr = (byte & (1 << (7-j)) ? 0xff : 0x00);
+    }
   }
 }
