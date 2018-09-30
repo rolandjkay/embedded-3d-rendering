@@ -5,12 +5,16 @@ all: demo
 run: demo
 	./demo
 
-demo:	main.o display.o matrix.o vector.o camera.o simple_renderer.o 3d_model.o font.o
+demo:	main.o display.o matrix.o vector.o camera.o simple_renderer.o 3d_model.o \
+     	font.o animation/typed_string.o
 	gcc $(CFLGAS) -o demo matrix.o main.o display.o vector.o camera.o \
-	                      simple_renderer.o 3d_model.o font.o -lSDL2
+	                      simple_renderer.o 3d_model.o font.o \
+	                      animation/typed_string.o \
+	                      -lSDL2
 
 clean:
-	rm main.o display.o matrix.o vector.o camera.o simple_renderer.o 3d_model.o font.o demo
+	rm main.o display.o matrix.o vector.o camera.o simple_renderer.o \
+	   3d_model.o font.o animation/*.o demo
 
 main.o:		main.c polygon.h
 	gcc $(CFLAGS) -o main.o -c main.c
@@ -35,3 +39,6 @@ simple_renderer.o:	simple_renderer.c simple_renderer.h
 
 font.o:	font.c font.h
 	gcc $(CFLAGS) -o font.o -c font.c
+
+animation/typed_string.o:	animation/typed_string.c animation/typed_string.h
+	gcc $(CFLAGS) -o animation/typed_string.o -c animation/typed_string.c

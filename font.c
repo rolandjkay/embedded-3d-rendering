@@ -50,20 +50,23 @@ void font_write_char(Display* display, char c, size_t x, size_t y)
   display_release_buffer(display);
 }
 
-void font_write_string(Display* display, const char* str, size_t x, size_t y)
+void font_write_string(Display* display, const char* str, size_t n, size_t x, size_t y)
 {
   uint8_t* screen_buffer = display_get_buffer(display) + (x >> 3) + (y << LOG_SCREEN_STRIDE);
 
-  for (int i = 0; i < 8 ; ++i)
+  for (int scan_line_index = 0; scan_line_index < 8 ; ++scan_line_index)
   {
-    uint8_t* screen_ptr = screen_buffer + (i << LOG_SCREEN_STRIDE);
+    uint8_t* screen_ptr = screen_buffer + (scan_line_index << LOG_SCREEN_STRIDE);
 
-    for (const char* c = str; *c; ++c, ++screen_ptr)
+    //for (const char* c = str; *c; ++c, ++screen_ptr)
+    for (int char_index = 0;
+         str[char_index] && char_index < n;
+         ++char_index, ++screen_ptr)
     {
-      int d = *c - '!';
+      int d = str[char_index] - '!';
       const uint8_t* char_data = &font[((d & 0b11100000) << 3) + (d & 0b00011111)] ;
 
-      *screen_ptr = *(char_data + (i << LOG_STRIDE));
+      *screen_ptr = *(char_data + (scan_line_index << LOG_STRIDE));
     }
   }
 

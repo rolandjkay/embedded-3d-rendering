@@ -7,6 +7,7 @@
 #include "simple_renderer.h"
 #include "3d_model.h"
 #include "font.h"
+#include "animation/typed_string.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -21,9 +22,7 @@ static float far_plane = -160.0;
 static SimpleRenderer renderer;
 static Scene scene = SCENE_INIT;
 
-//static const Object* ships[] = {
-//  &viper, &cobra1, &cobra, &gecko, &missile
-//};
+static TypedString ship_name_animator;
 
 void update(Display* display, uint32_t clock)
 {
@@ -41,13 +40,15 @@ void update(Display* display, uint32_t clock)
   const Object* ship = ships[(clock / 10000) % countof(ships)];
 
   scene.scene_objects[0].object = ship;
+  typed_string_init(&ship_name_animator, ship->name, 350, 0, 0);
 
   camera_set_look_point(&camera, 0.0, 0.0, 0.0);
   camera_calc_transforms(&camera);
 
   display_cls(display);
   sr_render_scene(&renderer, &camera, display);
-  font_write_string_at_text_pos(display, ship->name, 1, 0);
+  //font_write_string_at_text_pos(display, ship->name, 100, 1, 0);
+  typed_string_render(&ship_name_animator, display, clock % 10000);
 }
 
 int main( int argc, char* args[] )
