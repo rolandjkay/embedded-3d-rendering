@@ -31,6 +31,7 @@ typedef struct
 
 typedef struct
 {
+  const char* name;
   int num_points;
   int num_lines;
   int num_faces;

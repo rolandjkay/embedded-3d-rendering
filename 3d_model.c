@@ -102,6 +102,7 @@ static const Vector cobra_face_normals[] =
 };
 
 static const Object _cobra = {
+ "Cobra Mk. III",
  countof(cobra_points),
  countof(cobra_lines),
  countof(cobra_face_normals),
@@ -169,6 +170,7 @@ static const Vector cobra1_face_normals[] =
 };
 
 static const Object _cobra1 = {
+  "Cobra Mk. I",
  countof(cobra1_points),
  countof(cobra1_lines),
  countof(cobra1_face_normals),
@@ -238,12 +240,13 @@ static const Vector viper_face_normals[] =
 };
 
 static const Object _viper = {
- countof(viper_points),
- countof(viper_lines),
- countof(viper_face_normals),
- &viper_points[0],
- &viper_lines[0],
- &viper_face_normals[0]
+  "Viper",
+  countof(viper_points),
+  countof(viper_lines),
+  countof(viper_face_normals),
+  &viper_points[0],
+  &viper_lines[0],
+  &viper_face_normals[0]
 };
 
 const Object* viper = &_viper;
@@ -315,12 +318,13 @@ static const Vector missile_face_normals[] =
 };
 
 static const Object _missile = {
- countof(missile_points),
- countof(missile_lines),
- countof(missile_face_normals),
- &missile_points[0],
- &missile_lines[0],
- &missile_face_normals[0]
+  "Missile",
+  countof(missile_points),
+  countof(missile_lines),
+  countof(missile_face_normals),
+  &missile_points[0],
+  &missile_lines[0],
+  &missile_face_normals[0]
 };
 
 const Object* missile = &_missile;
@@ -381,12 +385,13 @@ static const Vector gecko_face_normals[] =
 };
 
 static const Object _gecko = {
- countof(gecko_points),
- countof(gecko_lines),
- countof(gecko_face_normals),
- &gecko_points[0],
- &gecko_lines[0],
- &gecko_face_normals[0]
+  "Gecko",
+  countof(gecko_points),
+  countof(gecko_lines),
+  countof(gecko_face_normals),
+  &gecko_points[0],
+  &gecko_lines[0],
+  &gecko_face_normals[0]
 };
 
 const Object* gecko = &_gecko;
@@ -471,12 +476,13 @@ static const Vector orbit_face_normals[] =
 };
 
 static const Object _orbit = {
- countof(orbit_points),
- countof(orbit_lines),
- countof(orbit_face_normals),
- &orbit_points[0],
- &orbit_lines[0],
- &orbit_face_normals[0]
+  "Orbital Shuttle",
+  countof(orbit_points),
+  countof(orbit_lines),
+  countof(orbit_face_normals),
+  &orbit_points[0],
+  &orbit_lines[0],
+  &orbit_face_normals[0]
 };
 
 const Object* orbit = &_orbit;
@@ -596,11 +602,12 @@ static const Vector transp_face_normals[] =
 };
 
 static const Object _transp = {
- countof(transp_points),
- countof(transp_lines),
- countof(transp_face_normals),
- &transp_points[0],
- &transp_lines[0],
+  "Transporter",
+  countof(transp_points),
+  countof(transp_lines),
+  countof(transp_face_normals),
+  &transp_points[0],
+  &transp_lines[0],
  &transp_face_normals[0]
 };
 
@@ -674,12 +681,13 @@ static const Vector pythona_face_normals[] =
 };
 
 static const Object _pythona = {
- countof(pythona_points),
- countof(pythona_lines),
- countof(pythona_face_normals),
- &pythona_points[0],
- &pythona_lines[0],
- &pythona_face_normals[0]
+  "Python",
+  countof(pythona_points),
+  countof(pythona_lines),
+  countof(pythona_face_normals),
+  &pythona_points[0],
+  &pythona_lines[0],
+  &pythona_face_normals[0]
 };
 
 const Object* pythona = &_pythona;
@@ -752,12 +760,13 @@ static const Vector boa_face_normals[] =
 };
 
 static const Object _boa = {
- countof(boa_points),
- countof(boa_lines),
- countof(boa_face_normals),
- &boa_points[0],
- &boa_lines[0],
- &boa_face_normals[0]
+  "Boa",
+  countof(boa_points),
+  countof(boa_lines),
+  countof(boa_face_normals),
+  &boa_points[0],
+  &boa_lines[0],
+  &boa_face_normals[0]
 };
 
 const Object* boa = &_boa;
@@ -832,12 +841,13 @@ static const Vector anaconda_face_normals[] =
 };
 
 static const Object _anaconda = {
- countof(anaconda_points),
- countof(anaconda_lines),
- countof(anaconda_face_normals),
- &anaconda_points[0],
- &anaconda_lines[0],
- &anaconda_face_normals[0]
+  "Anaconda",
+  countof(anaconda_points),
+  countof(anaconda_lines),
+  countof(anaconda_face_normals),
+  &anaconda_points[0],
+  &anaconda_lines[0],
+  &anaconda_face_normals[0]
 };
 
 const Object* anaconda = &_anaconda;
@@ -892,12 +902,13 @@ static const Vector sidewnd_face_normals[] =
 };
 
 static const Object _sidewnd = {
- countof(sidewnd_points),
- countof(sidewnd_lines),
- countof(sidewnd_face_normals),
- &sidewnd_points[0],
- &sidewnd_lines[0],
- &sidewnd_face_normals[0]
+  "Sidewinder",
+  countof(sidewnd_points),
+  countof(sidewnd_lines),
+  countof(sidewnd_face_normals),
+  &sidewnd_points[0],
+  &sidewnd_lines[0],
+  &sidewnd_face_normals[0]
 };
 
 const Object* sidewnd = &_sidewnd;
@@ -978,12 +989,13 @@ static const Vector mamba_face_normals[] =
 };
 
 static const Object _mamba = {
- countof(mamba_points),
- countof(mamba_lines),
- countof(mamba_face_normals),
- &mamba_points[0],
- &mamba_lines[0],
- &mamba_face_normals[0]
+  "Mamba",
+  countof(mamba_points),
+  countof(mamba_lines),
+  countof(mamba_face_normals),
+  &mamba_points[0],
+  &mamba_lines[0],
+  &mamba_face_normals[0]
 };
 
 const Object* mamba = &_mamba;
@@ -1050,12 +1062,13 @@ static const Vector krait_face_normals[] =
 };
 
 static const Object _krait = {
- countof(krait_points),
- countof(krait_lines),
- countof(krait_face_normals),
- &krait_points[0],
- &krait_lines[0],
- &krait_face_normals[0]
+  "Krait",
+  countof(krait_points),
+  countof(krait_lines),
+  countof(krait_face_normals),
+  &krait_points[0],
+  &krait_lines[0],
+  &krait_face_normals[0]
 };
 
 const Object* krait = &_krait;
@@ -1140,6 +1153,7 @@ const Object* krait = &_krait;
  };
 
 static const Object _adder = {
+  "Adder",
   countof(adder_points),
   countof(adder_lines),
   countof(adder_face_normals),
@@ -1227,6 +1241,7 @@ static const Vector asp2_face_normals[] =
 };
 
 static const Object _asp2 = {
+  "Asp",
   countof(asp2_points),
   countof(asp2_lines),
   countof(asp2_face_normals),
@@ -1311,6 +1326,7 @@ static const Vector ferdlce_face_normals[] =
 };
 
 static const Object _ferdlce = {
+  "Fer de Lance",
   countof(ferdlce_points),
   countof(ferdlce_lines),
   countof(ferdlce_face_normals),
@@ -1381,6 +1397,7 @@ static const Vector moray_face_normals[] =
 };
 
 static const Object _moray = {
+  "Moray",
   countof(moray_points),
   countof(moray_lines),
   countof(moray_face_normals),
@@ -1396,7 +1413,7 @@ const Object* moray = &_moray;
  ** Thargoid
  ***************************************************************************/
 
- static const Point thargoid_points[] =
+static const Point thargoid_points[] =
 {
 	{  32,  -48,   48, 31,  4,  0,  8,  8},
 	{  32,  -68,    0, 31,  1,  0,  4,  4},
@@ -1465,6 +1482,7 @@ static const Vector thargoid_face_normals[] =
 };
 
 static const Object _thargoid = {
+  "Thargoid",
   countof(thargoid_points),
   countof(thargoid_lines),
   countof(thargoid_face_normals),
@@ -1525,6 +1543,7 @@ static const Vector thargon_face_normals[] =
 };
 
 static const Object _thargon = {
+  "Thargon",
   countof(thargon_points),
   countof(thargon_lines),
   countof(thargon_face_normals),
@@ -1604,6 +1623,7 @@ static const Vector constrct_face_normals[] =
 };
 
 static const Object _constrct = {
+  "Constrictor",
   countof(constrct_points),
   countof(constrct_lines),
   countof(constrct_face_normals),
@@ -1682,6 +1702,7 @@ static const Vector cougar_face_normals[] =
 };
 
 static const Object _cougar = {
+  "Cougar",
   countof(cougar_points),
   countof(cougar_lines),
   countof(cougar_face_normals),
