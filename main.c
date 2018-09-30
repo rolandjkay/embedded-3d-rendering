@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "simple_renderer.h"
 #include "3d_model.h"
+#include "font.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -37,13 +38,16 @@ void update(Display* display, uint32_t clock)
   matrix_tf_rotation(&scene.scene_objects[0].rotation_matrix,
                      2.*PI*clock/8000.0, 0.0, 2.*PI*clock/8000.0);
 
-  scene.scene_objects[0].object = ships[(clock / 10000) % countof(ships)];
+  const Object* ship = ships[(clock / 10000) % countof(ships)];
+
+  scene.scene_objects[0].object = ship;
 
   camera_set_look_point(&camera, 0.0, 0.0, 0.0);
   camera_calc_transforms(&camera);
 
   display_cls(display);
   sr_render_scene(&renderer, &camera, display);
+  font_write_string_at_text_pos(display, ship->name, 1, 0);
 }
 
 int main( int argc, char* args[] )
