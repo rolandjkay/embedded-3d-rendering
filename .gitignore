@@ -2,3 +2,4 @@
 demo
 *.xlsx
 *.bak
+.DS_Store
