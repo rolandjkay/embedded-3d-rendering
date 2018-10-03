@@ -17,14 +17,9 @@
  * DC = PB1  (Data/Command)
  * RES = PB2 (Reset)
  * D1 = PB3 (MOSI)
- * D0 = PB5 (SCK)      <- should be PB5 (according to ATMEGA328P pinout)
+ * D0 = PB5 (SCK)
  *
  */
-/*#define CS_PIN_MASK   0b00000001
-#define DC_PIN_MASK   0b00000010
-#define RES_PIN_MASK  0b00000100
-#define MOSI_PIN_MASK 0b00001000
-#define SCK_PIN_MASK  0b00100000 */
 #define CS_PIN PORTB0
 #define DC_PIN PORTB1
 #define RES_PIN PORTB2
@@ -57,9 +52,7 @@ int main(void)
 
   // Bring out of reset
   PIN_LOW(PORTB, RES_PIN);
-  //PORTB &= ~RES_PIN_MASK;   // Low
   _delay_ms(10);
-  //PORTB |= RES_PIN_MASK;   // High
   PIN_HIGH(PORTB, RES_PIN);
 
   ssd1306_command(SSD1306_DISPLAYOFF);                    // 0xAE
@@ -125,18 +118,15 @@ int main(void)
   /*
    * Drop into 'blinky'
    */
-  //DDRC |= 0b00100000;                  // Arduino pin A5 as output (PC5)
-  SET_BIT(DDRC, PORTC5);
+  SET_BIT(DDRC, DDC5);             // Arduino pin A5 as output (PC5)
   while(1)
   {
       // LED on
-      //PORTC |= 0b00100000;            // PC0 = High = Vcc
-      PIN_HIGH(PORTC, PORTC5);
+      PIN_HIGH(PORTC, PORTC5);       // PC0 = High = Vcc
       _delay_ms(500);                // wait 500 milliseconds
 
       //LED off
-      //PORTC &= ~0b00100000;            // PC0 = Low = 0v
-      PIN_LOW(PORTC, PORTC5);
+      PIN_LOW(PORTC, PORTC5);        // PC0 = Low = 0v
       _delay_ms(500);                // wait 500 milliseconds
   }
 }
@@ -167,15 +157,11 @@ void ssd1306_command(uint8_t cmd)
   PIN_HIGH(PORTB, CS_PIN);
   PIN_LOW(PORTB, DC_PIN);
   PIN_LOW(PORTB, CS_PIN);
-//  PORTB |= CS_PIN_MASK;
-//  PORTB &= ~DC_PIN_MASK;
-//  PORTB &= ~CS_PIN_MASK;
 
   WRITE(cmd);
 
   // Set CS high to end command.
   PIN_HIGH(PORTB, CS_PIN);
-  //PORTB |= CS_PIN_MASK;
 }
 
 
@@ -201,28 +187,6 @@ void display(void)
   PIN_HIGH(PORTB, CS_PIN);
   PIN_HIGH(PORTB, DC_PIN);
   PIN_LOW(PORTB, CS_PIN);
-  //PORTB |= CS_PIN_MASK;
-  //PORTB |= DC_PIN_MASK;
-  //PORTB &= ~CS_PIN_MASK;
-
-  //for (uint16_t i=0; i<(SSD1306_LCDWIDTH*SSD1306_LCDHEIGHT/8); i++) {
-/*for (uint16_t row = 0; row < SSD1306_LCDHEIGHT; row += 8)
-  {
-    for (uint16_t column=0; column < SSD1306_LCDWIDTH; ++column)
-    {
-      uint8_t mask = 0x80 >> (column % 8);
-      uint8_t foo = ((cat_128_64[row*16 + (column >> 3)] & mask) ? 0x01 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 16] & mask) ? 0x02 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 32] & mask) ? 0x04 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 48] & mask) ? 0x08 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 64] & mask) ? 0x10 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 80] & mask) ? 0x20 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 96] & mask) ? 0x40 : 0x00)
-                  | ((cat_128_64[row*16 + (column >> 3)+ 112] & mask) ? 0x80 : 0x00);
-
-      WRITE(foo);
-    }
-  }*/
 
   // Write cat sprite
   for (int offset = 0; offset < 1024; ++offset)
@@ -231,5 +195,4 @@ void display(void)
   }
 
   PIN_HIGH(PORTB, CS_PIN);
-  //PORTB |= CS_PIN_MASK;
 }
