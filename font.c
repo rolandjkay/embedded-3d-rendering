@@ -1,5 +1,4 @@
-#include "stddef.h"
-#include "types.h"
+#include <stdint.h>
 #include "display.h"
 
 // Search for '1' in Atom, to make this data readable; it will highlight the 1s.

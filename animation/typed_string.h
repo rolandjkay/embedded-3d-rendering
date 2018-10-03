@@ -4,7 +4,7 @@
 #ifndef _TYPED_STRING
 #define _TYPED_STRING
 
-#include "../types.h"
+#include "stdint.h"
 #include "../display.h"
 
 

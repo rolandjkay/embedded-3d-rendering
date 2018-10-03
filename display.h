@@ -2,7 +2,7 @@
 #define _DISPLAY_H
 
 #include <SDL2/SDL.h>
-#include "types.h"
+#include "stdint.h"
 
 typedef struct
 {
