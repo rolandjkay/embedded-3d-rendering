@@ -128,7 +128,10 @@ void sr_render_object(SimpleRenderer* self,
   {
     Vector normal;
 
-    vector_copy_is(&normal, &object->normals[face_index]);
+    //vector_copy_is(&normal, &object->normals[face_index]);
+    normal.x = object->normals[face_index].x;
+    normal.y = object->normals[face_index].y;
+    normal.z = object->normals[face_index].z;
 
     // Apply rotation
     matrix_left_multiply_vector(rotation_matrix, &normal);

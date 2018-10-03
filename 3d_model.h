@@ -1,6 +1,8 @@
 #ifndef _3D_MODEL_H
 #define _3D_MODEL_H
 
+#include <stdint.h>
+
 #include "vector.h"
 #include "matrix.h"
 
@@ -10,34 +12,46 @@
 
 typedef struct
 {
-  int x;
-  int y;
-  int z;
-  int dist;
+  int8_t x;
+  int8_t y;
+  int8_t z;
+  /*int dist;
   int face1;
   int face2;
   int face3;
-  int face4;
+  int face4; */
 } Point;
 
 typedef struct
 {
-  int dist;
-  int face1;
-  int face2;
-  int start_point;
-  int end_point;
+  //int dist;
+  uint8_t face1;
+  uint8_t face2;
+  uint8_t start_point;
+  uint8_t end_point;
 } Line;
 
 typedef struct
 {
+  int8_t x;
+  int8_t y;
+  int8_t z;
+  /*int dist;
+  int face1;
+  int face2;
+  int face3;
+  int face4; */
+} Normal;
+
+typedef struct
+{
   const char* name;
-  int num_points;
-  int num_lines;
-  int num_faces;
+  uint8_t num_points;
+  uint8_t num_lines;
+  uint8_t num_faces;
   const Point* points;
   const Line* lines;
-  const Vector* normals;
+  const Normal* normals;
 } Object;
 
 extern const Object *cobra, *cobra1, *viper, *gecko, *orbit, *transp, *pythona;
