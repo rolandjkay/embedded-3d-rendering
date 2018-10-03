@@ -5,19 +5,28 @@ all: demo
 run: demo
 	./demo
 
-demo:	main.o display.o matrix.o vector.o camera.o simple_renderer.o 3d_model.o \
+demo:	main.o display.o matrix.o vector.o camera.o simple_renderer.o \
+	3d_model.o sdl/display_impl_sdl.o utils.o errors.o sdl/event_loop_sdl.o \
      	font.o animation/typed_string.o
 	gcc $(CFLGAS) -o demo matrix.o main.o display.o vector.o camera.o \
 	                      simple_renderer.o 3d_model.o font.o \
-	                      animation/typed_string.o \
+	                      animation/typed_string.o utils.o errors.o \
+	                      sdl/display_impl_sdl.o \
+	                      sdl/event_loop_sdl.o \
 	                      -lSDL2
 
 clean:
 	rm main.o display.o matrix.o vector.o camera.o simple_renderer.o \
-	   3d_model.o font.o animation/*.o demo
+	   3d_model.o font.o animation/*.o demo sdl\*.o
 
-main.o:		main.c polygon.h
+main.o:		main.c
 	gcc $(CFLAGS) -o main.o -c main.c
+
+errors.o:	errors.c errors.h
+	gcc $(CFLAGS) -o errors.o -c errors.c
+
+utils.o:	utils.c utils.h
+	gcc $(CFLAGS) -o utils.o -c utils.c
 
 matrix.o:	matrix.c matrix.h
 	gcc $(CFLAGS) -o matrix.o -c matrix.c
@@ -42,3 +51,9 @@ font.o:	font.c font.h
 
 animation/typed_string.o:	animation/typed_string.c animation/typed_string.h
 	gcc $(CFLAGS) -o animation/typed_string.o -c animation/typed_string.c
+
+sdl/display_impl_sdl.o:	sdl/display_impl_sdl.c sdl/display_impl_sdl.h
+	gcc $(CFLAGS) -o sdl/display_impl_sdl.o -c sdl/display_impl_sdl.c
+
+sdl/event_loop_sdl.o:	sdl/event_loop_sdl.c sdl/event_loop_sdl.h
+	gcc $(CFLAGS) -o sdl/event_loop_sdl.o -c sdl/event_loop_sdl.c

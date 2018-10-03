@@ -5,6 +5,7 @@
 /*
  * Calculate the normal facing out of the form.
  */
+ /*
 void _calc_normal(Vector* normal_out, const Polygon* polygon)
 {
   Vector a, b;
@@ -12,7 +13,7 @@ void _calc_normal(Vector* normal_out, const Polygon* polygon)
   vector_subtract(&b, &polygon->vertices[polygon->n - 1], &polygon->vertices[0]);
 
   vector_cross_product(normal_out, &a, &b);
-}
+}*/
 
 /*
  * Project a vector onto the canvas.

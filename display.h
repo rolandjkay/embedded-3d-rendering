@@ -1,60 +1,76 @@
 #ifndef _DISPLAY_H
 #define _DISPLAY_H
 
-#include <SDL2/SDL.h>
+#ifdef __AVR__
+#  include "ssd1306/display_impl_ssd1306.h"
+  //define WITHARCH(x) x ## _ssd1306
+#else
+#  include "sdl/display_impl_sdl.h"
+  //define WITHARCH(x) x ## _sdl
+#endif
+
 #include "stdint.h"
 
 typedef struct
 {
-  SDL_Window* _window;
-  SDL_Renderer* _renderer;
-  SDL_Surface* _screen;
-  SDL_Texture * _texture;
-  uint8_t* _pixels;
-  int _width;
-  int _height;
-  // Virtual screen buffer in 1 bit per pixel layout.
-  // - SDL doesn't support this, so we have to marshal back and forth between
-  //   its 1 byte per pixel format.
-  uint8_t _buffer[1024];
+  DisplayImpl _impl;
 } Display;
 
-typedef void UpdateFunc(Display*, uint32_t clock);
+#define DISPLAY_INIT { DISPLAY_IMPL_INIT }
+
 
 /*
  * Ctor and dtor
  */
-Display* display_new();
-void free_display(Display* self);
+static inline int display_init(Display* self)
+{
+  return display_impl_init(&self->_impl);
+}
 
-static inline int display_get_width(Display* display) { return display->_width; }
-static inline int display_get_height(Display* display) { return display->_height; }
+static inline int display_get_width(Display* self)
+{
+  return display_impl_get_width(&self->_impl);
+}
 
-/*
- * Errors
- */
-const char* get_display_error();
-
-/*
- * Event loop
- */
-void run_event_loop(Display* display, UpdateFunc* update_func);
+static inline int display_get_height(Display* self)
+{
+  return display_impl_get_height(&self->_impl);
+}
 
 /*
  * Drawing
  */
-void display_cls(Display* self);
+static inline void display_cls(Display* self)
+{
+  display_impl_cls(&self->_impl);
+}
+
+static inline void display_show(Display* self)
+{
+  display_impl_show(&self->_impl);
+}
+
 void display_draw_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
-void display_draw_col_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
-void display_draw_pixel(Display* self, int16_t x, int16_t y);
-void display_draw_col_pixel(Display* self, int16_t x, int16_t y);
-uint8_t display_pixel_colour(Display* self, int16_t x, int16_t y);
+
+//void display_draw_col_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
+static inline void display_draw_pixel(Display* self, int16_t x, int16_t y)
+{
+  display_impl_draw_pixel(&self->_impl, x, y);
+}
+//void display_draw_col_pixel(Display* self, int16_t x, int16_t y);
+//uint8_t display_pixel_colour(Display* self, int16_t x, int16_t y);
 
 /*
  * Access to virtual buffer
  */
-uint8_t* display_get_buffer(Display* display);
+static inline uint8_t* display_get_buffer(Display* self)
+{
+  return display_impl_get_buffer(&self->_impl);
+}
 
-void display_release_buffer(Display* display);
+static inline void display_release_buffer(Display* self)
+{
+  display_impl_release_buffer(&self->_impl);
+}
 
 #endif

@@ -12,34 +12,10 @@
 #include "ssd1306.h"
 #include "sprites.h"
 
-/*
- * CS = PB0  (SS)
- * DC = PB1  (Data/Command)
- * RES = PB2 (Reset)
- * D1 = PB3 (MOSI)
- * D0 = PB5 (SCK)
- *
- */
-#define CS_PIN PORTB0
-#define DC_PIN PORTB1
-#define RES_PIN PORTB2
-#define MOSI_PIN PORTB3
-#define SCK_PIN PORTB5
-
 void spi_init (void);
 void ssd1306_command(uint8_t c);
 void display(void);
 
-/*
- * Macro to write one byte to the SPI bus and wait for transmission to complete.
- */
-#define WRITE(b) { SPDR = (b); while(!(SPSR & (1<<SPIF) )); }
-
-#define PIN_HIGH(port, pin) ((port) |= (1<<pin))
-#define PIN_LOW(port, pin) ((port) &= ~(1<<pin))
-// Euphemisms that are more natural when setting register bits
-#define SET_BIT(port, pin) ((port) |= (1<<pin))
-#define CLEAR_BIT(port, pin) ((port) &= ~(1<<pin))
 
 int main(void)
 {
@@ -132,7 +108,7 @@ int main(void)
 }
 
 
-// Initialize SPI Slave Device
+// Initialize SPI
 void spi_init (void)
 {
 

@@ -8,8 +8,10 @@ all: testcard.hex
 clean:
 	rm generate_sprites sprites.c
 
-generate_sprites:	generate_sprites.c sprites-input.c sprites.h
-	gcc -o generate_sprites generate_sprites.c sprites-input.c
+generate_sprites:	generate_sprites.c ../utils.h ../utils.c \
+	                sprites-input.c sprites.h
+	gcc -o generate_sprites generate_sprites.c sprites-input.c \
+  	    ../utils.c
 
 sprites.c:	generate_sprites
 	./generate_sprites

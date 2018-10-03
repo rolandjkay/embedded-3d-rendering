@@ -1,3 +1,32 @@
+
+
+/*
+ * Pin assignments
+ *
+ * CS = PB0  (SS)
+ * DC = PB1  (Data/Command)
+ * RES = PB2 (Reset)
+ * D1 = PB3 (MOSI)     | Cannot change these, as we're using hardware SPI.
+ * D0 = PB5 (SCK)      /
+ */
+#define CS_PIN PORTB0
+#define DC_PIN PORTB1
+#define RES_PIN PORTB2
+#define MOSI_PIN PORTB3
+#define SCK_PIN PORTB5
+
+/*
+ * Macro to write one byte to the SPI bus and wait for transmission to complete.
+ */
+#define WRITE(b) { SPDR = (b); while(!(SPSR & (1<<SPIF) )); }
+
+#define PIN_HIGH(port, pin) ((port) |= (1<<pin))
+#define PIN_LOW(port, pin) ((port) &= ~(1<<pin))
+// Euphemisms that are more natural when setting register bits
+#define SET_BIT(port, pin) ((port) |= (1<<pin))
+#define CLEAR_BIT(port, pin) ((port) &= ~(1<<pin))
+
+
 /*
  * Constants for SSD1306; adapted from Adafruit
  */

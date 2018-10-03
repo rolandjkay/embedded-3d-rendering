@@ -2,7 +2,6 @@
 
 #include "vector.h"
 #include "matrix.h"
-#include "polygon.h"
 #include "camera.h"
 #include "display.h"
 #include "3d_model.h"
