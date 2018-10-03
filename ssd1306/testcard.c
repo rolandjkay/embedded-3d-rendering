@@ -147,7 +147,7 @@ void spi_init (void)
 {
 
   // Set MOSI, SCK, CS, DC & RES as output
-  DDRB = (1<<MOSI_PIN) | (1<<SCK_PIN) | (1<<CS_PIN) | (1<<DC_PIN) | (1<<DC_PIN);
+  DDRB = (1<<MOSI_PIN) | (1<<SCK_PIN) | (1<<CS_PIN) | (1<<DC_PIN) | (1<<RES_PIN);
 
   // We want MSB_FIRST endianess and SPI_MODE0
   // - Not including DORD gives MSB first
