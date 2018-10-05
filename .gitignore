@@ -1,5 +1,7 @@
 *.o
 demo
+convert-bitmap
 *.xlsx
 *.bak
 .DS_Store
+convert-bitmap.dSYM
