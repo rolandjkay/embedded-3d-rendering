@@ -7,14 +7,17 @@
 
 #include <avr/io.h>
 #include <util/delay.h>                // for _delay_ms()
+#include <stdlib.h>
+#include <stdbool.h>
 
 #define SSD1306_128_64
 #include "ssd1306.h"
-#include "sprites.h"
+#include "../bitmaps_ssd1306/cat.h"
+#include "../bitmaps_ssd1306/bbc_micro_font.h"
 
 void spi_init (void);
 void ssd1306_command(uint8_t c);
-void display(void);
+void display(const uint8_t bitmap[], size_t n);
 
 
 int main(void)
@@ -89,14 +92,23 @@ int main(void)
 
   ssd1306_command(SSD1306_DISPLAYON);//--turn on oled panel
 
-  display();
+  display(cat, sizeof(cat));
 
   /*
    * Drop into 'blinky'
    */
   SET_BIT(DDRC, DDC5);             // Arduino pin A5 as output (PC5)
-  while(1)
+  for (size_t count = 0; true; ++count)
   {
+      if (count % 20 < 10)
+      {
+        display(cat, sizeof(cat));
+      }
+      else
+      {
+        display(bbc_micro_font, sizeof(bbc_micro_font));
+      }
+
       // LED on
       PIN_HIGH(PORTC, PORTC5);       // PC0 = High = Vcc
       _delay_ms(500);                // wait 500 milliseconds
@@ -141,7 +153,7 @@ void ssd1306_command(uint8_t cmd)
 }
 
 
-void display(void)
+void display(const uint8_t bitmap[], size_t n)
 {
   ssd1306_command(SSD1306_COLUMNADDR);
   ssd1306_command(0);   // Column start address (0 = reset)
@@ -165,9 +177,9 @@ void display(void)
   PIN_LOW(PORTB, CS_PIN);
 
   // Write cat sprite
-  for (int offset = 0; offset < 1024; ++offset)
+  for (int offset = 0; offset < n; ++offset)
   {
-    WRITE(cat_128_64[offset]);
+    WRITE(bitmap[offset]);
   }
 
   PIN_HIGH(PORTB, CS_PIN);
