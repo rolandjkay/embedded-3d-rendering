@@ -66,7 +66,6 @@ void display_impl_cls(DisplayImpl* self)
 {
   // Blank display
   memset(self->_pixels, 0, SDL_SCREEN_BUFFER_SIZE);
-
   SDL_UpdateTexture(self->_texture, NULL, self->_pixels, SDL_SCREEN_WIDTH);
 }
 
@@ -161,9 +160,9 @@ static void horiz_1byte_to_vert_1bit(const uint8_t input[SDL_SCREEN_BUFFER_SIZE]
        block_start < SDL_SCREEN_BUFFER_SIZE;
        block_start += BLOCK_SIZE)
   {
-    *out_ptr = 0;
     for (size_t column_index = 0; column_index < SDL_SCREEN_WIDTH; ++column_index, ++out_ptr)
     {
+      *out_ptr = 0;
       // Highest byte (on the screen) is LSB
       for (size_t pixel_index = 0; pixel_index < 8; ++pixel_index)
       {
