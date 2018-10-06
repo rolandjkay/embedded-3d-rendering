@@ -2,10 +2,10 @@
 #define _DISPLAY_H
 
 #ifdef __AVR__
-#  include "ssd1306/display_impl_ssd1306.h"
+#  include "avr/ssd1306/display_impl_ssd1306.h"
   //define WITHARCH(x) x ## _ssd1306
 #else
-#  include "sdl/display_impl_sdl.h"
+#  include "macos/sdl/display_impl_sdl.h"
   //define WITHARCH(x) x ## _sdl
 #endif
 

@@ -5,3 +5,5 @@ convert-bitmap
 *.bak
 .DS_Store
 convert-bitmap.dSYM
+demo-avr.elf
+demo-avr.hex

@@ -1,4 +1,8 @@
-#include "ssd1306_display.h"
+#include "display_impl_ssd1306.h"
+
+#ifndef F_CPU
+#define F_CPU 16000000UL // or whatever may be your frequency
+#endif
 
 #include <avr/io.h>
 #include <util/delay.h>                // for _delay_ms()
@@ -116,21 +120,31 @@ static void start_display()
 }
 
 
-void display_init(Display* self)
+int display_impl_init(DisplayImpl* self)
 {
   start_display();
+  return 0; // No error.
 }
 
-void display_cls(Display* self)
+void display_impl_draw_pixel(DisplayImpl* self, int16_t x, int16_t y)
 {
-    memset(&self->_screen_buffer[0], 0, sizeof(self->_screen_buffer));
+  if (x >= SSD1306_LCDWIDTH || y >= SSD1306_LCDHEIGHT) { return; }
+
+  self->_screen_buffer[x + (y>>3)<<7] |= 1 << (y & 0x00000111);
 }
 
-void display_draw_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1)
+void display_impl_show(DisplayImpl* self)
 {
+  // SPI
+  PIN_HIGH(PORTB, CS_PIN);
+  PIN_HIGH(PORTB, DC_PIN);
+  PIN_LOW(PORTB, CS_PIN);
 
+  // Write cat sprite
+  for (int offset = 0; offset < sizeof(self->_screen_buffer); ++offset)
+  {
+    WRITE(self->_screen_buffer[offset]);
+  }
 
+  PIN_HIGH(PORTB, CS_PIN);
 }
-
-void display_draw_pixel(Display* self, int16_t x, int16_t y);
-uint8_t display_pixel_colour(Display* self, int16_t x, int16_t y);

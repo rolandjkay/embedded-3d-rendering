@@ -2,23 +2,24 @@ CFLAGS=-std=c99 -gdwarf-2
 AVR-CFLAGS=-std=c99 -Os
 AVR-CFLAGS-ELF=-std=c99
 AVR-CC=avr-gcc
+AVR-OBJCOPY=avr-objcopy
 MCU=atmega328p
 
-BUILD-DIR-MACOS=macos
-BUILD-DIR-AVR=avr
+BUILD-DIR-MACOS=build/macos
+BUILD-DIR-AVR=build/avr
 
 DEMO-OBJ-FILENAMES=main.o display.o matrix.o vector.o camera.o \
                    simple_renderer.o 3d_model.o errors.o  \
                    font.o typed_string.o
 
 DEMO-OBJ-FILENAMES-MACOS=event_loop_sdl.o display_impl_sdl.o
-DEMO-OBJ-FILENAMES-AVR=event_loop_ssd1306.o display_impl_ssd1306.o
+DEMO-OBJ-FILENAMES-AVR=event_loop_avr.o display_impl_ssd1306.o
 
 DEMO-OBJ-FILES-MACOS=$(addprefix $(BUILD-DIR-MACOS)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-MACOS))
 DEMO-OBJ-FILES-AVR=$(addprefix $(BUILD-DIR-AVR)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-AVR))
 
 
-all: demo convert-bitmap
+all: demo convert-bitmap demo-avr.hex
 
 debug-make:
 	@echo macos build dir: $(BUILD-DIR-MACOS)
@@ -34,7 +35,7 @@ convert-bitmap: convert-bitmap.c
 	gcc $(CFLAGS) -o $@ $< -largp
 
 #
-# Bitnaps
+# Bitmaps
 #
 
 bitmaps:	bitmaps_ssd1306/bbc_micro_font.c bitmaps_ssd1306/cat.c
@@ -106,11 +107,54 @@ $(BUILD-DIR-MACOS)/event_loop_sdl.o:	sdl/event_loop_sdl.c sdl/event_loop_sdl.h
 #
 # AVR build
 #
-ssd1306/event_loop_ssd1306.o:	ssd1306/event_loop_ssd1306.c ssd1306/event_loop_ssd1306.h
-	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o ssd1306/event_loop_ssd1306.o -c ssd1306/event_loop_ssd1306.c
+AVR_SRC_DIR=avr
+SSD1306_SRC_DIR=avr/ssd1306
 
-demo-avr.elf:	main.o display.o matrix.o vector.o camera.o simple_renderer.o \
-             	3d_model.o sdl/display_impl_sdl.o errors.o \
-             	ssd1306/event_loop_ssd1306.o \
-             	font.o animation/typed_string.o
-	$(CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf ssd1306/event_loop_ssd1306.o
+# Platform specific
+#
+$(BUILD-DIR-AVR)/event_loop_avr.o:	$(addprefix $(AVR_SRC_DIR)/, event_loop_avr.c event_loop_avr.h)
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/display_impl_ssd1306.o:	$(addprefix $(SSD1306_SRC_DIR)/, display_impl_ssd1306.c display_impl_ssd1306.h)
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+# Common
+#
+$(BUILD-DIR-AVR)/main.o:	main.c
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/display.o:	display.c display.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/matrix.o:	matrix.c matrix.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/vector.o:	vector.c vector.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/camera.o:	camera.c camera.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/simple_renderer.o:	simple_renderer.c simple_renderer.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/3d_model.o:	3d_model.c 3d_model.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/errors.o:	errors.c errors.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/font.o:	font.c font.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/typed_string.o:	animation/typed_string.c animation/typed_string.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+demo-avr.elf:	$(DEMO-OBJ-FILES-AVR)
+	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf $(DEMO-OBJ-FILES-AVR)
+
+demo-avr.hex:	demo-avr.elf
+	$(AVR-OBJCOPY) -j .text -j .data -O ihex $< $@
+
+upload-demo-avr:	demo-avr.hex
+	avrdude -c arduino -P /dev/cu.usbmodem14121 -p ATMEGA328P -b 115200 -U flash:w:demo-avr.hex

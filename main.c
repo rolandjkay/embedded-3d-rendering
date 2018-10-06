@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#ifdef __AVR__
-# include "ssd1306/event_loop_ssd1306.h"
+#ifdef __AVR
+# include "avr/event_loop_avr.h"
 #else
 # include "sdl/event_loop_sdl.h"
 #endif
@@ -56,6 +56,12 @@ static void update(uint32_t clock)
   sr_render_scene(&renderer, &camera, &display);
   //font_write_string_at_text_pos(display, ship->name, 100, 1, 0);
   typed_string_render(&ship_name_animator, &display, clock % 10000);
+  /*display_draw_line(&display, 0,0,128,64);
+  font_write_string(&display, "Hello World", 5, 0, 3);
+  font_write_char(&display, 'H', 0, 20); */
+
+  //font_write_string_at_text_pos(&display, ship->name, 100, 1, 0);
+
   display_show(&display);
 }
 
