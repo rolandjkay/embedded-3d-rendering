@@ -4,6 +4,8 @@
 
 #ifdef __AVR
 # include <avr/pgmspace.h>
+#else
+# include "../macos/pgmspace.h"
 #endif
 
 void typed_string_init(TypedString* self,

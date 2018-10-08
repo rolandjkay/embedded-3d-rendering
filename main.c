@@ -12,15 +12,10 @@
 #include <math.h>
 
 #ifdef __AVR
-# include "avr/event_loop_avr.h"
 # include "avr/atmega328p/usart.h"
-#define F_CPU 16000000UL
-#include <util/delay.h>
-#include <avr/io.h>
-#include <avr/pgmspace.h>
-#include "avr/avr-defs.h"
+# include "avr/event_loop_avr.h"
 #else
-# include "sdl/event_loop_sdl.h"
+# include "macos/sdl/event_loop_sdl.h"
 #endif
 
 // http://www.kmjn.org/notes/3d_rendering_intro.html
@@ -57,9 +52,9 @@ static void update(uint32_t clock)
   camera_calc_transforms(&camera);
 
   display_cls(&display);
-  sr_render_scene(&renderer, &camera, &display);
-  //font_write_string_at_text_pos(display, ship->name, 100, 1, 0);
+  //sr_render_scene(&renderer, &camera, &display);
   typed_string_render(&ship_name_animator, &display, clock % 10000);
+  font_write_string_at_text_pos_P(&display, PSTR("ship->name"), 100, 0, 4);
   /*display_draw_line(&display, 0,0,128,64);
   display_draw_pixel(&display, 0, 16);
   display_draw_pixel(&display, 1, 17);
@@ -79,54 +74,9 @@ static void update(uint32_t clock)
 
 int main( int argc, char* args[] )
 {
-
-
 #ifdef __AVR
   usart_init();
-
-  SET_BIT(DDRC, DDC5);             // Arduino pin A5 as output (PC5)
-
-  //while (1) {
-    PIN_HIGH(PORTC, PORTC5);   // LED on
-    //usart_write_string_P(foo);
-    //usart_write_string_P(test);
-    //sprintf(buf, "%x\n", string_0);
-    //usart_write_string(buf);
-
-    //uint16_t addr_of_cobra_obj = pgm_read_word(&cobra);
-    //const Object* cobra_ptr = (const Object*)pgm_read_word(&cobra);
-    //uint16_t addr_of_string = pgm_read_word(addr_of_cobra_obj);
-    //uint16_t addr_of_string = pgm_read_word(&(cobra.name));
-    //sprintf(buf, "%x\n", _cobra_name);
-    //usart_write_string(buf);
-    //const Object* addr_of_cobra = GET_SHIP(SHIP_COBRA);
-    //uint16_t addr_of_string = pgm_read_word(&(addr_of_cobra->name));
-    //sprintf(buf, "%x\n", addr_of_string);
-    //usart_write_string(buf);
-    usart_write_string_P(GET_OBJ_NAME(GET_OBJ(SHIP_COBRA)));
-
-    //usart_write_string_P((char*)pgm_read_word(cobra->name));
-    //PGM_P xxx = (PGM_P)cobra;
-    //usart_write_string_P(xxx);
-    //  usart_transmit('D');
-
-    _delay_ms(100);
-    PIN_LOW(PORTC, PORTC5);   // LED on
-    _delay_ms(100);
 #endif
-
-    PIN_HIGH(PORTC, PORTC5);   // LED on
-    _delay_ms(300);
-    PIN_LOW(PORTC, PORTC5);   // LED on
-    _delay_ms(300);
-    PIN_HIGH(PORTC, PORTC5);   // LED on
-    _delay_ms(300);
-    PIN_LOW(PORTC, PORTC5);   // LED on
-    _delay_ms(300);
-    PIN_HIGH(PORTC, PORTC5);   // LED on
-    _delay_ms(300);
-    PIN_LOW(PORTC, PORTC5);   // LED on
-    _delay_ms(300);
 
   scene.scene_objects[0].object = GET_OBJ(SHIP_VIPER);
 

@@ -6,6 +6,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>                // for _delay_ms()
+#include "../avr-defs.h"
 
 #define CS_PIN PORTB0
 #define DC_PIN PORTB1

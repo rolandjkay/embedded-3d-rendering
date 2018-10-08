@@ -16,7 +16,7 @@
 
 typedef struct
 {
-  uint8_t _screen_buffer[SSD1306_SCREEN_BUFFER_SIZE];
+  uint8_t _screen_buffer[7*128]; //SSD1306_SCREEN_BUFFER_SIZE];
 } DisplayImpl;
 
 #define DISPLAY_IMPL_INIT {0}

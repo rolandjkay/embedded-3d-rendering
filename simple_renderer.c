@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "simple_renderer.h"
-#include "avr/atmega328p/usart.h"
 
 //static char buf[30];
 
@@ -158,10 +157,6 @@ void sr_render_object(SimpleRenderer* self,
   const Matrix* rotation_matrix = &scene_object->rotation_matrix;
   const Vector* location = &scene_object->location;
 
-  usart_write_string_P((pgm_ptr_t)PSTR("====\n"));
-  usart_write_string_P(GET_OBJ_NAME(object));
-  usart_transmit('\n');
-
   int w = display_get_width(display);
   int h = display_get_height(display);
   Vector vertices[40];
@@ -211,10 +206,6 @@ void sr_render_object(SimpleRenderer* self,
   }
 
   uint8_t num_points = GET_OBJ_NUM_POINTS(object);
-  char buf[10];
-  int foo = num_points;
-  snprintf(buf, 10, ">%d\n", foo);
-  usart_write_string(buf);
 
   for (int vertex_index = 0; vertex_index < num_points; ++vertex_index)
   {
@@ -275,6 +266,4 @@ void sr_render_object(SimpleRenderer* self,
      } */
    }
   }
-
-  usart_write_string_P((pgm_ptr_t)PSTR("+++++"));
 }

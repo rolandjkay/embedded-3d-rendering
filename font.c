@@ -22,7 +22,7 @@ static void _font_write_char_to_buffer(uint8_t* screen_buffer, char c, size_t x,
   uint8_t mask = 0b11111111 >> (8 - shift);
 
   // Don't draw if it would go off the screen.
-  if (x > SCREEN_WIDTH - 8 || y > 0/*SCREEN_HEIGHT - 8*/) {
+  if (x > SCREEN_WIDTH - 8 || y > SCREEN_HEIGHT - 8) {
     return;
   }
 

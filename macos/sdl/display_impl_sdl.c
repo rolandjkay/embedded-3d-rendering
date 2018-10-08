@@ -1,6 +1,6 @@
 #include "display_impl_sdl.h"
-#include "../defs.h"
-#include "../errors.h"
+#include "../../defs.h"
+#include "../../errors.h"
 #include <sys/time.h>
 #include <SDL2/SDL.h>
 

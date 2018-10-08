@@ -3,8 +3,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
+
 #ifdef __AVR
   #include "avr/pgmspace.h"
+#else
+  #include "macos/pgmspace.h"
 #endif
 
 #include "defs.h"
@@ -91,38 +94,40 @@ extern const Object* const misc[1] PROGMEM;
  * write ship_ptr->name instead of prg_read_word(&ship_ptr->name).
  */
 
-#define GET_OBJ(index) ((pgm_ptr_t)pgm_read_word(&ships[(index)]))
-#define GET_OBJ_PROP(handle, prop_type, prop_name) ((prop_type)pgm_read_word(handle + offsetof(Object, prop_name))) //   &ship->prop_name))
+#define GET_OBJ(index) (pgm_ptr_t)pgm_read_ptr(&ships[(index)])
+#define GET_OBJ_PROP_WORD(handle, prop_name) pgm_read_word(handle + offsetof(Object, prop_name)) //   &ship->prop_name))
+#define GET_OBJ_PROP_BYTE(handle, prop_name) pgm_read_byte(handle + offsetof(Object, prop_name)) //   &ship->prop_name))
+#define GET_OBJ_PROP_PTR(handle, prop_name) (pgm_ptr_t)pgm_read_ptr(handle + offsetof(Object, prop_name)) //   &ship->prop_name))
 
 
 /*
  * Accessing structs in flash is a nightmare!
  */
-#define GET_OBJ_NAME(handle) (GET_OBJ_PROP(handle, pgm_ptr_t, name))
-#define GET_OBJ_NUM_POINTS(handle) (GET_OBJ_PROP(handle, uint8_t, num_points))
-#define GET_OBJ_NUM_LINES(handle) (GET_OBJ_PROP(handle, uint8_t, num_lines))
-#define GET_OBJ_NUM_FACES(handle) (GET_OBJ_PROP(handle, uint8_t, num_faces))
+#define GET_OBJ_NAME(handle) (GET_OBJ_PROP_PTR(handle, name))
+#define GET_OBJ_NUM_POINTS(handle) (GET_OBJ_PROP_BYTE(handle, num_points))
+#define GET_OBJ_NUM_LINES(handle) (GET_OBJ_PROP_BYTE(handle, num_lines))
+#define GET_OBJ_NUM_FACES(handle) (GET_OBJ_PROP_BYTE(handle, num_faces))
 
 #define GET_OBJ_NORMAL(handle, index, dst) { \
-  pgm_ptr_t n = GET_OBJ_PROP(handle, pgm_ptr_t, normals);  \
-  dst.x = pgm_read_byte(n + index*3); \
-  dst.y = pgm_read_byte(n + index*3 + 1); \
-  dst.z = pgm_read_byte(n + index*3 + 2); \
+  pgm_ptr_t normals = GET_OBJ_PROP_PTR(handle, normals);  \
+  dst.x = pgm_read_byte(normals + index*3); \
+  dst.y = pgm_read_byte(normals + index*3 + 1); \
+  dst.z = pgm_read_byte(normals + index*3 + 2); \
 }
 
 #define GET_OBJ_POINT(handle, index, dst) { \
-  pgm_ptr_t n = GET_OBJ_PROP(handle, pgm_ptr_t, points);  \
-  dst.x = pgm_read_byte(n + index*3); \
-  dst.y = pgm_read_byte(n + index*3 + 1); \
-  dst.z = pgm_read_byte(n + index*3 + 2); \
+  pgm_ptr_t points = GET_OBJ_PROP_PTR(handle, points);  \
+  dst.x = pgm_read_byte(points + index*3); \
+  dst.y = pgm_read_byte(points + index*3 + 1); \
+  dst.z = pgm_read_byte(points + index*3 + 2); \
 }
 
 #define GET_OBJ_LINE(handle, index, dst) { \
-  pgm_ptr_t n = GET_OBJ_PROP(handle, pgm_ptr_t, lines);  \
-  dst.face1 = pgm_read_byte(n + index*4); \
-  dst.face2 = pgm_read_byte(n + index*4 + 1); \
-  dst.start_point = pgm_read_byte(n + index*4 + 2); \
-  dst.end_point = pgm_read_byte(n + index*4 + 3); \
+  pgm_ptr_t lines = GET_OBJ_PROP_PTR(handle, lines);  \
+  dst.face1 = pgm_read_byte(lines + index*4); \
+  dst.face2 = pgm_read_byte(lines + index*4 + 1); \
+  dst.start_point = pgm_read_byte(lines + index*4 + 2); \
+  dst.end_point = pgm_read_byte(lines + index*4 + 3); \
 }
 
 #define MISC_OBJECT_MISSILE 0

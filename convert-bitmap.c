@@ -200,6 +200,8 @@ int main(int argc, char *argv[])
   fprintf(c_file,
     "#ifdef __AVR\n"
     "#  include <avr/pgmspace.h>\n"
+    "#else\n"
+    "#  include \"../macos/pgmspace.h\"\n"
     "#endif\n\n"
     "const unsigned char %s[] PROGMEM = {\n", arguments.symbol_name);
 
@@ -242,6 +244,8 @@ int main(int argc, char *argv[])
   fprintf(header_file, "\n"
                        "#ifdef __AVR\n"
                        "#  include <avr/pgmspace.h>\n"
+                       "#else\n"
+                       "#  include \"../macos/pgmspace.h\"\n"
                        "#endif\n"
                        "\n"
                        "\nconst unsigned char %s[%zu] PROGMEM;\n\n",

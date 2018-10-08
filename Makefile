@@ -32,7 +32,7 @@ debug-make:
 #
 
 convert-bitmap: convert-bitmap.c
-	gcc $(CFLAGS) -o $@ $< -largp
+	gcc $(CFLAGS) -largp -o $@ $<
 
 #
 # Bitmaps
@@ -96,10 +96,10 @@ $(BUILD-DIR-MACOS)/font.o:	font.c font.h
 $(BUILD-DIR-MACOS)/typed_string.o:	animation/typed_string.c animation/typed_string.h
 	gcc $(CFLAGS) -o $@ -c $<
 
-$(BUILD-DIR-MACOS)/display_impl_sdl.o:	sdl/display_impl_sdl.c sdl/display_impl_sdl.h
+$(BUILD-DIR-MACOS)/display_impl_sdl.o:	macos/sdl/display_impl_sdl.c macos/sdl/display_impl_sdl.h
 	gcc $(CFLAGS) -o $@ -c $<
 
-$(BUILD-DIR-MACOS)/event_loop_sdl.o:	sdl/event_loop_sdl.c sdl/event_loop_sdl.h
+$(BUILD-DIR-MACOS)/event_loop_sdl.o:	macos/sdl/event_loop_sdl.c macos/sdl/event_loop_sdl.h
 	gcc $(CFLAGS) -o $@ -c $<
 
 
@@ -160,8 +160,9 @@ $(BUILD-DIR-AVR)/bbc_micro_font.o:	bitmaps_ssd1306/bbc_micro_font.c bitmaps_ssd1
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 demo-avr.elf:	$(DEMO-OBJ-FILES-AVR) $(BUILD-DIR-AVR)/bbc_micro_font.o
-	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf  build/avr/main.o build/avr/usart.o build/avr/3d_model.o build/avr/errors.o build/avr/display.o build/avr/display_impl_ssd1306.o build/avr/vector.o build/avr/matrix.o build/avr/simple_renderer.o build/avr/camera.o  build/avr/event_loop_avr.o build/avr/typed_string.o build/avr/font.o build/avr/bbc_micro_font.o  #$(DEMO-OBJ-FILES-AVR)
-
+	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf build/avr/main.o build/avr/usart.o build/avr/3d_model.o build/avr/errors.o build/avr/display.o build/avr/display_impl_ssd1306.o build/avr/vector.o build/avr/matrix.o build/avr/simple_renderer.o build/avr/camera.o  build/avr/event_loop_avr.o build/avr/typed_string.o build/avr/font.o build/avr/bbc_micro_font.o
+ # $(DEMO-OBJ-FILES-AVR)
+ 
 demo-avr.hex:	demo-avr.elf
 	$(AVR-OBJCOPY)  -j .text -j .data -O ihex $< $@
 

@@ -3,9 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#ifdef __AVR
-# include <avr/pgmspace.h>
-#endif
+
 
 /*Vector* vector_new(float x, float y, float z, float w)
 {
@@ -93,9 +91,7 @@ void vector_subtract(Vector* dst, const Vector* u, const Vector* v)
 
 void vector_to_log(Vector* self)
 {
-  static char buf[256]
-  snprintf(str, sizeof(buf), PSTR("[%f, %f, %f, %f]"), self->x, self->y, self->z, self->w);
-  return buf;
+  printf("[%f, %f, %f, %f]", self->x, self->y, self->z, self->w);
 }
 
 #else
@@ -104,11 +100,11 @@ void vector_to_log(Vector* self)
 void vector_to_log(Vector* self)
 {
   char buf[10];
-  usart_transmit('|');
-  usart_write_string(dtostrf(self->x, 2, 2, buf)); usart_transmit('|');
-  usart_write_string(dtostrf(self->y, 2, 2, buf)); usart_transmit('|');
-  usart_write_string(dtostrf(self->z, 2, 2, buf)); usart_transmit('|');
-  usart_write_string(dtostrf(self->w, 2, 2, buf)); usart_transmit('|');
+  usart_transmit('[');
+  usart_write_string(dtostrf(self->x, 2, 2, buf)); usart_transmit(',');
+  usart_write_string(dtostrf(self->y, 2, 2, buf)); usart_transmit(',');
+  usart_write_string(dtostrf(self->z, 2, 2, buf)); usart_transmit(',');
+  usart_write_string(dtostrf(self->w, 2, 2, buf)); usart_transmit(']');
   usart_transmit('\n');
 }
 

@@ -14,7 +14,12 @@
  * is not in RAM. If we use uint16_t, we force a compile error if we try to
  * write ship_ptr->name instead of prg_read_word(&ship_ptr->name), for example.
  */
-typedef uint16_t pgm_ptr_t;
+#ifdef __AVR
+  typedef uint16_t pgm_ptr_t;
+#else
+  typedef const void* pgm_ptr_t;
+#endif
+
 #define NULL_PGM_PTR 0
 
 #endif
