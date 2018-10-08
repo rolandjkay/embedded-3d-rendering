@@ -13,7 +13,7 @@ DEMO-OBJ-FILENAMES=main.o display.o matrix.o vector.o camera.o \
                    font.o typed_string.o
 
 DEMO-OBJ-FILENAMES-MACOS=event_loop_sdl.o display_impl_sdl.o
-DEMO-OBJ-FILENAMES-AVR=event_loop_avr.o display_impl_ssd1306.o
+DEMO-OBJ-FILENAMES-AVR=event_loop_avr.o display_impl_ssd1306.o usart.o
 
 DEMO-OBJ-FILES-MACOS=$(addprefix $(BUILD-DIR-MACOS)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-MACOS))
 DEMO-OBJ-FILES-AVR=$(addprefix $(BUILD-DIR-AVR)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-AVR))
@@ -109,6 +109,7 @@ $(BUILD-DIR-MACOS)/event_loop_sdl.o:	sdl/event_loop_sdl.c sdl/event_loop_sdl.h
 #
 AVR_SRC_DIR=avr
 SSD1306_SRC_DIR=avr/ssd1306
+ATMEGA328P_SRC_DIR=avr/atmega328p
 
 # Platform specific
 #
@@ -116,6 +117,9 @@ $(BUILD-DIR-AVR)/event_loop_avr.o:	$(addprefix $(AVR_SRC_DIR)/, event_loop_avr.c
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 $(BUILD-DIR-AVR)/display_impl_ssd1306.o:	$(addprefix $(SSD1306_SRC_DIR)/, display_impl_ssd1306.c display_impl_ssd1306.h)
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/usart.o:	$(addprefix $(ATMEGA328P_SRC_DIR)/, usart.c usart.h)
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 # Common
@@ -150,11 +154,16 @@ $(BUILD-DIR-AVR)/font.o:	font.c font.h
 $(BUILD-DIR-AVR)/typed_string.o:	animation/typed_string.c animation/typed_string.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
-demo-avr.elf:	$(DEMO-OBJ-FILES-AVR)
-	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf $(DEMO-OBJ-FILES-AVR)
+# Bitmaps
+#
+$(BUILD-DIR-AVR)/bbc_micro_font.o:	bitmaps_ssd1306/bbc_micro_font.c bitmaps_ssd1306/bbc_micro_font.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+demo-avr.elf:	$(DEMO-OBJ-FILES-AVR) $(BUILD-DIR-AVR)/bbc_micro_font.o
+	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf  build/avr/main.o build/avr/usart.o build/avr/3d_model.o build/avr/errors.o build/avr/display.o build/avr/display_impl_ssd1306.o build/avr/vector.o build/avr/matrix.o build/avr/simple_renderer.o build/avr/camera.o  build/avr/event_loop_avr.o build/avr/typed_string.o build/avr/font.o build/avr/bbc_micro_font.o  #$(DEMO-OBJ-FILES-AVR)
 
 demo-avr.hex:	demo-avr.elf
-	$(AVR-OBJCOPY) -j .text -j .data -O ihex $< $@
+	$(AVR-OBJCOPY)  -j .text -j .data -O ihex $< $@
 
 upload-demo-avr:	demo-avr.hex
 	avrdude -c arduino -P /dev/cu.usbmodem14121 -p ATMEGA328P -b 115200 -U flash:w:demo-avr.hex

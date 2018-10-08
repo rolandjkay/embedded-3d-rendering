@@ -1,6 +1,10 @@
 #include "3d_model.h"
 #include "defs.h"
 
+#ifdef __AVR
+# include <avr/pgmspace.h>
+#endif
+
 // If we ever compute normals automatically...
 // Need vertices to be arranged in anti-clockwise order from the perspective of
 // someone sitting inside the form, if we are to use the backface culling algo.
@@ -9,7 +13,7 @@
  ** Cobra MK III
  ***************************************************************************/
 
-static const Point cobra_points[] = {
+static const Point cobra_points[] PROGMEM = {
   //  x,    y,   z,dist, f1, f2, f3, f4
   {  32,    0,   76}, //31, 15, 15, 15, 15}, // 0
   { -32,    0,   76}, //31, 15, 15, 15, 15}, // 1
@@ -41,7 +45,7 @@ static const Point cobra_points[] = {
   {  80,   -6,  -40}, // 8,  9,  9,  9,  9}, // 27
 };
 
-static const Line cobra_lines[] =
+static const Line cobra_lines[] PROGMEM =
 {
 //dist,f1, f2, start_point, end_point
   {/*31,*/ 11,  0,  0,  1}, // 0
@@ -84,7 +88,7 @@ static const Line cobra_lines[] =
   {/* 8,*/  9,  9, 25, 27}, // 37
 };
 
-static const Normal cobra_face_normals[] =
+static const Normal cobra_face_normals[] PROGMEM =
 {
   {   0,   62,   31}, // 0
   { -18,   55,   16}, // 1
@@ -101,24 +105,25 @@ static const Normal cobra_face_normals[] =
   {   7,  -42,    9}, // 12
 };
 
-static const Object _cobra = {
- "Cobra Mk. III",
+const char _cobra_name[] PROGMEM = "Cobra Mk. III";
+
+const Object _cobra PROGMEM = {
+ (pgm_ptr_t)_cobra_name,
  countof(cobra_points),
  countof(cobra_lines),
  countof(cobra_face_normals),
- &cobra_points[0],
- &cobra_lines[0],
- &cobra_face_normals[0]
+ (pgm_ptr_t)cobra_points,
+ (pgm_ptr_t)cobra_lines,
+ (pgm_ptr_t)cobra_face_normals
 };
 
-const Object* cobra = &_cobra;
-
+//const Object* const cobra PROGMEM = &_cobra;
 
 /***************************************************************************
  ** Cobra Mk I
  ***************************************************************************/
 
-static const Point cobra1_points[] =
+static const Point cobra1_points[] PROGMEM =
 {
 	{ -18,   -1,   50,/* 31,  0,  1,  2,  3*/},
 	{  18,   -1,   50,/* 31,  0,  1,  4,  5*/},
@@ -133,7 +138,7 @@ static const Point cobra1_points[] =
 	{   0,   -1,   60,/* 31,  0,  1,  1,  1*/},
 };
 
-static const Line cobra1_lines[] =
+static const Line cobra1_lines[] PROGMEM =
 {
 	{/*31,*/  0,  1,  1,  0},
 	{/*31,*/  2,  3,  0,  2},
@@ -155,7 +160,7 @@ static const Line cobra1_lines[] =
 	{/* 2,*/  0,  1, 10,  9},
 };
 
-static const Normal cobra1_face_normals[] =
+static const Normal cobra1_face_normals[] PROGMEM =
 {
 	{   0,   41,   10},
 	{   0,  -27,    3},
@@ -169,23 +174,23 @@ static const Normal cobra1_face_normals[] =
 	{ 121,  111,  -62},
 };
 
-static const Object _cobra1 = {
-  "Cobra Mk. I",
- countof(cobra1_points),
- countof(cobra1_lines),
- countof(cobra1_face_normals),
- &cobra1_points[0],
- &cobra1_lines[0],
- &cobra1_face_normals[0]
-};
+static const char _cobra1_name[] PROGMEM = "Cobra Mk. I";
 
-const Object* cobra1 = &_cobra1;
+static const Object _cobra1 PROGMEM = {
+  (pgm_ptr_t)_cobra1_name,
+  countof(cobra1_points),
+  countof(cobra1_lines),
+  countof(cobra1_face_normals),
+  (pgm_ptr_t)cobra1_points,
+  (pgm_ptr_t)cobra1_lines,
+  (pgm_ptr_t)cobra1_face_normals
+};
 
 /***************************************************************************
  ** Viper
  ***************************************************************************/
 
-static const Point viper_points[] =
+static const Point viper_points[] PROGMEM =
 {
   {   0,    0,   72, /*31,  2,  1,  4,  3*/},
   {   0,   16,   24, /*30,  1,  0,  2,  2*/},
@@ -204,7 +209,7 @@ static const Point viper_points[] =
   {   8,   -8,  -24, /*18,  6,  6,  6,  6*/},
 };
 
-static const Line viper_lines[] =
+static const Line viper_lines[] PROGMEM =
 {
   {/*31,*/  4,  2,  0,  3},
   {/*30,*/  2,  1,  0,  1},
@@ -228,7 +233,7 @@ static const Line viper_lines[] =
   {/*16,*/  6,  6, 12, 13},
 };
 
-static const Normal viper_face_normals[] =
+static const Normal viper_face_normals[] PROGMEM =
 {
   {    0,   32,    0},
   {  -22,   33,   11},
@@ -239,23 +244,23 @@ static const Normal viper_face_normals[] =
   {    0,    0,  -48},
 };
 
-static const Object _viper = {
-  "Viper",
+static const char _viper_name[] PROGMEM = "Viper";
+
+static const Object _viper PROGMEM = {
+  (pgm_ptr_t)_viper_name,
   countof(viper_points),
   countof(viper_lines),
   countof(viper_face_normals),
-  &viper_points[0],
-  &viper_lines[0],
-  &viper_face_normals[0]
+  (pgm_ptr_t)viper_points,
+  (pgm_ptr_t)viper_lines,
+  (pgm_ptr_t)viper_face_normals
 };
-
-const Object* viper = &_viper;
 
 /***************************************************************************
  ** Missile
  ***************************************************************************/
 
-static const Point missile_points[] =
+static const Point missile_points[] PROGMEM =
 {
   {   0,    0,   68,/* 31,  1,  0,  3,  2*/},
   {   8,   -8,   36,/* 31,  2,  1,  5,  4*/},
@@ -276,7 +281,7 @@ static const Point missile_points[] =
   {   8,   -8,  -12,/*  8,  5,  4,  5,  5*/},
 };
 
-static const Line missile_lines[] =
+static const Line missile_lines[] PROGMEM =
 {
   {/*31, */ 2,  1,  0,  1},
   {/*31, */ 3,  2,  0,  2},
@@ -304,7 +309,7 @@ static const Line missile_lines[] =
   {/* 8, */ 6,  5, 11, 14},
 };
 
-static const Normal missile_face_normals[] =
+static const Normal missile_face_normals[] PROGMEM =
 {
   {  -64,    0,   16},
   {    0,  -64,   16},
@@ -317,24 +322,24 @@ static const Normal missile_face_normals[] =
   {    0,    0, /*-176*/ -128},
 };
 
-static const Object _missile = {
-  "Missile",
+static const char _missile_name[] PROGMEM = "Missile";
+
+static const Object _missile PROGMEM = {
+  (pgm_ptr_t)_missile_name,
   countof(missile_points),
   countof(missile_lines),
   countof(missile_face_normals),
-  &missile_points[0],
-  &missile_lines[0],
-  &missile_face_normals[0]
+  (pgm_ptr_t)missile_points,
+  (pgm_ptr_t)missile_lines,
+  (pgm_ptr_t)missile_face_normals
 };
-
-const Object* missile = &_missile;
 
 
 /***************************************************************************
  ** Gecko
  ***************************************************************************/
 
-static const Point gecko_points[] =
+static const Point gecko_points[] PROGMEM =
 {
   { -10,   -4,   47, /* 31,  0,  3,  4,  5*/},
   {  10,   -4,   47, /* 31,  0,  1,  2,  3*/},
@@ -350,7 +355,7 @@ static const Point gecko_points[] =
   {   8,  -13,  -16, /* 17,  3,  3,  3,  3*/},
 };
 
-static const Line gecko_lines[] =
+static const Line gecko_lines[] PROGMEM =
 {
   {/*31,*/  0,  3,  0,  1},
   {/*31,*/  1,  2,  1,  5},
@@ -371,7 +376,7 @@ static const Line gecko_lines[] =
   {/*17,*/  3,  3,  9, 11},
 };
 
-static const Normal gecko_face_normals[] =
+static const Normal gecko_face_normals[] PROGMEM =
 {
   {   0,   31,    5},
   {   4,   45,    8},
@@ -384,24 +389,24 @@ static const Normal gecko_face_normals[] =
   /*{  88,   16, -214},*/ {  44,   8, -107},
 };
 
-static const Object _gecko = {
-  "Gecko",
+static const char _gecko_name[] PROGMEM = "Gecko";
+
+static const Object _gecko PROGMEM = {
+  (pgm_ptr_t)_gecko_name,
   countof(gecko_points),
   countof(gecko_lines),
   countof(gecko_face_normals),
-  &gecko_points[0],
-  &gecko_lines[0],
-  &gecko_face_normals[0]
+  (pgm_ptr_t)gecko_points,
+  (pgm_ptr_t)gecko_lines,
+  (pgm_ptr_t)gecko_face_normals
 };
-
-const Object* gecko = &_gecko;
 
 
 /***************************************************************************
  ** Orbit Shuttle
  ***************************************************************************/
 
-static const Point orbit_points[] =
+static const Point orbit_points[] PROGMEM =
 {
 	{   0,  -17,   23, /*31, 15, 15, 15, 15*/},
 	{ -17,    0,   23, /*31, 15, 15, 15, 15*/},
@@ -424,7 +429,7 @@ static const Point orbit_points[] =
 	{ -10,    4,   25, /* 8,  4, 15,  1,  8*/},
 };
 
-static const Line orbit_lines[] =
+static const Line orbit_lines[] PROGMEM =
 {
 	{/*31,*/  0,  2,  0,  1},
 	{/*31,*/  4, 10,  1,  2},
@@ -458,7 +463,7 @@ static const Line orbit_lines[] =
 	{/* 7,*/ 10, 10, 16, 18},
 };
 
-static const Normal orbit_face_normals[] =
+static const Normal orbit_face_normals[] PROGMEM =
 {
 	{ -55,  -55,   40},
 	{   0,  -74,    4},
@@ -475,24 +480,24 @@ static const Normal orbit_face_normals[] =
 	{  55,  -55,   40},
 };
 
-static const Object _orbit = {
-  "Orbital Shuttle",
+static const char _orbit_name[] PROGMEM = "Orbital Shuttle";
+
+static const Object _orbit PROGMEM = {
+  (pgm_ptr_t)_orbit_name,
   countof(orbit_points),
   countof(orbit_lines),
   countof(orbit_face_normals),
-  &orbit_points[0],
-  &orbit_lines[0],
-  &orbit_face_normals[0]
+  (pgm_ptr_t)orbit_points,
+  (pgm_ptr_t)orbit_lines,
+  (pgm_ptr_t)orbit_face_normals
 };
-
-const Object* orbit = &_orbit;
 
 
 /***************************************************************************
  ** Transporter
  ***************************************************************************/
 
-static const Point transp_points[] =
+static const Point transp_points[] PROGMEM =
 {
 	{   0,   10,  -26,/* 31,  0,  6,  7,  7*/},
 	{ -25,    4,  -26,/* 31,  0,  1,  7,  7*/},
@@ -533,7 +538,7 @@ static const Point transp_points[] =
 	{  -8,    3,  -26,/*  5,  0,  0,  0,  0*/},
 };
 
-static const Line transp_lines[] =
+static const Line transp_lines[] PROGMEM =
 {
 	{/*31,*/  0,  7,  0,  1},
 	{/*31,*/  0,  1,  1,  2},
@@ -583,7 +588,7 @@ static const Line transp_lines[] =
 	{/* 5,*/  0,  0, 36, 33},
 };
 
-static const Normal transp_face_normals[] =
+static const Normal transp_face_normals[] PROGMEM =
 {
 	{   0,    0, -103},
 	{-111,   48,   -7},
@@ -601,24 +606,24 @@ static const Normal transp_face_normals[] =
 	{   0,    0,  121},
 };
 
-static const Object _transp = {
-  "Transporter",
+static const char _transp_name[] PROGMEM = "Transporter";
+
+static const Object _transp PROGMEM = {
+  (pgm_ptr_t)_transp_name,
   countof(transp_points),
   countof(transp_lines),
   countof(transp_face_normals),
-  &transp_points[0],
-  &transp_lines[0],
- &transp_face_normals[0]
+  (pgm_ptr_t)transp_points,
+  (pgm_ptr_t)transp_lines,
+  (pgm_ptr_t)transp_face_normals
 };
-
-const Object* transp = &_transp;
 
 
 /***************************************************************************
  ** Python
  ***************************************************************************/
 
-static const Point pythona_points[] =
+static const Point pythona_points[] PROGMEM =
 {
 #if 0
 	{   0,    0,  224, /*31,  1,  0,  3,  2*/},
@@ -646,7 +651,7 @@ static const Point pythona_points[] =
   {   0,  -12, -56},
 };
 
-static const Line pythona_lines[] =
+static const Line pythona_lines[] PROGMEM =
 {
 	{/*31,*/  3,  2,  0,  8},
 	{/*31,*/  2,  0,  0,  3},
@@ -676,7 +681,7 @@ static const Line pythona_lines[] =
 	{/*31,*/  7,  6,  8,  9},
 };
 
-static const Normal pythona_face_normals[] =
+static const Normal pythona_face_normals[] PROGMEM =
 {
 	{ -27,   40,   11},
 	{  27,   40,   11},
@@ -693,24 +698,26 @@ static const Normal pythona_face_normals[] =
 	{   0,    0, -112},
 };
 
-static const Object _pythona = {
-  "Python",
+static const char _pythona_name[] PROGMEM = "Python";
+
+static const Object _pythona PROGMEM = {
+  (pgm_ptr_t)_pythona_name,
   countof(pythona_points),
   countof(pythona_lines),
   countof(pythona_face_normals),
-  &pythona_points[0],
-  &pythona_lines[0],
-  &pythona_face_normals[0]
+  (pgm_ptr_t)pythona_points,
+  (pgm_ptr_t)pythona_lines,
+  (pgm_ptr_t)pythona_face_normals
 };
 
-const Object* pythona = &_pythona;
+const Object* const pythona PROGMEM = &_pythona;
 
 
 /***************************************************************************
  ** Boa
  ***************************************************************************/
 
-static const Point boa_points[] =
+static const Point boa_points[] PROGMEM =
 {
 	{   0,    0,   93, /*31, 15, 15, 15, 15*/},
 	{   0,   40,  -87, /*24,  0,  2,  3,  3*/},
@@ -727,7 +734,7 @@ static const Point boa_points[] =
 	{ -13,   -9, -107, /*22,  1,  2, 12, 12*/},
 };
 
-static const Line boa_lines[] =
+static const Line boa_lines[] PROGMEM =
 {
 	{/*31, */ 6, 11,  0,  5},
 	{/*31, */ 8, 10,  0,  7},
@@ -755,7 +762,7 @@ static const Line boa_lines[] =
 	{/*14, */ 2, 12, 12, 10},
 };
 
-static const Normal boa_face_normals[] =
+static const Normal boa_face_normals[] PROGMEM =
 {
 	{  43,   37,  -60},
 	{   0,  -45,  -89},
@@ -772,24 +779,24 @@ static const Normal boa_face_normals[] =
 	{   0,    0, -107},
 };
 
-static const Object _boa = {
-  "Boa",
+static const char _boa_name[] PROGMEM = "Boa";
+
+static const Object _boa PROGMEM = {
+  (pgm_ptr_t)_boa_name,
   countof(boa_points),
   countof(boa_lines),
   countof(boa_face_normals),
-  &boa_points[0],
-  &boa_lines[0],
-  &boa_face_normals[0]
+  (pgm_ptr_t)boa_points,
+  (pgm_ptr_t)boa_lines,
+  (pgm_ptr_t)boa_face_normals
 };
-
-const Object* boa = &_boa;
 
 
 /***************************************************************************
  ** Anaconda
  ***************************************************************************/
 
-static const Point anaconda_points[] =
+static const Point anaconda_points[] PROGMEM =
 {
 #if 0
 	{   0,    7,  -58, /*30,  0,  1,  5,  5*/},
@@ -825,7 +832,7 @@ static const Point anaconda_points[] =
 {  21,   26,  -11, /*31, 15, 15, 15, 15*/},
 };
 
-static const Line anaconda_lines[] =
+static const Line anaconda_lines[] PROGMEM =
 {
 	{/*30, */ 0,  1,  0,  1},
 	{/*30, */ 0,  2,  1,  2},
@@ -854,7 +861,7 @@ static const Line anaconda_lines[] =
 	{/*31, */10, 11, 12, 14},
 };
 
-static const Normal anaconda_face_normals[] =
+static const Normal anaconda_face_normals[] PROGMEM =
 {
 	{  0,  -51,  -49},
 	{ -51,   18,  -87},
@@ -870,24 +877,24 @@ static const Normal anaconda_face_normals[] =
 	{   0,   94,   18},
 };
 
-static const Object _anaconda = {
-  "Anaconda",
+static const char _anaconda_name[] PROGMEM = "Anaconda";
+
+static const Object _anaconda PROGMEM = {
+  (pgm_ptr_t)_anaconda_name,
   countof(anaconda_points),
   countof(anaconda_lines),
   countof(anaconda_face_normals),
-  &anaconda_points[0],
-  &anaconda_lines[0],
-  &anaconda_face_normals[0]
+  (pgm_ptr_t)anaconda_points,
+  (pgm_ptr_t)anaconda_lines,
+  (pgm_ptr_t)anaconda_face_normals
 };
-
-const Object* anaconda = &_anaconda;
 
 
 /***************************************************************************
  ** Sidewinder
  ***************************************************************************/
 
-static const Point sidewnd_points[] =
+static const Point sidewnd_points[] PROGMEM =
 {
 	{ -32,    0,   36, /*31,  1,  0,  5,  4*/},
 	{  32,    0,   36, /*31,  2,  0,  6,  5*/},
@@ -901,7 +908,7 @@ static const Point sidewnd_points[] =
 	{ -12,   -6,  -28, /*12,  3,  3,  3,  3*/},
 };
 
-static const Line sidewnd_lines[] =
+static const Line sidewnd_lines[] PROGMEM =
 {
 	{/*31, */ 5,  0,  0,  1},
 	{/*31, */ 6,  2,  1,  2},
@@ -920,7 +927,7 @@ static const Line sidewnd_lines[] =
 	{/*12, */ 3,  3,  8,  9},
 };
 
-static const Normal sidewnd_face_normals[] =
+static const Normal sidewnd_face_normals[] PROGMEM =
 {
 	{   0,   32,    8},
 	{ -12,   47,    6},
@@ -931,24 +938,24 @@ static const Normal sidewnd_face_normals[] =
 	{  12,  -47,    6},
 };
 
-static const Object _sidewnd = {
-  "Sidewinder",
+static const char _sidewnd_name[] PROGMEM = "Sidewinder";
+
+static const Object _sidewnd PROGMEM = {
+  (pgm_ptr_t)_sidewnd_name,
   countof(sidewnd_points),
   countof(sidewnd_lines),
   countof(sidewnd_face_normals),
-  &sidewnd_points[0],
-  &sidewnd_lines[0],
-  &sidewnd_face_normals[0]
+  (pgm_ptr_t)sidewnd_points,
+  (pgm_ptr_t)sidewnd_lines,
+  (pgm_ptr_t)sidewnd_face_normals
 };
-
-const Object* sidewnd = &_sidewnd;
 
 
 /***************************************************************************
  ** Mamba
  ***************************************************************************/
 
-static const Point mamba_points[] =
+static const Point mamba_points[] PROGMEM =
 {
 	{   0,    0,   64,/* 31,  1,  0,  3,  2*/},
 	{ -64,   -8,  -32,/* 31,  2,  0,  4,  4*/},
@@ -977,7 +984,7 @@ static const Point mamba_points[] =
 	{  38,    0,  -32,/*  5,  4,  4,  4,  4*/},
 };
 
-static const Line mamba_lines[] =
+static const Line mamba_lines[] PROGMEM =
 {
 	{/*31,*/  2,  0,  0,  1},
 	{/*31,*/  3,  0,  0,  4},
@@ -1009,7 +1016,7 @@ static const Line mamba_lines[] =
 	{/*30,*/  3,  1,  0,  3},
 };
 
-static const Normal mamba_face_normals[] =
+static const Normal mamba_face_normals[] PROGMEM =
 {
 	{   0,  -24,    2},
 	{   0,   24,    2},
@@ -1018,24 +1025,24 @@ static const Normal mamba_face_normals[] =
 	{   0,    0, -127},
 };
 
-static const Object _mamba = {
-  "Mamba",
+static const char _mamba_name[] PROGMEM = "Mamba";
+
+static const Object _mamba PROGMEM = {
+  (pgm_ptr_t)_mamba_name,
   countof(mamba_points),
   countof(mamba_lines),
   countof(mamba_face_normals),
-  &mamba_points[0],
-  &mamba_lines[0],
-  &mamba_face_normals[0]
+  (pgm_ptr_t)mamba_points,
+  (pgm_ptr_t)mamba_lines,
+  (pgm_ptr_t)mamba_face_normals
 };
-
-const Object* mamba = &_mamba;
 
 
 /***************************************************************************
  ** Krait
  ***************************************************************************/
 
-static const Point krait_points[] =
+static const Point krait_points[] PROGMEM =
 {
 	{   0,    0,   96, /*31,  0,  1,  2,  3*/},
 	{   0,   18,  -48, /*31,  0,  3,  4,  5*/},
@@ -1056,7 +1063,7 @@ static const Point krait_points[] =
 	{ -36,    0,  -30, /* 8,  5,  5,  5,  5*/},
 };
 
-static const Line krait_lines[] =
+static const Line krait_lines[] PROGMEM =
 {
 	{/*31,*/  0,  3,  0,  1},
 	{/*31,*/  1,  2,  0,  2},
@@ -1081,7 +1088,7 @@ static const Line krait_lines[] =
 	{/* 8,*/  5,  5, 16, 14},
 };
 
-static const Normal krait_face_normals[] =
+static const Normal krait_face_normals[] PROGMEM =
 {
 	{   3,   24,    3},
 	{   3,  -24,    3},
@@ -1091,24 +1098,24 @@ static const Normal krait_face_normals[] =
 	{ -38,    0,  -77},
 };
 
-static const Object _krait = {
-  "Krait",
+static const char _krait_name[] PROGMEM = "Krait";
+
+static const Object _krait PROGMEM = {
+  (pgm_ptr_t)_krait_name,
   countof(krait_points),
   countof(krait_lines),
   countof(krait_face_normals),
-  &krait_points[0],
-  &krait_lines[0],
-  &krait_face_normals[0]
+  (pgm_ptr_t)krait_points,
+  (pgm_ptr_t)krait_lines,
+  (pgm_ptr_t)krait_face_normals
 };
-
-const Object* krait = &_krait;
 
 
 /***************************************************************************
  ** Adder
  ***************************************************************************/
 
- static const Point adder_points[] =
+ static const Point adder_points[] PROGMEM =
  {
  	{ -18,    0,   40, /*31,  0,  1, 11, 12*/},
  	{  18,    0,   40, /*31,  0,  1,  2,  3*/},
@@ -1130,7 +1137,7 @@ const Object* krait = &_krait;
  	{ -11,    4,   24, /* 4,  0,  0,  0,  0*/},
  };
 
- static const Line adder_lines[] =
+ static const Line adder_lines[] PROGMEM =
  {
  	{/*31, */ 0,  1,  0,  1},
  	{/* 7, */ 2,  3,  1,  2},
@@ -1163,7 +1170,7 @@ const Object* krait = &_krait;
  	{/* 3, */ 0,  0, 17, 14},
  };
 
- static const Normal adder_face_normals[] =
+ static const Normal adder_face_normals[] PROGMEM =
  {
  	{   0,   39,   10},
  	{   0,  -39,   10},
@@ -1182,24 +1189,24 @@ const Object* krait = &_krait;
  	{   0,  -28,    0},
  };
 
-static const Object _adder = {
-  "Adder",
+static const char _adder_name[] PROGMEM = "Adder";
+
+static const Object _adder PROGMEM = {
+  (pgm_ptr_t)_adder_name,
   countof(adder_points),
   countof(adder_lines),
   countof(adder_face_normals),
-  &adder_points[0],
-  &adder_lines[0],
-  &adder_face_normals[0]
+  (pgm_ptr_t)adder_points,
+  (pgm_ptr_t)adder_lines,
+  (pgm_ptr_t)adder_face_normals
 };
-
-const Object* adder = &_adder;
 
 
 /***************************************************************************
  ** Asp Mk II
  ***************************************************************************/
 
-static const Point asp2_points[] =
+static const Point asp2_points[] PROGMEM =
 {
 	{   0,  -18,    0, /*22,  0,  1,  2,  2*/},
 	{   0,   -9,  -45, /*31,  1,  2, 11, 11*/},
@@ -1222,7 +1229,7 @@ static const Point asp2_points[] =
 	{   0,   -7,   83, /*10,  0,  4,  0,  4*/},
 };
 
-static const Line asp2_lines[] =
+static const Line asp2_lines[] PROGMEM =
 {
 	{/*22, */ 1,  2,  0,  1},
 	{/*22, */ 0,  1,  0,  4},
@@ -1254,7 +1261,7 @@ static const Line asp2_lines[] =
 	{/*10, */ 0,  4, 18, 17},
 };
 
-static const Normal asp2_face_normals[] =
+static const Normal asp2_face_normals[] PROGMEM =
 {
 	{   0,  -35,    5},
 	{   8,  -38,   -7},
@@ -1270,24 +1277,24 @@ static const Normal asp2_face_normals[] =
 	{   0,    0,  -90},
 };
 
-static const Object _asp2 = {
-  "Asp",
+static const char _asp2_name[] PROGMEM = "Asp";
+
+static const Object _asp2 PROGMEM = {
+  (pgm_ptr_t)_asp2_name,
   countof(asp2_points),
   countof(asp2_lines),
   countof(asp2_face_normals),
-  &asp2_points[0],
-  &asp2_lines[0],
-  &asp2_face_normals[0]
+  (pgm_ptr_t)asp2_points,
+  (pgm_ptr_t)asp2_lines,
+  (pgm_ptr_t)asp2_face_normals
 };
-
-const Object* asp2 = &_asp2;
 
 
 /***************************************************************************
  ** Fer-de-Lance
  ***************************************************************************/
 
- static const Point ferdlce_points[] =
+ static const Point ferdlce_points[] PROGMEM =
 {
 	{   0,  -14,  108, /*31,  0,  1,  5,  9*/},
 	{ -40,  -14,   -4, /*31,  1,  2,  9,  9*/},
@@ -1310,7 +1317,7 @@ const Object* asp2 = &_asp2;
 	{  14,  -14,   44, /*12,  9,  9,  9,  9*/},
 };
 
-static const Line ferdlce_lines[] =
+static const Line ferdlce_lines[] PROGMEM =
 {
 	{/*31,*/  1,  9,  0,  1},
 	{/*31,*/  2,  9,  1,  2},
@@ -1341,7 +1348,7 @@ static const Line ferdlce_lines[] =
 	{/* 8,*/  9,  9, 17, 18},
 };
 
-static const Normal ferdlce_face_normals[] =
+static const Normal ferdlce_face_normals[] PROGMEM =
 {
 	{   0,   24,    6},
 	{ -68,    0,   24},
@@ -1355,24 +1362,24 @@ static const Normal ferdlce_face_normals[] =
 	{   0,  -28,    0},
 };
 
-static const Object _ferdlce = {
-  "Fer de Lance",
+static const char _ferdlce_name[] PROGMEM = "Fer de Lance";
+
+static const Object _ferdlce PROGMEM = {
+  (pgm_ptr_t)_ferdlce_name,
   countof(ferdlce_points),
   countof(ferdlce_lines),
   countof(ferdlce_face_normals),
-  &ferdlce_points[0],
-  &ferdlce_lines[0],
-  &ferdlce_face_normals[0]
+  (pgm_ptr_t)ferdlce_points,
+  (pgm_ptr_t)ferdlce_lines,
+  (pgm_ptr_t)ferdlce_face_normals
 };
-
-const Object* ferdlce = &_ferdlce;
 
 
 /***************************************************************************
  ** Moary star boat
  ***************************************************************************/
 
-static const Point moray_points[] =
+static const Point moray_points[] PROGMEM =
 {
 	{  15,    0,   65,/* 31,  0,  2,  7,  8*/},
 	{ -15,    0,   65,/* 31,  0,  1,  6,  7*/},
@@ -1390,7 +1397,7 @@ static const Point moray_points[] =
 	{  -6,    0,   65,/*  5,  0,  0,  0,  0*/},
 };
 
-static const Line moray_lines[] =
+static const Line moray_lines[] PROGMEM =
 {
 	{/*31, */ 0,  7,  0,  1},
 	{/*31, */ 1,  6,  1,  3},
@@ -1413,7 +1420,7 @@ static const Line moray_lines[] =
 	{/* 5, */ 0,  0, 12, 13},
 };
 
-static const Normal moray_face_normals[] =
+static const Normal moray_face_normals[] PROGMEM =
 {
 	{   0,   43,    7},
 	{ -10,   49,    7},
@@ -1426,17 +1433,17 @@ static const Normal moray_face_normals[] =
 	{  72,  -99,   50},
 };
 
-static const Object _moray = {
-  "Moray",
+static const char _moray_name[] PROGMEM = "Moray";
+
+static const Object _moray PROGMEM = {
+  (pgm_ptr_t)_moray_name,
   countof(moray_points),
   countof(moray_lines),
   countof(moray_face_normals),
-  &moray_points[0],
-  &moray_lines[0],
-  &moray_face_normals[0]
+  (pgm_ptr_t)moray_points,
+  (pgm_ptr_t)moray_lines,
+  (pgm_ptr_t)moray_face_normals
 };
-
-const Object* moray = &_moray;
 
 
 /***************************************************************************
@@ -1444,7 +1451,7 @@ const Object* moray = &_moray;
  ***************************************************************************/
 
 // Exceeds 8 bit limit
-static const Point thargoid_points[] =
+static const Point thargoid_points[] PROGMEM =
 {
 #if 0
 	{  32,  -48,   48,/* 31,  4,  0,  8,  8*/},
@@ -1490,7 +1497,7 @@ static const Point thargoid_points[] =
 { -12,  -32,   40,},
 };
 
-static const Line thargoid_lines[] =
+static const Line thargoid_lines[] PROGMEM =
 {
 	{/*31,*/  8,  4,  0,  7},
 	{/*31,*/  4,  0,  0,  1},
@@ -1520,7 +1527,7 @@ static const Line thargoid_lines[] =
 	{/*30,*/  9,  9, 18, 19},
 };
 
-static const Normal thargoid_face_normals[] =
+static const Normal thargoid_face_normals[] PROGMEM =
 {
 	{ 103,  -60,   25},
 	{ 103,  -60,  -25},
@@ -1534,23 +1541,23 @@ static const Normal thargoid_face_normals[] =
 	{ -48,    0,    0},
 };
 
-static const Object _thargoid = {
-  "Thargoid",
+static const char _thargoid_name[] PROGMEM = "Thargoid";
+
+static const Object _thargoid PROGMEM = {
+  (pgm_ptr_t)_thargoid_name,
   countof(thargoid_points),
   countof(thargoid_lines),
   countof(thargoid_face_normals),
-  &thargoid_points[0],
-  &thargoid_lines[0],
-  &thargoid_face_normals[0]
+  (pgm_ptr_t)thargoid_points,
+  (pgm_ptr_t)thargoid_lines,
+  (pgm_ptr_t)thargoid_face_normals
 };
-
-const Object* thargoid = &_thargoid;
 
 /***************************************************************************
  ** Thargon
  ***************************************************************************/
 
-static const Point thargon_points[] =
+static const Point thargon_points[] PROGMEM =
 {
 	{  -9,    0,   40, /*31,  0,  1,  5,  5*/},
 	{  -9,  -38,   12, /*31,  0,  1,  2,  2*/},
@@ -1564,7 +1571,7 @@ static const Point thargon_points[] =
 	{   9,   10,  -15, /*31,  4,  5,  6,  6*/},
 };
 
-static const Line thargon_lines[] =
+static const Line thargon_lines[] PROGMEM =
 {
 	{/*31, */ 1,  0,  0,  1},
 	{/*31, */ 2,  0,  1,  2},
@@ -1583,7 +1590,7 @@ static const Line thargon_lines[] =
 	{/*31, */ 6,  5,  9,  5},
 };
 
-static const Normal thargon_face_normals[] =
+static const Normal thargon_face_normals[] PROGMEM =
 {
 	{ -36,    0,    0},
 	{  20,   -5,    7},
@@ -1594,24 +1601,24 @@ static const Normal thargon_face_normals[] =
 	{  36,    0,    0},
 };
 
-static const Object _thargon = {
-  "Thargon",
+static const char _thargon_name[] PROGMEM = "Thargon";
+
+static const Object _thargon PROGMEM = {
+  (pgm_ptr_t)_thargon_name,
   countof(thargon_points),
   countof(thargon_lines),
   countof(thargon_face_normals),
-  &thargon_points[0],
-  &thargon_lines[0],
-  &thargon_face_normals[0]
+  (pgm_ptr_t)thargon_points,
+  (pgm_ptr_t)thargon_lines,
+  (pgm_ptr_t)thargon_face_normals
 };
-
-const Object* thargon = &_thargon;
 
 
 /***************************************************************************
  ** Constrictor
  ***************************************************************************/
 
-static const Point constrct_points[] =
+static const Point constrct_points[] PROGMEM =
 {
 	{  20,   -7,   80, /*31,  0,  2,  9,  9*/},
 	{ -20,   -7,   80, /*31,  0,  1,  9,  9*/},
@@ -1632,7 +1639,7 @@ static const Point constrct_points[] =
 	{   0,   -7,    0, /* 0,  9, 15,  0,  1*/},
 };
 
-static const Line constrct_lines[] =
+static const Line constrct_lines[] PROGMEM =
 {
 	{/*31,*/  0,  9,  0,  1},
 	{/*31,*/  1,  9,  1,  2},
@@ -1660,7 +1667,7 @@ static const Line constrct_lines[] =
 	{/*18,*/  9,  9, 11, 13},
 };
 
-static const Normal constrct_face_normals[] =
+static const Normal constrct_face_normals[] PROGMEM =
 {
 	{   0,   55,   15},
 	{ -24,   75,   20},
@@ -1674,24 +1681,24 @@ static const Normal constrct_face_normals[] =
 	{   0,  -27,    0},
 };
 
-static const Object _constrct = {
-  "Constrictor",
+static const char _constrct_name[] PROGMEM = "Constrictor";
+
+static const Object _constrct PROGMEM = {
+  (pgm_ptr_t)_constrct_name,
   countof(constrct_points),
   countof(constrct_lines),
   countof(constrct_face_normals),
-  &constrct_points[0],
-  &constrct_lines[0],
-  &constrct_face_normals[0]
+  (pgm_ptr_t)constrct_points,
+  (pgm_ptr_t)constrct_lines,
+  (pgm_ptr_t)constrct_face_normals
 };
-
-const Object* constrct = &_constrct;
 
 
 /***************************************************************************
  ** Cougar
  ***************************************************************************/
 
-static const Point cougar_points[] =
+static const Point cougar_points[] PROGMEM =
 {
 	{   0,    5,   67, /*31,  0,  2,  4,  4*/},
 	{ -20,    0,   40, /*31,  0,  1,  2,  2*/},
@@ -1714,7 +1721,7 @@ static const Point cougar_points[] =
 	{  10,    6,  -40, /*20,  5,  5,  5,  5*/},
 };
 
-static const Line cougar_lines[] =
+static const Line cougar_lines[] PROGMEM =
 {
 	{/*31, */ 0,  2,  0,  1},
 	{/*31, */ 0,  1,  1,  7},
@@ -1743,7 +1750,7 @@ static const Line cougar_lines[] =
 	{/*20, */ 5,  5, 17, 15},
 };
 
-static const Normal cougar_face_normals[] =
+static const Normal cougar_face_normals[] PROGMEM =
 {
 	{ -16,   46,    4},
 	{ -16,  -46,    4},
@@ -1753,27 +1760,27 @@ static const Normal cougar_face_normals[] =
 	{   0,    0,/* -160*/ -127},
 };
 
-static const Object _cougar = {
-  "Cougar",
+static const char _cougar_name[] PROGMEM = "Cougar";
+
+static const Object _cougar PROGMEM = {
+  (pgm_ptr_t)_cougar_name,
   countof(cougar_points),
   countof(cougar_lines),
   countof(cougar_face_normals),
-  &cougar_points[0],
-  &cougar_lines[0],
-  &cougar_face_normals[0]
+  (pgm_ptr_t)cougar_points,
+  (pgm_ptr_t)cougar_lines,
+  (pgm_ptr_t)cougar_face_normals
 };
-
-const Object* cougar = &_cougar;
 
 
 /***************************************************************************
  ** Arrays of all the obects
  ***************************************************************************/
 
-const Object* ships[] = {
- &_cobra, &_cobra1, &_viper, &_gecko, &_orbit, &_transp, &_pythona, &_boa, &_anaconda,
+const Object* const ships[] PROGMEM = {
+  &_cobra, &_cobra1, &_viper, &_gecko, &_orbit, &_transp, &_pythona, &_boa, &_anaconda,
  &_sidewnd, &_mamba, &_krait, &_adder, &_asp2, &_ferdlce, &_moray, &_thargoid, &_thargon,
  &_constrct, &_cougar
 };
 
-const Object* misc[] = {&_missile};
+const Object* const misc[] PROGMEM = {&_missile};

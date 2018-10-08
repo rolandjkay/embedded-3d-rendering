@@ -122,6 +122,7 @@ static void start_display()
 
 int display_impl_init(DisplayImpl* self)
 {
+  spi_init();
   start_display();
   return 0; // No error.
 }

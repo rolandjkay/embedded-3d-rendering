@@ -3,8 +3,8 @@ CC=avr-gcc
 OBJCOPY=avr-objcopy
 MCU=atmega328p
 
-BITMAP_HEADERS=$(addprefix ../bitmaps_ssd1306/, cat.h bbc_micro_font.h)
-BITMAP_SRC=$(addprefix ../bitmaps_ssd1306/, cat.c bbc_micro_font.c)
+BITMAP_HEADERS=$(addprefix ../../bitmaps_ssd1306/, cat.h bbc_micro_font.h)
+BITMAP_SRC=$(addprefix ../../bitmaps_ssd1306/, cat.c bbc_micro_font.c)
 
 all: testcard.hex
 

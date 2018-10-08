@@ -3,7 +3,11 @@
 #include <stdio.h>
 #include <math.h>
 
-Vector* vector_new(float x, float y, float z, float w)
+#ifdef __AVR
+# include <avr/pgmspace.h>
+#endif
+
+/*Vector* vector_new(float x, float y, float z, float w)
 {
   Vector* v = malloc(sizeof(Vector));
 
@@ -13,7 +17,7 @@ Vector* vector_new(float x, float y, float z, float w)
   v->w = w;
 
   return v;
-}
+} */
 
 void vector_init(Vector* self, float x, float y, float z, float w)
 {
@@ -31,13 +35,14 @@ void vector_copy_is(Vector* dst, const Vector* src)
   dst->w = src->w;
 }
 
-Vector* vector_scale(const Vector* vector, float factor)
+/*Vector* vector_scale(const Vector* vector, float factor)
 {
   return vector_new(factor * vector->x,
                     factor * vector->y,
                     factor * vector->z,
                     factor * vector->w);
-}
+                    return NULL;
+}*/
 
 void vector_scale_is(Vector* vector, float factor)
 {
@@ -84,9 +89,27 @@ void vector_subtract(Vector* dst, const Vector* u, const Vector* v)
   dst->w = u->w - v->w;
 }
 
-const char* vector_to_str(Vector* self)
+#ifndef __AVR
+
+void vector_to_log(Vector* self)
 {
-  static char buf[256];
-  sprintf(buf, "[%f, %f, %f, %f]", self->x, self->y, self->z, self->w);
+  static char buf[256]
+  snprintf(str, sizeof(buf), PSTR("[%f, %f, %f, %f]"), self->x, self->y, self->z, self->w);
   return buf;
 }
+
+#else
+#  include "avr/atmega328p/usart.h"
+
+void vector_to_log(Vector* self)
+{
+  char buf[10];
+  usart_transmit('|');
+  usart_write_string(dtostrf(self->x, 2, 2, buf)); usart_transmit('|');
+  usart_write_string(dtostrf(self->y, 2, 2, buf)); usart_transmit('|');
+  usart_write_string(dtostrf(self->z, 2, 2, buf)); usart_transmit('|');
+  usart_write_string(dtostrf(self->w, 2, 2, buf)); usart_transmit('|');
+  usart_transmit('\n');
+}
+
+#endif

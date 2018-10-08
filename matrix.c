@@ -62,11 +62,10 @@ void matrix_multiply(Matrix* dst, const Matrix* m1, const Matrix* m2)
 /*
  * Display
  */
-char* matrix_to_str(const Matrix* m)
+#ifndef __AVR
+void matrix_to_log(const Matrix* m)
 {
-  static char buf[2000];
-
-  sprintf(buf, "|%f,%f,%f,%f|\n|%f,%f,%f,%f|\n|%f,%f,%f,%f|\n|%f,%f,%f,%f|",
+  printf("|%f,%f,%f,%f|\n|%f,%f,%f,%f|\n|%f,%f,%f,%f|\n|%f,%f,%f,%f|",
           m->data[0],
           m->data[1],
           m->data[2],
@@ -83,10 +82,37 @@ char* matrix_to_str(const Matrix* m)
           m->data[13],
           m->data[14],
           m->data[15]);
+}
+#else
+  #include "avr/atmega328p/usart.h"
 
-  return buf;
+void matrix_to_log(const Matrix* m)
+{
+  char buf[10];
+  usart_transmit('|');
+  usart_write_string(dtostrf(m->data[0], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[1], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[2], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[3], 2, 2, buf));usart_transmit('|');
+  usart_transmit('\n');usart_transmit('|');
+  usart_write_string(dtostrf(m->data[4], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[5], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[6], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[7], 2, 2, buf));usart_transmit('|');
+  usart_transmit('\n');usart_transmit('|');
+  usart_write_string(dtostrf(m->data[8], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[9], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[10], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[11], 2, 2, buf));usart_transmit('|');
+  usart_transmit('\n');usart_transmit('|');
+  usart_write_string(dtostrf(m->data[12], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[13], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[14], 2, 2, buf));usart_transmit('|');
+  usart_write_string(dtostrf(m->data[15], 2, 2, buf));usart_transmit('|');
+  usart_transmit('\n');
 }
 
+#endif
 
 /*
  * Transforms

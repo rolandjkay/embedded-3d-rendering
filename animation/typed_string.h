@@ -6,11 +6,11 @@
 
 #include "stdint.h"
 #include "../display.h"
-
+#include "../defs.h"
 
 typedef struct
 {
-  const char* _str;
+  pgm_ptr_t _str;
   size_t _strlen;
   size_t _ms_per_char;
   size_t _column;
@@ -18,7 +18,7 @@ typedef struct
 } TypedString;
 
 void typed_string_init(TypedString* self,
-                       const char* str,
+                       pgm_ptr_t str,
                        size_t ms_per_char,
                        size_t column,
                        size_t row);

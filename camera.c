@@ -53,18 +53,3 @@ void camera_set_up_vector(Camera* self, float x, float y, float z)
 {
   vector_init(&self->_up_vector, x, y, z, 1.0);
 }
-
-const Matrix* camera_get_location_transform(Camera* self)
-{
-  return &self->_camera_location_transform;
-}
-
-const Matrix* camera_get_look_transform(Camera* self)
-{
-  return &self->_camera_look_transform;
-}
-
-const Vector* camera_get_look_vector(Camera* self)
-{
-  return &self->_look_vector;
-}

@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "simple_renderer.h"
+#include "avr/atmega328p/usart.h"
+
+//static char buf[30];
 
 
 /*
@@ -18,17 +22,45 @@ void _calc_normal(Vector* normal_out, const Polygon* polygon)
 /*
  * Project a vector onto the canvas.
  */
- void _project_vertex(SimpleRenderer* self,
-                      Vector* vertex,
-                      Camera* camera,
-                      int display_width,
-                      int display_height)
- {
-   float z;
+static inline void _project_vertex(SimpleRenderer* self,
+                                   Vector* vertex,
+                                   Camera* camera,
+                                   int display_width,
+                                   int display_height)
+{
+  float z;
+
+  //usart_write_string_P((pgm_ptr_t)PSTR("11111\n"));
+
+
+  //const Matrix* m = camera_get_location_transform(camera);
+
+
+  /*char* fff = malloc(10);
+  if (!fff)
+    usart_write_string_P((pgm_ptr_t)PSTR("<10 bytes free\n"));
+  else {
+    usart_write_string_P((pgm_ptr_t)PSTR("10 bytes OK\n"));
+
+    free(fff);
+  }*/
+
+
+   //matrix_to_log(m);
+
+   //vector_to_log(vertex);
 
    // XXX The camera could pre-multiply the matrices, so that we only have
    // one multiplication to do here.
    matrix_left_multiply_vector(camera_get_location_transform(camera), vertex);
+
+   //vector_to_log(vertex);
+   //usart_write_string_P((pgm_ptr_t)PSTR("22222\n"));
+
+
+   //sprintf(buf, sizeof(buf), "22222\n");
+   //usart_write_string(buf);
+
    matrix_left_multiply_vector(camera_get_look_transform(camera), vertex);
 
    // The matrix doesn't get the Z ordinates right and I don't see how to
@@ -36,23 +68,35 @@ void _calc_normal(Vector* normal_out, const Polygon* polygon)
    z = (2 * vertex->z - (self->_far_plane + self->_near_plane) )
        / (self->_near_plane - self->_far_plane);
 
+   //sprintf(buf, sizeof(buf), "4444\n", z);
+   //usart_write_string(buf);
+
    //matrix_left_multiply_vector(view_transform, &vertex);
    //matrix_left_multiply_vector(camera_location_transform, &vertex);
    matrix_left_multiply_vector(&self->_perspective_transform, vertex);
 
+   //sprintf(buf, sizeof(buf), "5555\n", z);
+   //usart_write_string(buf);
+
    //printf("*%f,%f,%f,%f\n", vertex.x, vertex.y, vertex.z, vertex.w);
+
+   //sprintf(buf, sizeof(buf), "6666\n", z);
+   //usart_write_string(buf);
 
    vector_scale_is(vertex, 1.0 / vertex->w);
 
+   //sprintf(buf, sizeof(buf), "z=%f\n", z);
+   //usart_write_string(buf);
+
    // Overwrite the matrix-calculated z with our calculation from above.
-   vertex->z = z;
+   //vertex->z = z;
 
    //printf("%f,%f,%f,%f\n", vertex->x, vertex->y, vertex->z, vertex->w);
 
    // Projection places view at [-1,-1] -> [+1,+1]
    vertex->x = (vertex->x / 2. * display_width) + display_width / 2.0;
    vertex->y = -(vertex->y / 2. * display_width) + display_height / 2.0;
- }
+}
 
 /*
  * Initialize the renderer with an array of polygons that make up the form.
@@ -95,12 +139,13 @@ void sr_init(SimpleRenderer* self,
 
 void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display)
 {
-  for (const SceneObject* scene_object = &self->_scene->scene_objects[0];
-       scene_object->object != NULL;
-       ++scene_object)
-  {
-    sr_render_object(self, scene_object, camera, display);
-  }
+//  for (const SceneObject* scene_object = &self->_scene->scene_objects[0];
+//       scene_object->object != NULL_PGM_PTR;
+//       ++scene_object)
+//  {
+//    sr_render_object(self, scene_object, camera, display);
+//  }
+    sr_render_object(self, &self->_scene->scene_objects[0], camera, display);
 }
 
 
@@ -109,14 +154,18 @@ void sr_render_object(SimpleRenderer* self,
                       Camera* camera,
                       Display* display)
 {
-  const Object* object = scene_object->object;
+  pgm_ptr_t object = scene_object->object;
   const Matrix* rotation_matrix = &scene_object->rotation_matrix;
   const Vector* location = &scene_object->location;
 
+  usart_write_string_P((pgm_ptr_t)PSTR("====\n"));
+  usart_write_string_P(GET_OBJ_NAME(object));
+  usart_transmit('\n');
+
   int w = display_get_width(display);
   int h = display_get_height(display);
-  Vector vertices[100];
-  int visible[100];
+  Vector vertices[40];
+  bool visible[40];
   Vector unit_look_vector;
 
   vector_copy_is(&unit_look_vector, camera_get_look_vector(camera));
@@ -125,14 +174,19 @@ void sr_render_object(SimpleRenderer* self,
   /*
    * Check the visibility of all faces.
    */
-  for (int face_index = 0; face_index < object->num_faces; face_index++)
+  for (int face_index = 0; face_index < GET_OBJ_NUM_FACES(object); face_index++)
   {
     Vector normal;
 
     //vector_copy_is(&normal, &object->normals[face_index]);
-    normal.x = object->normals[face_index].x;
+    Normal _normal;
+    GET_OBJ_NORMAL(object, face_index, _normal)
+    normal.x = _normal.x;
+    normal.y = _normal.y;
+    normal.z = _normal.z;
+    /*normal.x = object->normals[face_index].x;
     normal.y = object->normals[face_index].y;
-    normal.z = object->normals[face_index].z;
+    normal.z = object->normals[face_index].z;*/
 
     // Apply rotation
     matrix_left_multiply_vector(rotation_matrix, &normal);
@@ -140,7 +194,7 @@ void sr_render_object(SimpleRenderer* self,
     // Is this so that we an force a face to be visible?
     if ((normal.x == 0) && (normal.y == 0) && (normal.z == 0))
     {
-        visible[face_index] = 1;
+        visible[face_index] = true;
     }
     else
     {
@@ -156,13 +210,24 @@ void sr_render_object(SimpleRenderer* self,
     }
   }
 
-  for (int vertex_index = 0; vertex_index < object->num_points; ++vertex_index)
+  uint8_t num_points = GET_OBJ_NUM_POINTS(object);
+  char buf[10];
+  int foo = num_points;
+  snprintf(buf, 10, ">%d\n", foo);
+  usart_write_string(buf);
+
+  for (int vertex_index = 0; vertex_index < num_points; ++vertex_index)
   {
-    //vector_copy_is(&vertices[vertex_index], self->_object->points[vertex_index]);
-    vertices[vertex_index].x = object->points[vertex_index].x;
-    vertices[vertex_index].y = object->points[vertex_index].y;
-    vertices[vertex_index].z = object->points[vertex_index].z;
+    Point point;
+    GET_OBJ_POINT(object, vertex_index, point)
+
+    vertices[vertex_index].x = point.x; //object->points[vertex_index].x;
+    vertices[vertex_index].y = point.y; //object->points[vertex_index].y;
+    vertices[vertex_index].z = point.z; //object->points[vertex_index].z;
     vertices[vertex_index].w = 1.0;
+
+    //snprintf(buf, 30, "~%d,%d,%d\n", (int)point.x,  (int)point.y,  (int)point.z);
+    //usart_write_string(buf);
 
     // Apply rotation
     matrix_left_multiply_vector(rotation_matrix, &vertices[vertex_index]);
@@ -172,17 +237,32 @@ void sr_render_object(SimpleRenderer* self,
     vertices[vertex_index].y += location->y;
     vertices[vertex_index].z += location->z;
 
+    // XXX Seems to corrupt memory in _project_vertex
     _project_vertex(self, &vertices[vertex_index], camera, w, h);
   }
 
-  for (int line_index = 0; line_index < object->num_lines; ++line_index)
+  size_t num_lines = GET_OBJ_NUM_LINES(object);
+  //foo = num_lines;
+  //snprintf(buf, 10, ">>%d\n", foo);
+  //usart_write_string(buf);
+
+  for (int line_index = 0; line_index < num_lines; ++line_index)
   {
-    Vector* start_vertex = &vertices[object->lines[line_index].start_point];
-    Vector* end_vertex = &vertices[object->lines[line_index].end_point];
+    Line line;
+    GET_OBJ_LINE(object, line_index, line)
+
+    Vector* start_vertex = &vertices[line.start_point];
+    Vector* end_vertex = &vertices[line.end_point];
+    //Vector* start_vertex = &vertices[object->lines[line_index].start_point];
+    //Vector* end_vertex = &vertices[object->lines[line_index].end_point];
+
+    //snprintf(buf, 30, ">>>%f,%f,%f\n", start_vertex->x, start_vertex->y, start_vertex->z);
+    //usart_write_string(buf);
 
     // If either of the faces that the lines join is visible, then draw it.
-    if (visible[object->lines[line_index].face1]
-        || visible[object->lines[line_index].face2])
+//    if (visible[object->lines[line_index].face1]
+//        || visible[object->lines[line_index].face2])
+    if (visible[line.face1] || visible[line.face2])
     {
       display_draw_line(display, start_vertex->x, start_vertex->y,
                                  end_vertex->x, end_vertex->y);
@@ -195,4 +275,6 @@ void sr_render_object(SimpleRenderer* self,
      } */
    }
   }
+
+  usart_write_string_P((pgm_ptr_t)PSTR("+++++"));
 }

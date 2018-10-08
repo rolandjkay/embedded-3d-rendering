@@ -197,7 +197,11 @@ int main(int argc, char *argv[])
     goto error;
   }
 
-  fprintf(c_file, "const unsigned char %s[] = {\n", arguments.symbol_name);
+  fprintf(c_file,
+    "#ifdef __AVR\n"
+    "#  include <avr/pgmspace.h>\n"
+    "#endif\n\n"
+    "const unsigned char %s[] PROGMEM = {\n", arguments.symbol_name);
 
   // A block is eight pixels high stretching the width of the bitmap.
   for (size_t block_start = 0; block_start < width*height; block_start += width * 8)
@@ -235,8 +239,14 @@ int main(int argc, char *argv[])
   }
   fprintf(header_file, "#ifndef _BITMAP_%s_H\n", arguments.symbol_name);
   fprintf(header_file, "#define _BITMAP_%s_H\n", arguments.symbol_name);
-  fprintf(header_file, "\nconst unsigned char %s[%zu];\n\n",
-                       arguments.symbol_name, array_size);
+  fprintf(header_file, "\n"
+                       "#ifdef __AVR\n"
+                       "#  include <avr/pgmspace.h>\n"
+                       "#endif\n"
+                       "\n"
+                       "\nconst unsigned char %s[%zu] PROGMEM;\n\n",
+                       arguments.symbol_name,
+                       array_size);
   fprintf(header_file, "#endif\n");
 
 exit:

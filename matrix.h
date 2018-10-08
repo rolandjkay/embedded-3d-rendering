@@ -32,7 +32,7 @@ void matrix_left_multiply_vector(const Matrix*, Vector* Vector);
  * Display
  */
 
-char* matrix_to_str(const Matrix* m);
+void matrix_to_log(const Matrix* m);
 
 /*
  * Transforms

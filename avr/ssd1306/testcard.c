@@ -12,8 +12,9 @@
 
 #define SSD1306_128_64
 #include "ssd1306.h"
-#include "../bitmaps_ssd1306/cat.h"
-#include "../bitmaps_ssd1306/bbc_micro_font.h"
+#include "../avr-defs.h"
+#include "../../bitmaps_ssd1306/cat.h"
+#include "../../bitmaps_ssd1306/bbc_micro_font.h"
 
 void spi_init (void);
 void ssd1306_command(uint8_t c);

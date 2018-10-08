@@ -2,14 +2,18 @@
 #include "../font.h"
 #include "../defs.h"
 
+#ifdef __AVR
+# include <avr/pgmspace.h>
+#endif
+
 void typed_string_init(TypedString* self,
-                       const char* str,
+                       pgm_ptr_t str,
                        size_t ms_per_char,
                        size_t column,
                        size_t row)
 {
   self->_str = str;
-  self->_strlen = strlen(str);
+  self->_strlen = strlen_P((char*)str);
   self->_ms_per_char = ms_per_char;
   self->_column = column;
   self->_row = row;
@@ -18,10 +22,11 @@ void typed_string_init(TypedString* self,
 void typed_string_render(TypedString* self, Display* display, uint32_t clock)
 {
   // Display clock / ms-per-char characters.
-  font_write_string_at_text_pos(display,
-                                self->_str,
-                                clock / self->_ms_per_char,
-                                0,0);
+  // XXX Easiest to assume that string is in progmem atm.
+  font_write_string_at_text_pos_P(display,
+                                  self->_str,
+                                  clock / self->_ms_per_char,
+                                  0,0);
 
   if (clock % 1000 < 500)
   {
