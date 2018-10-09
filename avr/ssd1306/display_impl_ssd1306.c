@@ -132,7 +132,7 @@ void display_impl_draw_pixel(DisplayImpl* self, int16_t x, int16_t y)
 {
   if (x >= SSD1306_LCDWIDTH || y >= SSD1306_LCDHEIGHT) { return; }
 
-  self->_screen_buffer[x + (y>>3)<<7] |= 1 << (y & 0x00000111);
+  self->_screen_buffer[x + ((y>>3)<<7)] |= 1 << (y & 0b00000111);
 }
 
 void display_impl_show(DisplayImpl* self)
@@ -142,7 +142,7 @@ void display_impl_show(DisplayImpl* self)
   PIN_HIGH(PORTB, DC_PIN);
   PIN_LOW(PORTB, CS_PIN);
 
-  // Write cat sprite
+  // Write screen buffer
   for (int offset = 0; offset < sizeof(self->_screen_buffer); ++offset)
   {
     WRITE(self->_screen_buffer[offset]);
