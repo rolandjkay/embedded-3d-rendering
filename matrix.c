@@ -184,36 +184,6 @@ void matrix_tf_rotation(Matrix* dst, float xangle, float yangle, float zangle)
    dst->data[15] = 1.;
  }
 
-void matrix_tf_perspective(Matrix* dst,
-                           float near_plane,
-                           float far_plane,
-                           float viewport_width,
-                           float viewport_height
-                          )
-{
- //  float width = -2 * near_plane * tan(field_of_view / 2.0);
- //  float height = width / r;
-
-     dst->data[0] = 2. * near_plane / viewport_width;
-     dst->data[1] = 0.;
-     dst->data[2] = 0.;
-     dst->data[3] = 0.;
-     dst->data[4] = 0.;
-     dst->data[5] = 2. * near_plane / viewport_height;
-     dst->data[6] = 0.;
-     dst->data[7] = 0.;
-     dst->data[8] = 0.;
-     dst->data[9] = 0.;
-     //matrix->data[10] = -(far_plane + near_plane) / (far_plane-near_plane);
-     // He has -1, but I suspect it might be +1
-     dst->data[10] = (far_plane + near_plane) / (far_plane-near_plane);
-     dst->data[11] = -2.0 * far_plane * near_plane / (far_plane-near_plane);
-     dst->data[12] = 0.;
-     dst->data[13] = 0.;
-     dst->data[14] = -1.0;
-     dst->data[15] = 0.;
-}
-
 void matrix_tf_camera_look(Matrix* dst,
                            const Vector* camera_location,
                            const Vector* up_vector,

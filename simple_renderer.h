@@ -10,24 +10,18 @@
 
 typedef struct
 {
-  const Scene* _scene;
-  float _near_plane;
-  float _far_plane;
-  Matrix _perspective_transform;
 } SimpleRenderer;
 
-#define SR_INIT {NULL, 0, NULL, 0, 0, 0.0, 0.0, MATRIX_ZERO};
+#define SR_INIT
 
 /*
  * Initialize the renderer with an array of polygons that make up the form.
  */
-void sr_init(SimpleRenderer* self,
-             const Scene* scene,
-             float near_plane,
-             float far_plane,
-             float near_plane_width);
+//void sr_init(SimpleRenderer* self);
 
-void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display);
+void sr_render_scene(SimpleRenderer* self, Scene* scene,
+                                           Camera* camera,
+                                           Display* display);
 void sr_render_object(SimpleRenderer* self,
                       const SceneObject* object,
                       Camera* camera,

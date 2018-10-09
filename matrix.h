@@ -50,11 +50,4 @@ void matrix_tf_camera_look(Matrix* dst,
                            const Vector* up_vector,
                            const Vector* look_point);
 
-void matrix_tf_perspective(Matrix* dst,
-                           float near_plane,
-                           float far_plane,
-                           float viewport_width,
-                           float viewport_height
-                          );
-
 #endif

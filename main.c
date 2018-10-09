@@ -18,13 +18,9 @@
 # include "macos/sdl/event_loop_sdl.h"
 #endif
 
-// http://www.kmjn.org/notes/3d_rendering_intro.html
 static Camera camera = CAMERA_INIT;
 
 //static const Vector look_point = VECTOR_INIT(0.0, 0.0, 0.0);
-#define NEAR_PLANE -50.0
-#define NEAR_PLANE_WIDTH 60.0
-#define FAR_PLANE -160.0
 static SimpleRenderer renderer;
 static Scene scene = SCENE_INIT;
 static Display display = DISPLAY_INIT;
@@ -52,9 +48,9 @@ static void update(uint32_t clock)
   camera_calc_transforms(&camera);
 
   display_cls(&display);
-  //sr_render_scene(&renderer, &camera, &display);
+  sr_render_scene(&renderer, &scene, &camera, &display);
   typed_string_render(&ship_name_animator, &display, clock % 10000);
-  font_write_string_at_text_pos_P(&display, PSTR("ship->name"), 100, 0, 4);
+  //font_write_string_at_text_pos_P(&display, PSTR("ship->name"), 100, 0, 4);
   /*display_draw_line(&display, 0,0,128,64);
   display_draw_pixel(&display, 0, 16);
   display_draw_pixel(&display, 1, 17);
@@ -89,7 +85,7 @@ int main( int argc, char* args[] )
   vector_init(&scene.scene_objects[0].location, 0.0, 0.0, 0.0, 1.0);
   matrix_identity(&scene.scene_objects[0].rotation_matrix);
 
-  sr_init(&renderer, &scene, NEAR_PLANE, FAR_PLANE, NEAR_PLANE_WIDTH);
+  //sr_init(&renderer, &scene);
 
   event_loop_run(update);
 

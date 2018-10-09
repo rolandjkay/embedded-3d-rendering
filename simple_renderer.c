@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "simple_renderer.h"
+#include "settings.h"
+
+// http://www.kmjn.org/notes/3d_rendering_intro.html
+
 
 //static char buf[30];
 
@@ -29,54 +33,18 @@ static inline void _project_vertex(SimpleRenderer* self,
 {
   float z;
 
-  //usart_write_string_P((pgm_ptr_t)PSTR("11111\n"));
-
-  /*char* fff = malloc(10);
-  if (!fff)
-    usart_write_string_P((pgm_ptr_t)PSTR("<10 bytes free\n"));
-  else {
-    usart_write_string_P((pgm_ptr_t)PSTR("10 bytes OK\n"));
-
-    free(fff);
-  }*/
-
    // Find vertex position relative to the camera.
    vector_subtract(vertex, vertex, camera_get_location(camera));
 
-   //vector_to_log(vertex);
-   //usart_write_string_P((pgm_ptr_t)PSTR("22222\n"));
-
    matrix_left_multiply_vector(camera_get_look_transform(camera), vertex);
 
-   // The matrix doesn't get the Z ordinates right and I don't see how to
-   // fix it. This does the trick.
-   z = (2 * vertex->z - (self->_far_plane + self->_near_plane) )
-       / (self->_near_plane - self->_far_plane);
-
-   //sprintf(buf, sizeof(buf), "4444\n", z);
-   //usart_write_string(buf);
-
-   //matrix_left_multiply_vector(view_transform, &vertex);
-   //matrix_left_multiply_vector(camera_location_transform, &vertex);
-   matrix_left_multiply_vector(&self->_perspective_transform, vertex);
-
-   //sprintf(buf, sizeof(buf), "5555\n", z);
-   //usart_write_string(buf);
-
-   //printf("*%f,%f,%f,%f\n", vertex.x, vertex.y, vertex.z, vertex.w);
-
-   //sprintf(buf, sizeof(buf), "6666\n", z);
-   //usart_write_string(buf);
-
-   vector_scale(vertex, 1.0 / vertex->w);
-
-   //sprintf(buf, sizeof(buf), "z=%f\n", z);
-   //usart_write_string(buf);
-
-   // Overwrite the matrix-calculated z with our calculation from above.
-   //vertex->z = z;
-
-   //printf("%f,%f,%f,%f\n", vertex->x, vertex->y, vertex->z, vertex->w);
+   /*
+    * Perspective transform
+    */
+    vertex->x = 2. * NEAR_PLANE / NEAR_PLANE_WIDTH * vertex->x;
+    vertex->y = 2. * NEAR_PLANE / NEAR_PLANE_WIDTH * vertex->y;
+    vertex->x /= -vertex->z;
+    vertex->y /= -vertex->z;
 
    // Projection places view at [-1,-1] -> [+1,+1]
    vertex->x = (vertex->x / 2. * display_width) + display_width / 2.0;
@@ -86,6 +54,7 @@ static inline void _project_vertex(SimpleRenderer* self,
 /*
  * Initialize the renderer with an array of polygons that make up the form.
  */
+ #if 0
 void sr_init(SimpleRenderer* self,
              const Scene* scene,
              //const Polygon* polygons,
@@ -94,9 +63,6 @@ void sr_init(SimpleRenderer* self,
              float far_plane,
              float near_plane_width)
 {
-  self->_near_plane = near_plane;
-  self->_far_plane = far_plane;
-  self->_scene = scene;
 
   /*
    * Calculate normal vectors for backface culling algo.
@@ -121,8 +87,12 @@ void sr_init(SimpleRenderer* self,
                         near_plane_width,
                         near_plane_width);
 }
+#endif
 
-void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display)
+void sr_render_scene(SimpleRenderer* self,
+                     Scene* scene,
+                     Camera* camera,
+                     Display* display)
 {
 //  for (const SceneObject* scene_object = &self->_scene->scene_objects[0];
 //       scene_object->object != NULL_PGM_PTR;
@@ -130,7 +100,7 @@ void sr_render_scene(SimpleRenderer* self, Camera* camera, Display* display)
 //  {
 //    sr_render_object(self, scene_object, camera, display);
 //  }
-    sr_render_object(self, &self->_scene->scene_objects[0], camera, display);
+    sr_render_object(self, &scene->scene_objects[0], camera, display);
 }
 
 
