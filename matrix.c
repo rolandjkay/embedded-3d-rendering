@@ -214,17 +214,6 @@ void matrix_tf_perspective(Matrix* dst,
      dst->data[15] = 0.;
 }
 
-void matrix_tf_camera_location(Matrix* dst, const Vector* camera_location)
-{
-    Vector inverse_camera_location;
-    inverse_camera_location.x = camera_location->x * -1.0;
-    inverse_camera_location.y = camera_location->y * -1.0;
-    inverse_camera_location.z = camera_location->z * -1.0;
-    inverse_camera_location.w = camera_location->w * -1.0;
-
-    matrix_tf_translation(dst, &inverse_camera_location);
-}
-
 void matrix_tf_camera_look(Matrix* dst,
                            const Vector* camera_location,
                            const Vector* up_vector,
@@ -233,7 +222,7 @@ void matrix_tf_camera_look(Matrix* dst,
   Vector u, v, n;
 
   vector_subtract(&n, look_point, camera_location);
-  vector_normalize_is(&n);
+  vector_normalize(&n);
   vector_cross_product(&u, up_vector, &n);
   vector_cross_product(&v, &n, &u);
 

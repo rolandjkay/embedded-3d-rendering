@@ -16,8 +16,8 @@ Camera* camera_new()
  */
 void camera_init(Camera* self, const Vector* location, const Vector* look_point)
 {
-  vector_copy_is(&self->_camera_location, location);
-  vector_copy_is(&self->_look_point, look_point);
+  vector_copy(&self->_camera_location, location);
+  vector_copy(&self->_look_point, look_point);
 }
 
 /*
@@ -25,8 +25,6 @@ void camera_init(Camera* self, const Vector* location, const Vector* look_point)
  */
 void camera_calc_transforms(Camera* self)
 {
-  matrix_tf_camera_location(&self->_camera_location_transform,
-                            &self->_camera_location);
   matrix_tf_camera_look(&self->_camera_look_transform,
                         &self->_camera_location,
                         &self->_up_vector,

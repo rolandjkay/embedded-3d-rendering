@@ -3,20 +3,6 @@
 #include <stdio.h>
 #include <math.h>
 
-
-
-/*Vector* vector_new(float x, float y, float z, float w)
-{
-  Vector* v = malloc(sizeof(Vector));
-
-  v->x = x;
-  v->y = y;
-  v->z = z;
-  v->w = w;
-
-  return v;
-} */
-
 void vector_init(Vector* self, float x, float y, float z, float w)
 {
   self->x = x;
@@ -25,7 +11,7 @@ void vector_init(Vector* self, float x, float y, float z, float w)
   self->w = w;
 }
 
-void vector_copy_is(Vector* dst, const Vector* src)
+void vector_copy(Vector* dst, const Vector* src)
 {
   dst->x = src->x;
   dst->y = src->y;
@@ -33,16 +19,7 @@ void vector_copy_is(Vector* dst, const Vector* src)
   dst->w = src->w;
 }
 
-/*Vector* vector_scale(const Vector* vector, float factor)
-{
-  return vector_new(factor * vector->x,
-                    factor * vector->y,
-                    factor * vector->z,
-                    factor * vector->w);
-                    return NULL;
-}*/
-
-void vector_scale_is(Vector* vector, float factor)
+void vector_scale(Vector* vector, float factor)
 {
   vector->x = factor * vector->x;
   vector->y = factor * vector->y;
@@ -53,7 +30,7 @@ void vector_scale_is(Vector* vector, float factor)
 /*
  * Normalize a vector (in situ) by dividing by its magnitude.
  */
-void vector_normalize_is(Vector* vector)
+void vector_normalize(Vector* vector)
 {
   float magnitude = sqrtf(vector->x * vector->x +
                           vector->y * vector->y +

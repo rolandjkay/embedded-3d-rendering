@@ -44,7 +44,6 @@ void matrix_tf_change_of_basis(Matrix* dst,
                                 const Vector* i,
                                 const Vector* j,
                                 const Vector* k);
-void matrix_tf_camera_location(Matrix* dst, const Vector* camera_location);
 
 void matrix_tf_camera_look(Matrix* dst,
                            const Vector* camera_location,

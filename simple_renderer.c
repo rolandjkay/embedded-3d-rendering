@@ -31,10 +31,6 @@ static inline void _project_vertex(SimpleRenderer* self,
 
   //usart_write_string_P((pgm_ptr_t)PSTR("11111\n"));
 
-
-  //const Matrix* m = camera_get_location_transform(camera);
-
-
   /*char* fff = malloc(10);
   if (!fff)
     usart_write_string_P((pgm_ptr_t)PSTR("<10 bytes free\n"));
@@ -44,21 +40,11 @@ static inline void _project_vertex(SimpleRenderer* self,
     free(fff);
   }*/
 
-
-   //matrix_to_log(m);
-
-   //vector_to_log(vertex);
-
-   // XXX The camera could pre-multiply the matrices, so that we only have
-   // one multiplication to do here.
-   matrix_left_multiply_vector(camera_get_location_transform(camera), vertex);
+   // Find vertex position relative to the camera.
+   vector_subtract(vertex, vertex, camera_get_location(camera));
 
    //vector_to_log(vertex);
    //usart_write_string_P((pgm_ptr_t)PSTR("22222\n"));
-
-
-   //sprintf(buf, sizeof(buf), "22222\n");
-   //usart_write_string(buf);
 
    matrix_left_multiply_vector(camera_get_look_transform(camera), vertex);
 
@@ -82,7 +68,7 @@ static inline void _project_vertex(SimpleRenderer* self,
    //sprintf(buf, sizeof(buf), "6666\n", z);
    //usart_write_string(buf);
 
-   vector_scale_is(vertex, 1.0 / vertex->w);
+   vector_scale(vertex, 1.0 / vertex->w);
 
    //sprintf(buf, sizeof(buf), "z=%f\n", z);
    //usart_write_string(buf);
@@ -163,8 +149,8 @@ void sr_render_object(SimpleRenderer* self,
   bool visible[40];
   Vector unit_look_vector;
 
-  vector_copy_is(&unit_look_vector, camera_get_look_vector(camera));
-  vector_normalize_is(&unit_look_vector);
+  vector_copy(&unit_look_vector, camera_get_look_vector(camera));
+  vector_normalize(&unit_look_vector);
 
   /*
    * Check the visibility of all faces.
@@ -173,7 +159,7 @@ void sr_render_object(SimpleRenderer* self,
   {
     Vector normal;
 
-    //vector_copy_is(&normal, &object->normals[face_index]);
+    //vector_copy(&normal, &object->normals[face_index]);
     Normal _normal;
     GET_OBJ_NORMAL(object, face_index, _normal)
     normal.x = _normal.x;
@@ -198,7 +184,7 @@ void sr_render_object(SimpleRenderer* self,
       // The Elite face normals are not unit vectors.
       // -- Probably because it's hard to express unit vectors with 8 bit
       //    integers
-      vector_normalize_is(&normal);
+      vector_normalize(&normal);
 
       cos_angle = vector_dot_product(&normal, &unit_look_vector);
       visible[face_index] = (cos_angle < -0.08);
