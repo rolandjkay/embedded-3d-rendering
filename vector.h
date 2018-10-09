@@ -3,13 +3,12 @@
 
 typedef struct
 {
-  float x, y, z, w;
+  float x, y, z;
 } Vector ;
 
-#define VECTOR_INITW(x,y,z,w) {x,y,z,w}
-#define VECTOR_INIT(x,y,z) {x,y,z, 1.0}
+#define VECTOR_INIT(x,y,z,w) {x,y,z}
 
-void vector_init(Vector* self, float x, float y, float z, float w);
+void vector_init(Vector* self, float x, float y, float z);
 
 void vector_scale(Vector* vector, float factor);
 void vector_normalize(Vector* vector);

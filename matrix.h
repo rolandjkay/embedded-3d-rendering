@@ -8,7 +8,7 @@
  */
 typedef struct
 {
-  float data[16];
+  float data[9];
 } Matrix;
 
 #define MATRIX_ZERO {0};
@@ -20,11 +20,6 @@ void matrix_identity(Matrix* dst);
  * Operations
  */
 void matrix_multiply(Matrix* dst, const Matrix* m1, const Matrix* m2);
-
-/*void matrix_combine(Matrix* dst,
-                    const Matrix* m1,
-                    const Matrix* m2,
-                    const Matrix* m3);*/
 
 void matrix_left_multiply_vector(const Matrix*, Vector* Vector);
 

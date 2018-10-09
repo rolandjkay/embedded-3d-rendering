@@ -65,7 +65,7 @@ demo:	$(DEMO-OBJ-FILES-MACOS) bitmaps_ssd1306/bbc_micro_font.o
 clean:
 	-rm $(DEMO-OBJ-FILES-MACOS)  $(DEMO-OBJ-FILES-AVR)
 	-rm bitmaps_ssd1306/*.c
-	-rm demo
+	-rm demo demo-avr.elf demo-avr.hex
 
 $(BUILD-DIR-MACOS)/main.o:		main.c
 	gcc $(CFLAGS) -o $@ -c $<
@@ -163,7 +163,7 @@ $(BUILD-DIR-AVR)/bbc_micro_font.o:	bitmaps_ssd1306/bbc_micro_font.c bitmaps_ssd1
 demo-avr.elf:	$(DEMO-OBJ-FILES-AVR) $(BUILD-DIR-AVR)/bbc_micro_font.o
 	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf build/avr/main.o build/avr/usart.o build/avr/3d_model.o build/avr/errors.o build/avr/display.o build/avr/display_impl_ssd1306.o build/avr/vector.o build/avr/matrix.o build/avr/simple_renderer.o build/avr/camera.o  build/avr/event_loop_avr.o build/avr/typed_string.o build/avr/font.o build/avr/bbc_micro_font.o
  # $(DEMO-OBJ-FILES-AVR)
- 
+
 demo-avr.hex:	demo-avr.elf
 	$(AVR-OBJCOPY)  -j .text -j .data -O ihex $< $@
 

@@ -82,7 +82,7 @@ int main( int argc, char* args[] )
     return 255;
   }
 
-  vector_init(&scene.scene_objects[0].location, 0.0, 0.0, 0.0, 1.0);
+  vector_init(&scene.scene_objects[0].location, 0.0, 0.0, 0.0);
   matrix_identity(&scene.scene_objects[0].rotation_matrix);
 
   //sr_init(&renderer, &scene);

@@ -39,15 +39,15 @@ void camera_calc_transforms(Camera* self)
  */
 void camera_set_location(Camera* self, float x, float y, float z)
 {
-  vector_init(&self->_camera_location, x, y, z, 1.0);
+  vector_init(&self->_camera_location, x, y, z);
 }
 
 void camera_set_look_point(Camera* self, float x, float y, float z)
 {
-  vector_init(&self->_look_point, x, y, z, 1.0);
+  vector_init(&self->_look_point, x, y, z);
 }
 
 void camera_set_up_vector(Camera* self, float x, float y, float z)
 {
-  vector_init(&self->_up_vector, x, y, z, 1.0);
+  vector_init(&self->_up_vector, x, y, z);
 }

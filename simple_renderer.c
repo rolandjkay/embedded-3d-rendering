@@ -171,7 +171,6 @@ void sr_render_object(SimpleRenderer* self,
     vertices[vertex_index].x = point.x; //object->points[vertex_index].x;
     vertices[vertex_index].y = point.y; //object->points[vertex_index].y;
     vertices[vertex_index].z = point.z; //object->points[vertex_index].z;
-    vertices[vertex_index].w = 1.0;
 
     //snprintf(buf, 30, "~%d,%d,%d\n", (int)point.x,  (int)point.y,  (int)point.z);
     //usart_write_string(buf);
