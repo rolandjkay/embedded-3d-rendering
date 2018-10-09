@@ -65,6 +65,7 @@ demo:	$(DEMO-OBJ-FILES-MACOS) bitmaps_ssd1306/bbc_micro_font.o
 clean:
 	-rm $(DEMO-OBJ-FILES-MACOS)  $(DEMO-OBJ-FILES-AVR)
 	-rm bitmaps_ssd1306/*.c
+	-rm demo
 
 $(BUILD-DIR-MACOS)/main.o:		main.c
 	gcc $(CFLAGS) -o $@ -c $<
