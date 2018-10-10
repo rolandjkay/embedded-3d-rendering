@@ -9,8 +9,7 @@
  * Project a vector onto the canvas.
  * - NB: Corrupts 'vertex'.
  */
-static inline void _project_vertex(SimpleRenderer* self,
-                                   int8_vector_t* screen_vertex,
+static inline void _project_vertex(int8_vector_t* screen_vertex,
                                    Vector* vertex,
                                    const Camera* camera,
                                    int display_width,
@@ -93,11 +92,7 @@ void sr_render_object(SimpleRenderer* self,
                       Display* display)
 {
   pgm_ptr_t object = scene_object->object;
-  const Matrix* rotation_matrix = &scene_object->rotation_matrix;
   const Vector* location = &scene_object->location;
-
-  int w = display_get_width(display);
-  int h = display_get_height(display);
   int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
   uint16_t visible = 0;              // XXX Maximum of 16 faces !!!
   Vector unit_look_vector;
@@ -112,7 +107,8 @@ void sr_render_object(SimpleRenderer* self,
    //usart_write_string_P(GET_OBJ_NAME(object));
    //usart_transmit('\n');
   for (int face_index = 0;
-       face_index < GET_OBJ_NUM_FACES(object) && face_index < sizeof(visible)<<3;
+       face_index < GET_OBJ_NUM_FACES(scene_object->object)
+         && face_index < sizeof(visible)<<3;
        face_index++)
   {
     Vector normal;
@@ -128,7 +124,7 @@ void sr_render_object(SimpleRenderer* self,
     normal.z = object->normals[face_index].z;*/
 
     // Apply rotation
-    matrix_left_multiply_vector(rotation_matrix, &normal);
+    matrix_left_multiply_vector(&scene_object->rotation_matrix, &normal);
 
     // Is this so that we an force a face to be visible?
     if ((normal.x == 0) && (normal.y == 0) && (normal.z == 0))
@@ -156,13 +152,13 @@ void sr_render_object(SimpleRenderer* self,
    * Project 3D world vectors to 2D screen vectors.
    */
   //usart_write_string_P(PSTR("Projecting screen_vertices\n"));
-  uint8_t num_points = GET_OBJ_NUM_POINTS(object);
+  uint8_t num_points = GET_OBJ_NUM_POINTS(scene_object->object);
   for (int vertex_index = 0; vertex_index < num_points; ++vertex_index)
   {
     Point point;
     Vector world_vertex;
 
-    GET_OBJ_POINT(object, vertex_index, point)
+    GET_OBJ_POINT(scene_object->object, vertex_index, point)
 
     world_vertex.x = point.x; //object->points[vertex_index].x;
     world_vertex.y = point.y; //object->points[vertex_index].y;
@@ -172,15 +168,18 @@ void sr_render_object(SimpleRenderer* self,
     //usart_write_string(buf);
 
     // Apply rotation
-    matrix_left_multiply_vector(rotation_matrix, &world_vertex);
+    matrix_left_multiply_vector(&scene_object->rotation_matrix, &world_vertex);
 
     // Apply translation
     world_vertex.x += location->x;
     world_vertex.y += location->y;
     world_vertex.z += location->z;
 
-    // XXX Seems to corrupt memory in _project_vertex
-    _project_vertex(self, &screen_vertices[vertex_index], &world_vertex, camera, w, h);
+    _project_vertex(&screen_vertices[vertex_index],
+                    &world_vertex,
+                    camera,
+                    display_get_width(display),
+                    display_get_height(display));
   }
 
   //usart_write_string_P(PSTR("Drawing lines "));
