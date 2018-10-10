@@ -1,6 +1,11 @@
 #ifndef _Vector_H
 #define _Vector_H
 
+#include <stdint.h>
+
+/*
+ * 3D float vector
+ */
 typedef struct
 {
   float x, y, z;
@@ -18,5 +23,15 @@ float vector_dot_product(const Vector* u, const Vector* v);
 void vector_subtract(Vector* dst, const Vector* u, const Vector* v);
 
 void vector_to_log(Vector* self);
+
+
+/*
+ * 2D 8 bit vector
+ */
+ typedef struct
+ {
+   int8_t x, y;
+ } int8_vector_t;
+
 
 #endif

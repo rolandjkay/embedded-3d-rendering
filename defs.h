@@ -22,4 +22,9 @@
 
 #define NULL_PGM_PTR 0
 
+#define SET_BIT(port, bit) ((port) |= (1<<bit))
+#define CLEAR_BIT(port, bit) ((port) &= ~(1<<bit))
+
+#define IS_BIT_SET(port, bit) ((port) & (1<<bit))
+
 #endif

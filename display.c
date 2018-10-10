@@ -5,8 +5,8 @@
  * Drawing
  */
 
-#ifndef _swap_int16_t
-#define _swap_int16_t(a, b) { int16_t t = a; a = b; b = t; }
+#ifndef _swap_int8_t
+#define _swap_int8_t(a, b) { int8_t t = a; a = b; b = t; }
 #endif
 
 /**************************************************************************/
@@ -18,25 +18,25 @@
     @param    y1  End point y coordinate
 */
 /**************************************************************************/
-void display_draw_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1)
+void display_draw_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1)
 {
-    int16_t steep = abs(y1 - y0) > abs(x1 - x0);
+    int8_t steep = abs(y1 - y0) > abs(x1 - x0);
     if (steep) {
-        _swap_int16_t(x0, y0);
-        _swap_int16_t(x1, y1);
+        _swap_int8_t(x0, y0);
+        _swap_int8_t(x1, y1);
     }
 
     if (x0 > x1) {
-        _swap_int16_t(x0, x1);
-        _swap_int16_t(y0, y1);
+        _swap_int8_t(x0, x1);
+        _swap_int8_t(y0, y1);
     }
 
-    int16_t dx, dy;
+    int8_t dx, dy;
     dx = x1 - x0;
     dy = abs(y1 - y0);
 
-    int16_t err = dx / 2;
-    int16_t ystep;
+    int8_t err = dx / 2;
+    int8_t ystep;
 
     if (y0 < y1) {
         ystep = 1;

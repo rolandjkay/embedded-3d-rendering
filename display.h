@@ -50,10 +50,10 @@ static inline void display_show(Display* self)
   display_impl_show(&self->_impl);
 }
 
-void display_draw_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
+void display_draw_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1);
 
 //void display_draw_col_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
-static inline void display_draw_pixel(Display* self, int16_t x, int16_t y)
+static inline void display_draw_pixel(Display* self, int8_t x, int8_t y)
 {
   display_impl_draw_pixel(&self->_impl, x, y);
 }

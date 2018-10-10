@@ -5,34 +5,17 @@
 
 // http://www.kmjn.org/notes/3d_rendering_intro.html
 
-
-//static char buf[30];
-
-
-/*
- * Calculate the normal facing out of the form.
- */
- /*
-void _calc_normal(Vector* normal_out, const Polygon* polygon)
-{
-  Vector a, b;
-  vector_subtract(&a, &polygon->vertices[1], &polygon->vertices[0]);
-  vector_subtract(&b, &polygon->vertices[polygon->n - 1], &polygon->vertices[0]);
-
-  vector_cross_product(normal_out, &a, &b);
-}*/
-
 /*
  * Project a vector onto the canvas.
+ * - NB: Corrupts 'vertex'.
  */
 static inline void _project_vertex(SimpleRenderer* self,
+                                   int8_vector_t* screen_vertex,
                                    Vector* vertex,
-                                   Camera* camera,
+                                   const Camera* camera,
                                    int display_width,
                                    int display_height)
 {
-  float z;
-
    // Find vertex position relative to the camera.
    vector_subtract(vertex, vertex, camera_get_location(camera));
 
@@ -47,8 +30,8 @@ static inline void _project_vertex(SimpleRenderer* self,
     vertex->y /= -vertex->z;
 
    // Projection places view at [-1,-1] -> [+1,+1]
-   vertex->x = (vertex->x / 2. * display_width) + display_width / 2.0;
-   vertex->y = -(vertex->y / 2. * display_width) + display_height / 2.0;
+   screen_vertex->x = (vertex->x / 2. * display_width) + display_width / 2.0;
+   screen_vertex->y = -(vertex->y / 2. * display_width) + display_height / 2.0;
 }
 
 /*
@@ -115,8 +98,8 @@ void sr_render_object(SimpleRenderer* self,
 
   int w = display_get_width(display);
   int h = display_get_height(display);
-  Vector vertices[40];
-  bool visible[40];
+  int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
+  uint16_t visible = 0;              // XXX Maximum of 16 faces !!!
   Vector unit_look_vector;
 
   vector_copy(&unit_look_vector, camera_get_look_vector(camera));
@@ -125,7 +108,12 @@ void sr_render_object(SimpleRenderer* self,
   /*
    * Check the visibility of all faces.
    */
-  for (int face_index = 0; face_index < GET_OBJ_NUM_FACES(object); face_index++)
+   //usart_write_string_P(PSTR("Checking visibility of "));
+   //usart_write_string_P(GET_OBJ_NAME(object));
+   //usart_transmit('\n');
+  for (int face_index = 0;
+       face_index < GET_OBJ_NUM_FACES(object) && face_index < sizeof(visible)<<3;
+       face_index++)
   {
     Vector normal;
 
@@ -145,7 +133,7 @@ void sr_render_object(SimpleRenderer* self,
     // Is this so that we an force a face to be visible?
     if ((normal.x == 0) && (normal.y == 0) && (normal.z == 0))
     {
-        visible[face_index] = true;
+      SET_BIT(visible, face_index);
     }
     else
     {
@@ -157,50 +145,59 @@ void sr_render_object(SimpleRenderer* self,
       vector_normalize(&normal);
 
       cos_angle = vector_dot_product(&normal, &unit_look_vector);
-      visible[face_index] = (cos_angle < -0.08);
+      if (cos_angle < -0.08)
+      {
+        SET_BIT(visible, face_index);
+      }
     }
   }
 
+  /*
+   * Project 3D world vectors to 2D screen vectors.
+   */
+  //usart_write_string_P(PSTR("Projecting screen_vertices\n"));
   uint8_t num_points = GET_OBJ_NUM_POINTS(object);
-
   for (int vertex_index = 0; vertex_index < num_points; ++vertex_index)
   {
     Point point;
+    Vector world_vertex;
+
     GET_OBJ_POINT(object, vertex_index, point)
 
-    vertices[vertex_index].x = point.x; //object->points[vertex_index].x;
-    vertices[vertex_index].y = point.y; //object->points[vertex_index].y;
-    vertices[vertex_index].z = point.z; //object->points[vertex_index].z;
+    world_vertex.x = point.x; //object->points[vertex_index].x;
+    world_vertex.y = point.y; //object->points[vertex_index].y;
+    world_vertex.z = point.z; //object->points[vertex_index].z;
 
     //snprintf(buf, 30, "~%d,%d,%d\n", (int)point.x,  (int)point.y,  (int)point.z);
     //usart_write_string(buf);
 
     // Apply rotation
-    matrix_left_multiply_vector(rotation_matrix, &vertices[vertex_index]);
+    matrix_left_multiply_vector(rotation_matrix, &world_vertex);
 
     // Apply translation
-    vertices[vertex_index].x += location->x;
-    vertices[vertex_index].y += location->y;
-    vertices[vertex_index].z += location->z;
+    world_vertex.x += location->x;
+    world_vertex.y += location->y;
+    world_vertex.z += location->z;
 
     // XXX Seems to corrupt memory in _project_vertex
-    _project_vertex(self, &vertices[vertex_index], camera, w, h);
+    _project_vertex(self, &screen_vertices[vertex_index], &world_vertex, camera, w, h);
   }
 
+  //usart_write_string_P(PSTR("Drawing lines "));
   size_t num_lines = GET_OBJ_NUM_LINES(object);
-  //foo = num_lines;
-  //snprintf(buf, 10, ">>%d\n", foo);
+  //char buf[5];
+  //snprintf(buf, 4, "%d", num_lines);
   //usart_write_string(buf);
-
+  //usart_transmit('\n');
   for (int line_index = 0; line_index < num_lines; ++line_index)
   {
     Line line;
     GET_OBJ_LINE(object, line_index, line)
 
-    Vector* start_vertex = &vertices[line.start_point];
-    Vector* end_vertex = &vertices[line.end_point];
-    //Vector* start_vertex = &vertices[object->lines[line_index].start_point];
-    //Vector* end_vertex = &vertices[object->lines[line_index].end_point];
+    int8_vector_t* start_vertex = &screen_vertices[line.start_point];
+    int8_vector_t* end_vertex = &screen_vertices[line.end_point];
+    //Vector* start_vertex = &screen_vertices[object->lines[line_index].start_point];
+    //Vector* end_vertex = &screen_vertices[object->lines[line_index].end_point];
 
     //snprintf(buf, 30, ">>>%f,%f,%f\n", start_vertex->x, start_vertex->y, start_vertex->z);
     //usart_write_string(buf);
@@ -208,7 +205,7 @@ void sr_render_object(SimpleRenderer* self,
     // If either of the faces that the lines join is visible, then draw it.
 //    if (visible[object->lines[line_index].face1]
 //        || visible[object->lines[line_index].face2])
-    if (visible[line.face1] || visible[line.face2])
+    if (IS_BIT_SET(visible, line.face1) || IS_BIT_SET(visible, line.face2))
     {
       display_draw_line(display, start_vertex->x, start_vertex->y,
                                  end_vertex->x, end_vertex->y);

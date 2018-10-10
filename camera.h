@@ -39,17 +39,17 @@ void camera_set_location(Camera* self, float x, float y, float z);
 void camera_set_look_point(Camera* self, float x, float y, float z);
 void camera_set_up_vector(Camera* self, float x, float y, float z);
 
-static inline const Vector* camera_get_location(Camera* self)
+static inline const Vector* camera_get_location(const Camera* self)
 {
   return &self->_camera_location;
 }
 
-static inline const Matrix* camera_get_look_transform(Camera* self)
+static inline const Matrix* camera_get_look_transform(const Camera* self)
 {
   return &self->_camera_look_transform;
 }
 
-static inline const Vector* camera_get_look_vector(Camera* self)
+static inline const Vector* camera_get_look_vector(const Camera* self)
 {
   return &self->_look_vector;
 }
