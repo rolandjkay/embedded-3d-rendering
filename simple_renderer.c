@@ -93,7 +93,10 @@ void sr_render_object(SimpleRenderer* self,
 {
   pgm_ptr_t object = scene_object->object;
   const Vector* location = &scene_object->location;
-  int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
+  int8_vector_t screen_vertices[37]; // XXX Maximum of 40 'points'
+#ifndef __AVR
+  uint32_t _CHECK_POINT1 = 0xdeadbeef;
+#endif
   uint16_t visible = 0;              // XXX Maximum of 16 faces !!!
   Vector unit_look_vector;
 
@@ -217,4 +220,12 @@ void sr_render_object(SimpleRenderer* self,
      } */
    }
   }
+
+#ifndef __AVR
+  if (_CHECK_POINT1 != 0xdeadbeef)
+  {
+    printf("BANG!\n");
+    __builtin_trap();
+  }
+#endif
 }
