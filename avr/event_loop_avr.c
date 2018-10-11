@@ -8,6 +8,7 @@
 #include <avr/io.h>
 #include <util/delay.h>                // for _delay_ms()
 
+#include "../defs.h"
 #include "avr-defs.h"
 
 void event_loop_run(EventLoopUpdateFunc* update_func)
