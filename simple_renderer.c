@@ -91,11 +91,12 @@ void sr_render_object(SimpleRenderer* self,
                       Camera* camera,
                       Display* display)
 {
-  pgm_ptr_t object = scene_object->object;
-  const Vector* location = &scene_object->location;
-  int8_vector_t screen_vertices[37]; // XXX Maximum of 40 'points'
-#ifndef __AVR
-  uint32_t _CHECK_POINT1 = 0xdeadbeef;
+#ifdef __AVR
+  static int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
+#else
+  static int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
+  screen_vertices[countof(screen_vertices)-1].x = 0x7f;
+  screen_vertices[countof(screen_vertices)-1].y = 0x7f;
 #endif
   uint16_t visible = 0;              // XXX Maximum of 16 faces !!!
   Vector unit_look_vector;
@@ -111,14 +112,14 @@ void sr_render_object(SimpleRenderer* self,
    //usart_transmit('\n');
   for (int face_index = 0;
        face_index < GET_OBJ_NUM_FACES(scene_object->object)
-         && face_index < sizeof(visible)<<3;
+         && face_index < sizeof(visible)<<3; // Bounds check
        face_index++)
   {
     Vector normal;
 
     //vector_copy(&normal, &object->normals[face_index]);
     Normal _normal;
-    GET_OBJ_NORMAL(object, face_index, _normal)
+    GET_OBJ_NORMAL(scene_object->object, face_index, _normal)
     normal.x = _normal.x;
     normal.y = _normal.y;
     normal.z = _normal.z;
@@ -174,9 +175,9 @@ void sr_render_object(SimpleRenderer* self,
     matrix_left_multiply_vector(&scene_object->rotation_matrix, &world_vertex);
 
     // Apply translation
-    world_vertex.x += location->x;
-    world_vertex.y += location->y;
-    world_vertex.z += location->z;
+    world_vertex.x += scene_object->location.x;
+    world_vertex.y += scene_object->location.y;
+    world_vertex.z += scene_object->location.z;
 
     _project_vertex(&screen_vertices[vertex_index],
                     &world_vertex,
@@ -186,7 +187,7 @@ void sr_render_object(SimpleRenderer* self,
   }
 
   //usart_write_string_P(PSTR("Drawing lines "));
-  size_t num_lines = GET_OBJ_NUM_LINES(object);
+  size_t num_lines = GET_OBJ_NUM_LINES(scene_object->object);
   //char buf[5];
   //snprintf(buf, 4, "%d", num_lines);
   //usart_write_string(buf);
@@ -194,7 +195,7 @@ void sr_render_object(SimpleRenderer* self,
   for (int line_index = 0; line_index < num_lines; ++line_index)
   {
     Line line;
-    GET_OBJ_LINE(object, line_index, line)
+    GET_OBJ_LINE(scene_object->object, line_index, line)
 
     int8_vector_t* start_vertex = &screen_vertices[line.start_point];
     int8_vector_t* end_vertex = &screen_vertices[line.end_point];
@@ -222,7 +223,8 @@ void sr_render_object(SimpleRenderer* self,
   }
 
 #ifndef __AVR
-  if (_CHECK_POINT1 != 0xdeadbeef)
+  if (screen_vertices[countof(screen_vertices)-1].x != 0x7f ||
+      screen_vertices[countof(screen_vertices)-1].y != 0x7f)
   {
     printf("BANG!\n");
     __builtin_trap();
