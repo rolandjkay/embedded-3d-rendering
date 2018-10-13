@@ -144,7 +144,8 @@ extern const Object* const misc[1] PROGMEM;
  typedef struct
  {
    Matrix rotation_matrix;
-   Vector location;
+   fix8_matrix_t fx_rotation_matrix;
+   int16_vector_t location;
    pgm_ptr_t object;
  } SceneObject;
 

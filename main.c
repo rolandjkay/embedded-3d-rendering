@@ -18,7 +18,9 @@
 # include "macos/sdl/event_loop_sdl.h"
 #endif
 
-static Camera camera = CAMERA_INIT;
+static Camera camera = {/* location = */  {0,0,200/*257*/},
+                        /* look_point = */ {0,0,0},
+                        /* up vector = */  {0,64,0}};
 
 //static const Vector look_point = VECTOR_INIT(0.0, 0.0, 0.0);
 static SimpleRenderer renderer;
@@ -28,23 +30,21 @@ static Display display = DISPLAY_INIT;
 static TypedString ship_name_animator;
 static void update(uint32_t clock)
 {
-  // Move the camera
-  float clock_ = 0.0;
-  camera_set_location(&camera, 50 * sin(clock_ / 1000.), 50 * cos(clock_ / 1000.), 257.0);
-  camera_set_up_vector(&camera, 0.0, 1.0, 0.0);
-
-  //camera_set_location(&camera, 0., 200.0, 0.0);
-  //camera_set_up_vector(&camera, 0.0, 0.0, -1.0);
+  // Calc fixed-point rotation matrix
+  // - angle is in units of PI.
+  fix8_t angle = ((clock % 8192) - 4096) >> 6; // = *64 / 4096
+  fix8_matrix_tf_rotation(&scene.scene_objects[0].fx_rotation_matrix,
+                          angle, 0.0, angle);
 
   matrix_tf_rotation(&scene.scene_objects[0].rotation_matrix,
-                     2.*PI*clock/8000.0, 0.0, 2.*PI*clock/8000.0);
+                     angle * PI / 64., 0.0, angle * PI / 64.);
+                    // 2.*PI*clock/8192.0, 0.0, 2.*PI*clock/8192.0);
 
   pgm_ptr_t ship = GET_OBJ((clock / 10000) % countof(ships));
 
   scene.scene_objects[0].object = ship;
   typed_string_init(&ship_name_animator, GET_OBJ_NAME(ship), 350, 0, 0);
 
-  camera_set_look_point(&camera, 0.0, 0.0, 0.0);
   camera_calc_transforms(&camera);
 
   display_cls(&display);
@@ -82,8 +82,8 @@ int main( int argc, char* args[] )
     return 255;
   }
 
-  vector_init(&scene.scene_objects[0].location, 0.0, 0.0, 0.0);
   matrix_identity(&scene.scene_objects[0].rotation_matrix);
+  fix8_matrix_identity(&scene.scene_objects[0].fx_rotation_matrix);
 
   //sr_init(&renderer, &scene);
 

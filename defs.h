@@ -18,6 +18,10 @@
   typedef uint16_t pgm_ptr_t;
 #else
   typedef const void* pgm_ptr_t;
+
+  // We don't want to use these on AVR to avoid linking float lib.
+#  define FLT_TO_FIX(x)  ((fix8_t)((x)*64))
+#  define FIX_TO_FLT(x)  (((float)(x))/64)
 #endif
 
 #define NULL_PGM_PTR 0

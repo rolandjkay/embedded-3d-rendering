@@ -10,12 +10,12 @@ void vector_init(Vector* self, float x, float y, float z)
   self->z = z;
 }
 
-void vector_copy(Vector* dst, const Vector* src)
+/*void vector_copy(Vector* dst, const Vector* src)
 {
   dst->x = src->x;
   dst->y = src->y;
   dst->z = src->z;
-}
+}*/
 
 void vector_scale(Vector* vector, float factor)
 {
@@ -52,12 +52,12 @@ float vector_dot_product(const Vector* u, const Vector* v)
 }
 
 
-void vector_subtract(Vector* dst, const Vector* u, const Vector* v)
+/*void vector_subtract(Vector* dst, const Vector* u, const Vector* v)
 {
   dst->x = u->x - v->x;
   dst->y = u->y - v->y;
   dst->z = u->z - v->z;
-}
+}*/
 
 #ifndef __AVR
 

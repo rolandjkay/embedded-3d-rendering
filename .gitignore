@@ -7,3 +7,5 @@ convert-bitmap
 convert-bitmap.dSYM
 demo-avr.elf
 demo-avr.hex
+fixed-point-tests.dSYM
+fixed-point-tests

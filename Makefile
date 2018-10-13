@@ -10,7 +10,7 @@ BUILD-DIR-AVR=build/avr
 
 DEMO-OBJ-FILENAMES=main.o display.o matrix.o vector.o camera.o \
                    simple_renderer.o 3d_model.o errors.o  \
-                   font.o typed_string.o
+                   font.o typed_string.o fixed_point.o
 
 DEMO-OBJ-FILENAMES-MACOS=event_loop_sdl.o display_impl_sdl.o
 DEMO-OBJ-FILENAMES-AVR=event_loop_avr.o display_impl_ssd1306.o usart.o
@@ -19,13 +19,19 @@ DEMO-OBJ-FILES-MACOS=$(addprefix $(BUILD-DIR-MACOS)/, $(DEMO-OBJ-FILENAMES) $(DE
 DEMO-OBJ-FILES-AVR=$(addprefix $(BUILD-DIR-AVR)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-AVR))
 
 
-all: demo convert-bitmap demo-avr.hex
+all: demo convert-bitmap demo-avr.hex fixed_point_tests
 
 debug-make:
 	@echo macos build dir: $(BUILD-DIR-MACOS)
 	@echo macos obect files:
 	@echo ------------------
 	@echo $(DEMO-OBJ-FILES-MACOS)
+#
+# Tests
+#
+#
+fixed-point-tests: fixed-point-tests.c matrix.o vector.o $(BUILD-DIR-MACOS)/fixed_point.o
+	gcc $(CFLAGS) -o $@ matrix.o vector.o $(BUILD-DIR-MACOS)/fixed_point.o $<
 
 #
 # Utils
@@ -68,6 +74,9 @@ clean:
 	-rm demo demo-avr.elf demo-avr.hex
 
 $(BUILD-DIR-MACOS)/main.o:		main.c
+	gcc $(CFLAGS) -o $@ -c $<
+
+$(BUILD-DIR-MACOS)/fixed_point.o:	fixed_point.c fixed_point.h
 	gcc $(CFLAGS) -o $@ -c $<
 
 $(BUILD-DIR-MACOS)/errors.o:	errors.c errors.h
