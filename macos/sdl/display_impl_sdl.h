@@ -30,7 +30,8 @@ static inline int display_impl_get_width(DisplayImpl* self) { return SDL_SCREEN_
 static inline int display_impl_get_height(DisplayImpl* self) { return SDL_SCREEN_HEIGHT; }
 void display_impl_cls(DisplayImpl* self);
 void display_impl_show(DisplayImpl* self);
-void display_impl_draw_pixel(DisplayImpl* self, int16_t x, int16_t y);
+void display_impl_draw_pixel(DisplayImpl* self, int8_t x, int8_t y);
+void display_impl_draw_col_pixel(DisplayImpl* self, int8_t x, int8_t y);
 uint8_t* display_impl_get_buffer(DisplayImpl* display);
 void display_impl_release_buffer(DisplayImpl* display);
 

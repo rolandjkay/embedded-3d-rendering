@@ -7,33 +7,41 @@
   #include "macos/pgmspace.h"
 #endif
 
+// Avoid using these in the AVR build, to avoid linking float lib.
+// - We have to special case 1.0, because it is out of range.
+#define FLT_TO_FIX(x)  ((x) == 1.0 ? 127 : (fix8_t)((x)*128))
+#define FIX_TO_FLT(x)  (((float)(x))/128)
+
 /*
- * 1 bit integer part; 6 bits fractional; 1 sign bit
+ * 7 bits fractional; 1 sign bit; i.e. 1.7 format
  *
- * NB: ((float)c)/64  will convert floating point for display
+ * NB: ((float)c)/128  will convert floating point for display
  */
 typedef int8_t fix8_t;
 
 /*
- * Multiply to 2.6 fixed-point numbers to yield 2.6 result.
+ * Multiply two 1.7 fixed-point numbers to yield 1.7 result.
  */
 static inline fix8_t fix8_mul(fix8_t a, fix8_t b)
 {
   int16_t r = (int16_t)a * (int16_t)b;
-  return r >> 6;
-}
-/*
- * Multiply a 16 bit integer by a 2.6 fixed-point numbers to yield a 16 bit
- * integer result.
- */
-static inline int16_t int16_x_fix8_mul(fix8_t a, int16_t b)
-{
-  int16_t r = (int16_t)a * b;
-  // r is 18.6; shift off the fractional bits to leave an integer
-  return r >> 6;
+  return r >> 7;
 }
 
-const fix8_t cos_lookup[34] PROGMEM;
+/*
+ * Multiply a 16 bit integer by a 1.7 fixed-point numbers to yield a 16 bit
+ * integer result.
+ */
+static inline int16_t fix8_x_int16_mul(fix8_t a, int16_t b)
+{
+  // 16.0 x 1.7 yields 17.7 -> ie. a 24 bit intermediate result, before we
+  // shift left. Therefore, we must store the result in a 32 bit int.
+  int32_t r = (int32_t)a * b;
+  // r is 17.7; shift off the fractional bits to leave an integer
+  return (int16_t)(r >> 7);
+}
+
+const fix8_t cos_lookup[65] PROGMEM;
 
 static inline fix8_t fix8_cos(fix8_t theta)
 {
@@ -43,27 +51,19 @@ static inline fix8_t fix8_cos(fix8_t theta)
     theta = -theta;
   }
 
-  if (theta < -96)
-  {
-    return pgm_read_byte(cos_lookup + 128 - -theta);
-  }
   if (theta < -64)
   {
-    return -pgm_read_byte(cos_lookup + -theta - 64);
-  }
-  else if (theta < -32)
-  {
-    return -pgm_read_byte(cos_lookup + 64 - -theta);
+    return -pgm_read_byte(cos_lookup + 128 + theta);
   }
   else
   {
-    return pgm_read_byte(cos_lookup + -theta);
+    return pgm_read_byte(cos_lookup - theta);
   }
 }
 
 static inline fix8_t fix8_sin(fix8_t theta)
 {
-  return fix8_cos(theta - 32);
+  return fix8_cos(theta - 64);
 }
 
 #endif

@@ -67,9 +67,9 @@ static inline void fix8_matrix_left_multiply_int16_vector(const fix8_matrix_t* m
                                                           int16_vector_t* v)
 {
   int16_vector_t t = *v;
-  v->x = int16_x_fix8_mul(m->a.x, t.x) + int16_x_fix8_mul(m->a.y, t.y) + int16_x_fix8_mul(m->a.z, t.z);
-  v->y = int16_x_fix8_mul(m->b.x, t.x) + int16_x_fix8_mul(m->b.y, t.y) + int16_x_fix8_mul(m->b.z, t.z);
-  v->z = int16_x_fix8_mul(m->c.x, t.x) + int16_x_fix8_mul(m->c.y, t.y) + int16_x_fix8_mul(m->c.z, t.z);
+  v->x = fix8_x_int16_mul(m->a.x, t.x) + fix8_x_int16_mul(m->a.y, t.y) + fix8_x_int16_mul(m->a.z, t.z);
+  v->y = fix8_x_int16_mul(m->b.x, t.x) + fix8_x_int16_mul(m->b.y, t.y) + fix8_x_int16_mul(m->b.z, t.z);
+  v->z = fix8_x_int16_mul(m->c.x, t.x) + fix8_x_int16_mul(m->c.y, t.y) + fix8_x_int16_mul(m->c.z, t.z);
 }
 
 void fix8_matrix_tf_rotation(fix8_matrix_t* dst, fix8_t xangle, fix8_t yangle, fix8_t zangle);

@@ -25,12 +25,12 @@ static inline void _project_vertex(int8_vector_t* screen_vertex,
     */
     vertex->x = 2. * NEAR_PLANE / NEAR_PLANE_WIDTH * vertex->x;
     vertex->y = 2. * NEAR_PLANE / NEAR_PLANE_WIDTH * vertex->y;
-    vertex->x /= -vertex->z;
+    vertex->x /= -vertex->z;  // -20/-z
     vertex->y /= -vertex->z;
 
    // Projection places view at [-1,-1] -> [+1,+1]
-   screen_vertex->x = (vertex->x / 2. * display_width) + display_width / 2.0;
-   screen_vertex->y = -(vertex->y / 2. * display_width) + display_height / 2.0;
+   screen_vertex->x = (vertex->x / 2. * display_width) /*+ display_width / 2.0*/;
+   screen_vertex->y = -(vertex->y / 2. * display_width) /*+ display_height / 2.0*/;
 }
 
 static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
@@ -42,9 +42,8 @@ static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
    // Find vertex position relative to the camera.
    vector_subtract(world_vertex, world_vertex, &camera->camera_location);
 
-
+   // Multiply 16 bit integers with 1.7 fixed-point and return 16 bit ints.
    fix8_matrix_left_multiply_int16_vector(&camera->_fx_camera_look_transform, world_vertex);
-
 
    /*
     * Let's choose near_plane_width to be 128 so that our world coordinates
@@ -52,8 +51,8 @@ static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
     * because (with )
 
        x = x / (NEAR_PLANE_WIDTH/2);                          10 / 64
-       x = x * NEAR_PLANE / -z                                10/64 * 64/64
-       x = x * HALF_DISPLAY_WIDTH + HALF_DISPLAY_WIDTH        10
+       x = x * NEAR_PLANE / -z                                10/64 * -128 / -z = 20/z
+       x = x * HALF_DISPLAY_WIDTH + HALF_DISPLAY_WIDTH        10/z * 128 + 64 =
 
        then, this becomes
        x = (x / 64 * 64 / -z) * 64 + 64)
@@ -63,9 +62,12 @@ static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
        y = (y / 64 * 64 / -z) * 64 + 32)
        y = (y / -z)*64 + 32
        y = 64*x / -z + 32
+
+       Note that we're using NEAR_PLANE of 128 (should be -128), so we
+       divide by z not -z.
      */
-  screen_vertex->x = (world_vertex->x << 6) / -world_vertex->z + 64;
-  screen_vertex->y = (world_vertex->y << 6) / -world_vertex->z + 32;
+  screen_vertex->x = (world_vertex->x << 7) / world_vertex->z /*+ 64*/;
+  screen_vertex->y = -(world_vertex->y << 7) / world_vertex->z /*+ 32*/;
 
    /*
     * Perspective transform
@@ -175,9 +177,9 @@ void sr_render_object(SimpleRenderer* self,
 
   uint16_t fx_visible = 0;              // XXX Maximum of 16 faces !!!
   fix8_vector_t fx_unit_look_vector;
-  fx_unit_look_vector.x = (fix8_t)(unit_look_vector.x * 64);
-  fx_unit_look_vector.y = (fix8_t)(unit_look_vector.y * 64);
-  fx_unit_look_vector.z = (fix8_t)(unit_look_vector.z * 64);
+  fx_unit_look_vector.x = FLT_TO_FIX(unit_look_vector.x);
+  fx_unit_look_vector.y = FLT_TO_FIX(unit_look_vector.y);
+  fx_unit_look_vector.z = FLT_TO_FIX(unit_look_vector.z);
 
   //fix8_matrix_to_log(&scene_object->fx_rotation_matrix);
   //matrix_to_log(&scene_object->rotation_matrix);
@@ -196,9 +198,9 @@ void sr_render_object(SimpleRenderer* self,
     tmp.y = _fx_normal.y;
     tmp.z = _fx_normal.z;
     vector_normalize(&tmp);
-    fx_normal.x = (fix8_t)(tmp.x * 64);
-    fx_normal.y = (fix8_t)(tmp.y * 64);
-    fx_normal.z = (fix8_t)(tmp.z * 64);
+    fx_normal.x = FLT_TO_FIX(tmp.x);
+    fx_normal.y = FLT_TO_FIX(tmp.y);
+    fx_normal.z = FLT_TO_FIX(tmp.z);
 
     // Apply rotation
     fix8_matrix_left_multiply_vector(&scene_object->fx_rotation_matrix, &fx_normal);
@@ -350,8 +352,8 @@ void sr_render_object(SimpleRenderer* self,
     Line line;
     GET_OBJ_LINE(scene_object->object, line_index, line)
 
-    int8_vector_t* start_vertex = &fx_screen_vertices[line.start_point];
-    int8_vector_t* end_vertex = &fx_screen_vertices[line.end_point];
+    int8_vector_t* start_vertex = &screen_vertices[line.start_point];
+    int8_vector_t* end_vertex = &screen_vertices[line.end_point];
     //Vector* start_vertex = &screen_vertices[object->lines[line_index].start_point];
     //Vector* end_vertex = &screen_vertices[object->lines[line_index].end_point];
 
@@ -366,12 +368,13 @@ void sr_render_object(SimpleRenderer* self,
       display_draw_line(display, start_vertex->x, start_vertex->y,
                                  end_vertex->x, end_vertex->y);
 
-/*     if (self->_object->lines[line_index].face1 == 9
-         || self->_object->lines[line_index].face2 == 9)
+     if (line_index == 3)
      {
-       display_draw_col_line(display, start_vertex->x, start_vertex->y,
-                                      end_vertex->x, end_vertex->y);
-     } */
+       display_draw_col_line(display, screen_vertices[line.start_point].x,
+                                      screen_vertices[line.start_point].y,
+                                      screen_vertices[line.end_point].x,
+                                      screen_vertices[line.end_point].y);
+     }
    }
   }
 

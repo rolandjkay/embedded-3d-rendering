@@ -136,9 +136,9 @@ void matrix_tf_camera_look(Matrix* dst,
 {
   Vector u, v, n, _up_vector;
 
-  _up_vector.x = ((float)up_vector->x) / 64.;
-  _up_vector.y = ((float)up_vector->y) / 64.;
-  _up_vector.z = ((float)up_vector->z) / 64.;
+  _up_vector.x = FIX_TO_FLT(up_vector->x);
+  _up_vector.y = FIX_TO_FLT(up_vector->y);
+  _up_vector.z = FIX_TO_FLT(up_vector->z);
 
   vector_subtract(&n, look_point, camera_location);
   vector_normalize(&n);
@@ -168,9 +168,9 @@ void fix8_matrix_tf_camera_look(fix8_matrix_t* dst,
   //  2) This computation only happen on camera move, which is never in the demo.
   // We could save some flash by not linking the float lib, if we got rid of
   // all float operations, but it's not a priority.
-  dst->a.x = (fix8_t)(u.x*64.0f); dst->a.y = (fix8_t)(u.y*64.0f); dst->a.z = (fix8_t)(u.z*64.0f);
-  dst->b.x = (fix8_t)(v.x*64.0f); dst->b.y = (fix8_t)(v.y*64.0f); dst->b.z = (fix8_t)(v.z*64.0f);
-  dst->c.x = (fix8_t)(n.x*64.0f); dst->c.y = (fix8_t)(n.y*64.0f); dst->c.z = (fix8_t)(n.z*64.0f);
+  dst->a.x = FLT_TO_FIX(u.x); dst->a.y = FLT_TO_FIX(u.y); dst->a.z = FLT_TO_FIX(u.z);
+  dst->b.x = FLT_TO_FIX(v.x); dst->b.y = FLT_TO_FIX(v.y); dst->b.z = FLT_TO_FIX(v.z);
+  dst->c.x = FLT_TO_FIX(n.x); dst->c.y = FLT_TO_FIX(n.y); dst->c.z = FLT_TO_FIX(n.z);
 }
 
 
@@ -185,20 +185,156 @@ void fix8_matrix_identity(fix8_matrix_t* dst)
 // Angles need to be in fractions of pi.
 void fix8_matrix_tf_rotation(fix8_matrix_t* dst, fix8_t xangle, fix8_t yangle, fix8_t zangle)
 {
-  dst->a.x = fix8_mul(fix8_cos(yangle), fix8_cos(zangle));
-  dst->a.y = -fix8_mul(fix8_cos(yangle), fix8_sin(zangle));
-  dst->a.z = fix8_sin(yangle);
+  // Because we cannot represent 1 accuratly, if we have expressions like
+  // cos(y)sin(z) the result won't be equal to sin(z) when y is zero, because
+  // cos(y) = 127/128 and not 1.0 Therefore, we simplify the matrix in the case
+  // that any angles are zero. This also reduces computation time, but at the
+  // expence of more code in flash.
+  if (yangle == 0)
+  {
+    if (xangle == 0)
+    {
+      register fix8_t cz = fix8_cos(zangle);
+      register fix8_t sz = fix8_sin(zangle);
+      dst->a.x = cz;
+      dst->a.y = -sz;
+      dst->a.z = 0;
 
-  dst->b.x = fix8_mul(fix8_mul(fix8_sin(xangle), fix8_sin(yangle)), fix8_cos(zangle))
-           + fix8_mul(fix8_cos(xangle), fix8_sin(zangle));
-  dst->b.y = -fix8_mul(fix8_mul(fix8_sin(xangle), fix8_sin(yangle)), fix8_sin(zangle))
-           + fix8_mul(fix8_cos(xangle), fix8_cos(zangle));
-  dst->b.z = -fix8_mul(fix8_sin(xangle) ,fix8_cos(yangle));
+      dst->b.x = sz;
+      dst->b.y = cz;
+      dst->b.z = 0;
 
-  dst->c.x = -fix8_mul(fix8_cos(xangle), fix8_mul(fix8_sin(yangle), fix8_cos(zangle)))
-           + fix8_mul(fix8_sin(xangle), fix8_sin(zangle));
-  dst->c.y = fix8_mul(fix8_cos(xangle), fix8_mul(fix8_sin(yangle), fix8_sin(zangle))) + fix8_mul(fix8_sin(xangle), fix8_cos(zangle));
-  dst->c.z = fix8_mul(fix8_cos(xangle), fix8_cos(yangle));
+      dst->c.x = 0;
+      dst->c.y = 0;
+      dst->c.z = 127;
+    }
+    else
+    {
+      if (zangle == 0)
+      {
+        register fix8_t cx = fix8_cos(xangle);
+        register fix8_t sx = fix8_sin(xangle);
+        dst->a.x = 127;
+        dst->a.y = 0;
+        dst->a.z = 0;
+
+        dst->b.x = 0;
+        dst->b.y = cx;
+        dst->b.z = -sx;
+
+        dst->c.x = 0;
+        dst->c.y = sx;
+        dst->c.z = cx;
+      }
+      else
+      {
+        register fix8_t cx = fix8_cos(xangle);
+        register fix8_t sx = fix8_sin(xangle);
+        register fix8_t cz = fix8_cos(zangle);
+        register fix8_t sz = fix8_sin(zangle);
+
+        dst->a.x = cz;
+        dst->a.y = -sz;
+        dst->a.z = 0;
+
+        dst->b.x = fix8_mul(cx, sz);
+        dst->b.y = fix8_mul(cx, cz);
+        dst->b.z = -sx;
+
+        dst->c.x = fix8_mul(sx, sz);
+        dst->c.y = fix8_mul(sx, cz);
+        dst->c.z = cx;
+      }
+    }
+  }
+  else
+  {
+    if (zangle == 0)
+    {
+      if (xangle == 0)
+      {
+        register fix8_t cy = fix8_cos(yangle);
+        register fix8_t sy = fix8_sin(yangle);
+
+        dst->a.x = cy;
+        dst->a.y = -0;
+        dst->a.z = sy;
+
+        dst->b.x = 0;
+        dst->b.y = 127;
+        dst->b.z = 0;
+
+        dst->c.x = -sy;
+        dst->c.y = 0;
+        dst->c.z = cy;
+      }
+      else
+      {
+        register fix8_t cx = fix8_cos(xangle);
+        register fix8_t sx = fix8_sin(xangle);
+        register fix8_t cy = fix8_cos(yangle);
+        register fix8_t sy = fix8_sin(yangle);
+
+        dst->a.x = cy;
+        dst->a.y = -0;
+        dst->a.z = sy;
+
+        dst->b.x = fix8_mul(sx, sy);
+        dst->b.y = cx;
+        dst->b.z = -fix8_mul(sx, cy);
+
+        dst->c.x = -fix8_mul(cx, sy);
+        dst->c.y = sx;
+        dst->c.z = fix8_mul(cx, cy);
+      }
+    }
+    else
+    {
+      if (xangle == 0)
+      {
+        register fix8_t cy = fix8_cos(yangle);
+        register fix8_t sy = fix8_sin(yangle);
+        register fix8_t cz = fix8_cos(zangle);
+        register fix8_t sz = fix8_sin(zangle);
+
+        dst->a.x = fix8_mul(cy, cz);
+        dst->a.y = -fix8_mul(cy, sz);
+        dst->a.z = sy;
+
+        dst->b.x = sz;
+        dst->b.y = cz;
+        dst->b.z = 0;
+
+        dst->c.x = -fix8_mul(sy, cz);
+        dst->c.y = fix8_mul(sy, sz);
+        dst->c.z = cy;
+      }
+      else
+      {
+        register fix8_t cx = fix8_cos(xangle);
+        register fix8_t sx = fix8_sin(xangle);
+        register fix8_t cy = fix8_cos(yangle);
+        register fix8_t sy = fix8_sin(yangle);
+        register fix8_t cz = fix8_cos(zangle);
+        register fix8_t sz = fix8_sin(zangle);
+
+        dst->a.x = fix8_mul(cy, cz);
+        dst->a.y = -fix8_mul(cy, sz);
+        dst->a.z = sy;
+
+        dst->b.x = fix8_mul(fix8_mul(sx, sy), cz)
+                 + fix8_mul(cx, sz);
+        dst->b.y = -fix8_mul(fix8_mul(sx, sy), sz)
+                 + fix8_mul(cx, cz);
+        dst->b.z = -fix8_mul(sx, cy);
+
+        dst->c.x = -fix8_mul(cx, fix8_mul(sy, cz))
+                 + fix8_mul(sx, sz);
+        dst->c.y = fix8_mul(cx, fix8_mul(sy, sz)) + fix8_mul(sx, cz);
+        dst->c.z = fix8_mul(cx, cy);
+      }
+    }
+  }
 }
 
 #ifndef __AVR

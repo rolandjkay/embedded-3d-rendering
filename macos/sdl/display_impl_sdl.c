@@ -80,68 +80,40 @@ void display_impl_show(DisplayImpl* self)
 }
 
 
-static uint8_t display_pixel_colour(DisplayImpl* display, int16_t x, int16_t y)
+static uint8_t display_pixel_colour(DisplayImpl* display, int8_t x, int8_t y)
 {
   return 0xff;
 }
 
-void display_impl_draw_pixel(DisplayImpl* display, int16_t x, int16_t y)
+void display_impl_draw_pixel(DisplayImpl* display, int8_t x, int8_t y)
 {
+  // We adjust x & y so that the on-screen coordinates range from
+  // (-64,-32) -> (+64,+32), with (0,0) in the centre. We do this because
+  // having bands of valid, but invisible coordinates around the screen makes
+  // is easier to draw lines whose vertices lie slightly beyond the screen.
+  //
+  // We use signed 8 bit integers for screen coordinates, so if we made (0,0)
+  // the top-left corner then the far right would be 127, which is already the
+  // maximum value.
+  x += (SDL_SCREEN_WIDTH >> 1);
+  y += (SDL_SCREEN_HEIGHT >> 1);
+
   if (x < SDL_SCREEN_WIDTH && x >= 0 && y < SDL_SCREEN_HEIGHT && y >= 0)
   {
     *(display->_pixels + y * SDL_SCREEN_WIDTH + x) = display_pixel_colour(display, x, y);
   }
 }
 
-// XXX HORRIBLE COPY-PASTE
-//
-/*void display_impl_draw_col_line(DisplayImpl* display, int16_t x0, int16_t y0, int16_t x1, int16_t y1)
+void display_impl_draw_col_pixel(DisplayImpl* display, int8_t x, int8_t y)
 {
-    int16_t steep = abs(y1 - y0) > abs(x1 - x0);
-    if (steep) {
-        _swap_int16_t(x0, y0);
-        _swap_int16_t(x1, y1);
-    }
+  x += (SDL_SCREEN_WIDTH >> 1);
+  y += (SDL_SCREEN_HEIGHT >> 1);
 
-    if (x0 > x1) {
-        _swap_int16_t(x0, x1);
-        _swap_int16_t(y0, y1);
-    }
-
-    int16_t dx, dy;
-    dx = x1 - x0;
-    dy = abs(y1 - y0);
-
-    int16_t err = dx / 2;
-    int16_t ystep;
-
-    if (y0 < y1) {
-        ystep = 1;
-    } else {
-        ystep = -1;
-    }
-
-    for (; x0<=x1; x0++) {
-        if (steep) {
-            display_draw_col_pixel(display, y0, x0);
-        } else {
-            display_draw_col_pixel(display, x0, y0);
-        }
-        err -= dy;
-        if (err < 0) {
-            y0 += ystep;
-            err += dx;
-        }
-    }
-}
-
-void display_impl_draw_col_pixel(DisplayImpl* display, int16_t x, int16_t y)
-{
-  if (x < display->_width && x >= 0 && y < display->_height && y >= 0)
+  if (x < SDL_SCREEN_WIDTH && x >= 0 && y < SDL_SCREEN_HEIGHT && y >= 0)
   {
-    *(display->_pixels + y * display->_width + x) = 0xf0;
+    *(display->_pixels + y * SDL_SCREEN_WIDTH + x) = 0xf0;
   }
-}*/
+}
 
 /*
  * Translate 1 byte pp horizontal layout to 1 bit pp vertical layout of

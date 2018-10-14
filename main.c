@@ -18,9 +18,9 @@
 # include "macos/sdl/event_loop_sdl.h"
 #endif
 
-static Camera camera = {/* location = */  {0,0,200/*257*/},
+static Camera camera = {/* location = */  {0,0,257/*257*/},
                         /* look_point = */ {0,0,0},
-                        /* up vector = */  {0,64,0}};
+                        /* up vector = */  {0,127,0}};
 
 //static const Vector look_point = VECTOR_INIT(0.0, 0.0, 0.0);
 static SimpleRenderer renderer;
@@ -32,12 +32,12 @@ static void update(uint32_t clock)
 {
   // Calc fixed-point rotation matrix
   // - angle is in units of PI.
-  fix8_t angle = ((clock % 8192) - 4096) >> 6; // = *64 / 4096
+  fix8_t angle = ((clock % 8192) - 4096) >> 5; // = *128 / 4096
   fix8_matrix_tf_rotation(&scene.scene_objects[0].fx_rotation_matrix,
                           angle, 0.0, angle);
 
   matrix_tf_rotation(&scene.scene_objects[0].rotation_matrix,
-                     angle * PI / 64., 0.0, angle * PI / 64.);
+                     FIX_TO_FLT(angle) * PI, 0.0, FIX_TO_FLT(angle) * PI);
                     // 2.*PI*clock/8192.0, 0.0, 2.*PI*clock/8192.0);
 
   pgm_ptr_t ship = GET_OBJ((clock / 10000) % countof(ships));
@@ -49,22 +49,8 @@ static void update(uint32_t clock)
 
   display_cls(&display);
   sr_render_scene(&renderer, &scene, &camera, &display);
-  typed_string_render(&ship_name_animator, &display, clock % 10000);
-  //font_write_string_at_text_pos_P(&display, PSTR("ship->name"), 100, 0, 4);
-  /*display_draw_line(&display, 0,0,128,64);
-  display_draw_pixel(&display, 0, 16);
-  display_draw_pixel(&display, 1, 17);
-  display_draw_pixel(&display, 2, 18);
-  display_draw_pixel(&display, 3, 19);
-  display_draw_pixel(&display, 4, 20);
-  display_draw_pixel(&display, 5, 21);
-  display_draw_pixel(&display, 6, 22);
-  display_draw_pixel(&display, 7, 23);*/
-  /*font_write_string(&display, "Hello World", 11, 0, 24);
-  font_write_string_P(&display, GET_SHIP_NAMEx(ship), 11, 0, 32);
-  font_write_char(&display, 'H', 0, 20); */
+//  typed_string_render(&ship_name_animator, &display, clock % 10000);
 
-  //font_write_string_at_text_pos(&display, ship->name, 100, 1, 0);
   display_show(&display);
 }
 
