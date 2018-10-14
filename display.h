@@ -52,13 +52,15 @@ static inline void display_show(Display* self)
 
 void display_draw_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1);
 
-//void display_draw_col_line(Display* self, int16_t x0, int16_t y0, int16_t x1, int16_t y1);
 static inline void display_draw_pixel(Display* self, int8_t x, int8_t y)
 {
   display_impl_draw_pixel(&self->_impl, x, y);
 }
-//void display_draw_col_pixel(Display* self, int16_t x, int16_t y);
-//uint8_t display_pixel_colour(Display* self, int16_t x, int16_t y);
+
+#ifndef __AVR
+  void display_draw_col_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1);
+  //void display_draw_col_pixel(Display* self, int16_t x, int16_t y);
+#endif
 
 /*
  * Access to virtual buffer
