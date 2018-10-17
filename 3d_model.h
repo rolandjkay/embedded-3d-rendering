@@ -11,8 +11,13 @@
 #endif
 
 #include "defs.h"
-#include "vector.h"
-#include "matrix.h"
+#ifdef INCLUDE_FLOAT_MATHS
+#  include "vector.h"
+#  include "matrix.h"
+#endif
+
+#include "fix8_matrix.h"
+#include "fix8_vector.h"
 
 /************************************************************************
  ** Object
@@ -39,17 +44,17 @@ typedef struct
   uint8_t end_point;
 } Line;
 
-typedef struct
+/*typedef struct
 {
   int8_t x;
   int8_t y;
   int8_t z;
-  /*int dist;
+  /_*int dist;
   int face1;
   int face2;
   int face3;
-  int face4; */
-} Normal;
+  int face4; *_/
+} Normal; */
 
 typedef struct
 {
@@ -143,8 +148,10 @@ extern const Object* const misc[1] PROGMEM;
 
  typedef struct
  {
-   Matrix rotation_matrix;
-   fix8_matrix_t fx_rotation_matrix;
+#ifdef INCLUDE_FLOAT_MATHS
+   Matrix float_rotation_matrix;
+#endif
+   fix8_matrix_t rotation_matrix;
    int16_vector_t location;
    pgm_ptr_t object;
  } SceneObject;

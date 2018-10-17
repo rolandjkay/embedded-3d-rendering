@@ -88,9 +88,9 @@ static const Line cobra_lines[] PROGMEM =
   {/* 8,*/  9,  9, 25, 27}, // 37
 };
 
-static const Normal cobra_face_normals[] PROGMEM =
+static const fix8_vector_t cobra_face_normals[] PROGMEM =
 {
-  {   0,   62,   31}, // 0
+  /*{   0,   62,   31}, // 0
   { -18,   55,   16}, // 1
   {  18,   55,   16}, // 2
   { -16,   52,   14}, // 3
@@ -102,7 +102,21 @@ static const Normal cobra_face_normals[] PROGMEM =
   {   0,    0,  -80}, // 9
   {  -7,  -42,    9}, // 10
   {   0,  -30,    6}, // 11
-  {   7,  -42,    9}, // 12
+  {   7,  -42,    9}, // 12  */
+
+  {   0,  114,   57},  //0
+  { -38,  117,   34},  //1
+  {  38,  117,   34},  //2
+  { -36,  118,   32},  //3
+  {  36,  118,   32},  //4
+  { -37,  123,    0},  //5
+  {  37,  123,    0},  //6
+  { -66,  110,    0},  //7
+  {  66,  110,    0},  //8
+  {  0,     0, -128},  //9
+  { -21, -124,   26},  //10
+  {   0, -126,   25},  //11
+  {  21, -124,   26},  //12
 };
 
 const char _cobra_name[] PROGMEM = "Cobra Mk. III";
@@ -140,28 +154,29 @@ static const Point cobra1_points[] PROGMEM =
 
 static const Line cobra1_lines[] PROGMEM =
 {
-	{/*31,*/  0,  1,  1,  0},
-	{/*31,*/  2,  3,  0,  2},
-	{/*31,*/  3,  8,  2,  6},
-	{/*31,*/  1,  7,  6,  7},
-	{/*31,*/  5,  9,  7,  3},
-	{/*31,*/  4,  5,  3,  1},
-	{/*31,*/  2,  8,  2,  4},
-	{/*31,*/  6,  7,  4,  5},
-	{/*31,*/  4,  9,  5,  3},
-	{/*20,*/  0,  2,  0,  8},
-	{/*20,*/  0,  4,  8,  1},
-	{/*16,*/  2,  6,  4,  8},
-	{/*16,*/  4,  6,  8,  5},
-	{/*31,*/  7,  8,  4,  6},
-	{/*31,*/  7,  9,  5,  7},
-	{/*20,*/  1,  3,  0,  6},
-	{/*20,*/  1,  5,  1,  7},
-	{/* 2,*/  0,  1, 10,  9},
+	{/*31,*/  0,  1,  1,  0}, // 0
+	{/*31,*/  2,  3,  0,  2}, // 1
+	{/*31,*/  3,  8,  2,  6}, // 2
+	{/*31,*/  1,  7,  6,  7}, // 3
+	{/*31,*/  5,  9,  7,  3}, // 4
+	{/*31,*/  4,  5,  3,  1}, // 5
+	{/*31,*/  2,  8,  2,  4}, // 6
+	{/*31,*/  6,  7,  4,  5}, // 7
+	{/*31,*/  4,  9,  5,  3}, // 8
+	{/*20,*/  0,  2,  0,  8}, // 9
+	{/*20,*/  0,  4,  8,  1}, // 10
+	{/*16,*/  2,  6,  4,  8}, // 11
+	{/*16,*/  4,  6,  8,  5}, // 12
+	{/*31,*/  7,  8,  4,  6}, // 13
+	{/*31,*/  7,  9,  5,  7}, // 14
+	{/*20,*/  1,  3,  0,  6}, // 15
+	{/*20,*/  1,  5,  1,  7}, // 16
+	{/* 2,*/  0,  1, 10,  9}, // 17
 };
 
-static const Normal cobra1_face_normals[] PROGMEM =
+static const fix8_vector_t cobra1_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,   41,   10},
 	{   0,  -27,    3},
 	{  -8,   46,    8},
@@ -172,6 +187,17 @@ static const Normal cobra1_face_normals[] PROGMEM =
 	{   0,    0, /*-154*/ -128},
 	{-121,  111,  -62},
 	{ 121,  111,  -62},
+#else
+  {  0,  124,   30},  //0
+  {  0, -127,   14},  //1
+  {-22,  124,   22},  //2
+  {-26, -123,   26},  //3
+  { 22,  124,   22},  //4
+  { 26, -123,   26},  //5
+  {  0,  127,    0},  //6
+  {  0,    0, -128},  //7
+  {-88,   81,  -45},  //8
+#endif
 };
 
 static const char _cobra1_name[] PROGMEM = "Cobra Mk. I";
@@ -233,8 +259,9 @@ static const Line viper_lines[] PROGMEM =
   {/*16,*/  6,  6, 12, 13},
 };
 
-static const Normal viper_face_normals[] PROGMEM =
+static const fix8_vector_t viper_face_normals[] PROGMEM =
 {
+#if 0
   {    0,   32,    0},
   {  -22,   33,   11},
   {   22,   33,   11},
@@ -242,6 +269,15 @@ static const Normal viper_face_normals[] PROGMEM =
   {   22,  -33,   11},
   {    0,  -32,    0},
   {    0,    0,  -48},
+#else
+  {   0,  127,    0},  //0
+  { -68,  103,   34},  //1
+  {  68,  103,   34},  //2
+  { -68, -103,   34},  //3
+  {  68, -103,   34},  //4
+  {   0, -128,    0},  //5
+  {   0,    0, -128},  //6
+#endif
 };
 
 static const char _viper_name[] PROGMEM = "Viper";
@@ -309,8 +345,9 @@ static const Line missile_lines[] PROGMEM =
   {/* 8, */ 6,  5, 11, 14},
 };
 
-static const Normal missile_face_normals[] PROGMEM =
+static const fix8_vector_t missile_face_normals[] PROGMEM =
 {
+#if 0
   {  -64,    0,   16},
   {    0,  -64,   16},
   {   64,    0,   16},
@@ -320,6 +357,17 @@ static const Normal missile_face_normals[] PROGMEM =
   {  -32,    0,    0},
   {    0,   32,    0},
   {    0,    0, /*-176*/ -128},
+#else
+  { -124,    0,   31},  //0
+  {    0, -124,   31},  //1
+  { 124,     0,   31},  //2
+  {   0,   124,   31},  //3
+  { 127,     0,    0},  //4
+  {   0,  -128,    0},  //5
+  { -128,    0,    0},  //6
+  {    0,  127,    0},  //7
+  {    0,    0, -128},  //8
+#endif
 };
 
 static const char _missile_name[] PROGMEM = "Missile";
@@ -376,8 +424,9 @@ static const Line gecko_lines[] PROGMEM =
   {/*17,*/  3,  3,  9, 11},
 };
 
-static const Normal gecko_face_normals[] PROGMEM =
+static const fix8_vector_t gecko_face_normals[] PROGMEM =
 {
+#if 0
   {   0,   31,    5},
   {   4,   45,    8},
   {  25, -108,   19},
@@ -387,6 +436,17 @@ static const Normal gecko_face_normals[] PROGMEM =
   /*{ -88,   16, -214},*/ {-44,   8, -107},
   /*{   0,    0, -187},*/ {   0,    0, -128},
   /*{  88,   16, -214},*/ {  44,   8, -107},
+#else
+  {   0,  126,   20},  //0
+  {  11,  126,   22},  //1
+  {  28, -123,   22},  //2
+  {   0, -127,   18},  //3
+  { -28, -123,   22},  //4
+  { -11,  126,   22},  //5
+  { -49,    9, -118},  //6
+  {   0,    0, -128},  //7
+  {  49,    9, -118},  //8
+#endif
 };
 
 static const char _gecko_name[] PROGMEM = "Gecko";
@@ -463,8 +523,9 @@ static const Line orbit_lines[] PROGMEM =
 	{/* 7,*/ 10, 10, 16, 18},
 };
 
-static const Normal orbit_face_normals[] PROGMEM =
+static const fix8_vector_t orbit_face_normals[] PROGMEM =
 {
+#if 0
 	{ -55,  -55,   40}, //0
 	{   0,  -74,    4},//1
 	{ -51,  -51,   23},//2
@@ -478,6 +539,21 @@ static const Normal orbit_face_normals[] PROGMEM =
 	{ -41,   41,   90},//10
 	{  41,   41,   90},//11
 	{  55,  -55,   40},//12
+#else
+  {  -80,  -80,   59},  //0
+  {    0, -128,    7},  //1
+  {  -86,  -86,   39},  //2
+  { -128,    0,    7},  //
+  {  -86,   86,   39},  //4
+  {    0,  127,    7},  //5
+  {   86,   86,   39},  //6
+  {  127,    0,    7},  //7
+  {   86,  -86,   39},  //8
+  {    0,    0, -128},  //9
+  {  -49,   49,  108},  //10
+  {   49,   49,  108},  //11
+  {   80,  -80,   59},  //12
+#endif
 };
 
 static const char _orbit_name[] PROGMEM = "Orbital Shuttle";
@@ -588,8 +664,9 @@ static const Line transp_lines[] PROGMEM =
 	{/* 5,*/  0,  0, 36, 33},
 };
 
-static const Normal transp_face_normals[] PROGMEM =
+static const fix8_vector_t transp_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,    0, -103}, //0
 	{-111,   48,   -7},//1
 	{-105,  -63,  -21},//2
@@ -604,6 +681,22 @@ static const Normal transp_face_normals[] PROGMEM =
 	{   8,   34,   11},//11
 	{   0,   38,   17},//12
 	{   0,    0,  121},//13
+#else
+  {    0,    0, -128},  //0
+  { -117,   51,   -7},  //1
+  { -108,  -65,  -22},  //2
+  {    0, -128,    0},  //3
+  {  108,  -65,  -22},  //4
+  {  117,   51,   -7},  //5
+  {   31,  124,   12},  //6
+  {  -31,  124,   12},  //7
+  {  -28,  119,   38},  //8
+  {  -85,   36,   89},  //9
+  {   85,   36,   89},  //10
+  {   28,  119,   38},  //11
+  {    0,  117,   52},  //12
+  {    0,    0,  127},  //13
+#endif
 };
 
 static const char _transp_name[] PROGMEM = "Transporter";
@@ -681,8 +774,9 @@ static const Line pythona_lines[] PROGMEM =
 	{/*31,*/  7,  6,  8,  9},
 };
 
-static const Normal pythona_face_normals[] PROGMEM =
+static const fix8_vector_t pythona_face_normals[] PROGMEM =
 {
+#if 0
 	{ -27,   40,   11},//0
 	{  27,   40,   11},//1
 	{ -27,  -40,   11},//2
@@ -696,6 +790,21 @@ static const Normal pythona_face_normals[] PROGMEM =
 	{  25,  -37,  -11},//10
 	{ -25,  -37,  -11},//11
 	{   0,    0, -112},//12
+#else
+  { -70,  103,   28},  //0
+  {  70,  103,   28},  //1
+  { -70, -103,   28},  //2
+  {  70, -103,   28},  //3
+  { -57,  114,    0},  //4
+  {  57,  114,    0},  //5
+  { -57, -114,    0},  //6
+  {  57, -114,    0},  //7
+  { -70,  103,  -31},  //8
+  {  70,  103,  -31},  //9
+  {  70, -103,  -31},  //10
+  { -70, -103,  -31},  //11
+  {   0,    0, -128},  //12
+#endif
 };
 
 static const char _pythona_name[] PROGMEM = "Python";
@@ -762,8 +871,9 @@ static const Line boa_lines[] PROGMEM =
 	{/*14, */ 2, 12, 12, 10},
 };
 
-static const Normal boa_face_normals[] PROGMEM =
+static const fix8_vector_t boa_face_normals[] PROGMEM =
 {
+#if 0
 	{  43,   37,  -60}, // 0
 	{   0,  -45,  -89}, // 1
 	{ -43,   37,  -60}, // 2
@@ -777,6 +887,21 @@ static const Normal boa_face_normals[] PROGMEM =
 	{   0,  -31,   12}, // 10
 	{  26,   13,   10}, // 11
 	{   0,    0, -107}, // 12
+#else
+  {   67,   57,  -93},  // 0
+  {    0,  -58, -114},  // 1
+  {  -67,   57,  -93},  // 2
+  {    0,  127,    0},  // 3
+  {  109,  -56,  -35},  // 4
+  { -109,  -56,  -35},  // 5
+  {    0,  124,   32},  // 6
+  { -102,  -66,   40},  // 7
+  {  102,  -66,   40},  // 8
+  { -108,   54,   42},  // 9
+  {    0, -119,   46},  // 10
+  {  108,   54,   42},  // 11
+  {    0,    0, -128},  // 12
+#endif
 };
 
 static const char _boa_name[] PROGMEM = "Boa";
@@ -861,8 +986,9 @@ static const Line anaconda_lines[] PROGMEM =
 	{/*31, */10, 11, 12, 14},
 };
 
-static const Normal anaconda_face_normals[] PROGMEM =
+static const fix8_vector_t anaconda_face_normals[] PROGMEM =
 {
+#if 0
 	{  0,  -51,  -49}, //0
 	{ -51,   18,  -87},//1
 	{ -77,  -57,  -19},//2
@@ -875,6 +1001,20 @@ static const Normal anaconda_face_normals[] PROGMEM =
 	{ 108,  -68,   34},//9
 	{  97,   72,   24},//10
 	{   0,   94,   18},//11
+#else
+  {    0,  -92,  -89},  //0
+  {  -64,   22, -109},  //1
+  { -101,  -75,  -25},  //2
+  {    0, -126,   22},  //3
+  {  101,  -75,  -25},  //4
+  {   64,   22, -109},  //5
+  {    0,  126,  -23},  //6
+  { -101,   75,   25},  //7
+  { -105,  -66,   33},  //8
+  {  105,  -66,   33},  //9
+  {  101,   75,   25},  //10
+  {    0,  126,   24},  //11
+#endif
 };
 
 static const char _anaconda_name[] PROGMEM = "Anaconda";
@@ -927,8 +1067,9 @@ static const Line sidewnd_lines[] PROGMEM =
 	{/*12, */ 3,  3,  8,  9},
 };
 
-static const Normal sidewnd_face_normals[] PROGMEM =
+static const fix8_vector_t sidewnd_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,   32,    8},
 	{ -12,   47,    6},
 	{  12,   47,    6},
@@ -936,6 +1077,15 @@ static const Normal sidewnd_face_normals[] PROGMEM =
 	{ -12,  -47,    6},
 	{   0,  -32,    8},
 	{  12,  -47,    6},
+#else
+  {   0,  124,   31},  //0
+  { -31,  123,   16},  //1
+  {  31,  123,   16},  //2
+  {   0,    0, -128},  //3
+  { -31, -123,   16},  //4
+  {   0, -124,   31},  //5
+  {  31, -123,   16},  //6
+#endif
 };
 
 static const char _sidewnd_name[] PROGMEM = "Sidewinder";
@@ -1016,13 +1166,21 @@ static const Line mamba_lines[] PROGMEM =
 	{/*30,*/  3,  1,  0,  3},
 };
 
-static const Normal mamba_face_normals[] PROGMEM =
+static const fix8_vector_t mamba_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,  -24,    2},
 	{   0,   24,    2},
 	{ -32,   64,   16},
 	{  32,   64,   16},
 	{   0,    0, -127},
+#else
+  {   0, -128,   11},  //0
+  {   0,  127,   11},  //1
+  { -56,  112,   28},  //2
+  {  56,  112,   28},  //3
+  {   0,    0, -128},  //4
+#endif
 };
 
 static const char _mamba_name[] PROGMEM = "Mamba";
@@ -1088,14 +1246,23 @@ static const Line krait_lines[] PROGMEM =
 	{/* 8,*/  5,  5, 16, 14}, // 20
 };
 
-static const Normal krait_face_normals[] PROGMEM =
+static const fix8_vector_t krait_face_normals[] PROGMEM =
 {
+#if 0
 	{   3,   24,    3},  // 0
 	{   3,  -24,    3},  // 1
 	{  -3,  -24,    3},  // 2
 	{  -3,   24,    3},  // 3
 	{  38,    0,  -77},  // 4
 	{ -38,    0,  -77},  // 5
+#else
+  {  16,  126,   16},  //0
+  {  16, -126,   16},  //1
+  { -16, -126,   16},  //2
+  { -16,  126,   16},  //3
+  {  57,    0, -115},  //4
+  { -57,    0, -115},  //5
+#endif
 };
 
 static const char _krait_name[] PROGMEM = "Krait";
@@ -1170,8 +1337,9 @@ static const Object _krait PROGMEM = {
  	{/* 3, */ 0,  0, 17, 14},
  };
 
- static const Normal adder_face_normals[] PROGMEM =
+ static const fix8_vector_t adder_face_normals[] PROGMEM =
  {
+#if 0
  	{   0,   39,   10},  //0
  	{   0,  -39,   10},//1
  	{  69,   50,   13},//2
@@ -1187,6 +1355,23 @@ static const Object _krait PROGMEM = {
  	{ -69,  -50,   13},//12
  	{   0,   28,    0},//13
  	{   0,  -28,    0},//14
+#else
+  {    0,  124,   32},  //0
+  {    0, -124,   32},  //1
+  {  102,   74,   19},  //2
+  {  102,  -74,   19},  //3
+  {   64,  111,    0},  //4
+  {   64, -111,    0},  //5
+  {    0,    0, -128},  //6
+  {    0,    0, -128},  //7
+  {    0,    0, -128},  //8
+  {  -64,  111,    0},  //9
+  {  -64, -111,    0},  //10
+  { -102,   74,   19},  //11
+  { -102,  -74,   19},  //12
+  {    0,  127,    0},  //13
+  {    0, -128,    0},  //14
+#endif
  };
 
 static const char _adder_name[] PROGMEM = "Adder";
@@ -1261,8 +1446,9 @@ static const Line asp2_lines[] PROGMEM =
 	{/*10, */ 0,  4, 18, 17},
 };
 
-static const Normal asp2_face_normals[] PROGMEM =
+static const fix8_vector_t asp2_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,  -35,    5}, //0
 	{   8,  -38,   -7},//1
 	{  -8,  -38,   -7},//2
@@ -1275,6 +1461,20 @@ static const Normal asp2_face_normals[] PROGMEM =
 	{  80,   46,   50},//9
 	{ -80,   46,   50},//10
 	{   0,    0,  -90},//11
+#else
+  {    0, -127,  18},  //0
+  {   26, -123, -23},  //1
+  {  -26, -123, -23},  //2
+  {    0,  127,  -5},  //3
+  {    0,  117,  52},  //4
+  {  -27,  125,  -9},  //5
+  {   27,  125,  -9},  //6
+  {   82,  -89,  43},  //7
+  {  -82,  -89,  43},  //8
+  {   98,   56,  61},  //9
+  {  -98,   56,  61},  //10
+  {    0,   0, -128},  //11
+#endif
 };
 
 static const char _asp2_name[] PROGMEM = "Asp";
@@ -1348,8 +1548,9 @@ static const Line ferdlce_lines[] PROGMEM =
 	{/* 8,*/  9,  9, 17, 18},
 };
 
-static const Normal ferdlce_face_normals[] PROGMEM =
+static const fix8_vector_t ferdlce_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,   24,    6},
 	{ -68,    0,   24},
 	{ -63,    0,  -37},
@@ -1360,6 +1561,17 @@ static const Normal ferdlce_face_normals[] PROGMEM =
 	{   0,   45,  -22},
 	{  12,   46,  -19},
 	{   0,  -28,    0},
+#else
+  { -121,    0,  43},  //1
+  { -110,    0, -65},  //2
+  {    0,    0, -128},  //3
+  {  110,    0, -65},  //4
+  {  121,    0,  43},  //5
+  {  -30,  115, -48},  //6
+  {    0,  115, -56},  //7
+  {   30,  115, -48},  //8
+  {    0, -128,  0},  //9
+#endif
 };
 
 static const char _ferdlce_name[] PROGMEM = "Fer de Lance";
@@ -1420,8 +1632,9 @@ static const Line moray_lines[] PROGMEM =
 	{/* 5, */ 0,  0, 12, 13},
 };
 
-static const Normal moray_face_normals[] PROGMEM =
+static const fix8_vector_t moray_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,   43,    7},
 	{ -10,   49,    7},
 	{  10,   49,    7},
@@ -1431,6 +1644,17 @@ static const Normal moray_face_normals[] PROGMEM =
 	{ -72,  -99,   50},
 	{   0,  -83,   30},
 	{  72,  -99,   50},
+#else
+  {0,126,21},  //0
+  {-25,124,18},  //1
+  {25,124,18},  //2
+  {-63,-30,-107},  //3
+  {0,-71,-107},  //4
+  {63,-30,-107},  //5
+  {-70,-96,48},  //6
+  {0,-120,44},  //7
+  {70,-96,48},  //8
+#endif
 };
 
 static const char _moray_name[] PROGMEM = "Moray";
@@ -1527,8 +1751,9 @@ static const Line thargoid_lines[] PROGMEM =
 	{/*30,*/  9,  9, 18, 19},
 };
 
-static const Normal thargoid_face_normals[] PROGMEM =
+static const fix8_vector_t thargoid_face_normals[] PROGMEM =
 {
+#if 0
 	{ 103,  -60,   25},
 	{ 103,  -60,  -25},
 	{ 103,  -25,  -60},
@@ -1539,6 +1764,18 @@ static const Normal thargoid_face_normals[] PROGMEM =
 	{ 103,   25,   60},
 	{ 103,  -25,   60},
 	{ -48,    0,    0},
+#else
+{108,-63,26},  //0
+{108,-63,-26},  //1
+{108,-26,-63},  //2
+{108,26,-63},  //3
+{127,0,0},  //4
+{108,63,-26},  //5
+{108,63,26},  //6
+{108,26,63},  //7
+{108,-26,63},  //8
+{-128,0,0},  //9
+#endif
 };
 
 static const char _thargoid_name[] PROGMEM = "Thargoid";
@@ -1590,8 +1827,9 @@ static const Line thargon_lines[] PROGMEM =
 	{/*31, */ 6,  5,  9,  5},
 };
 
-static const Normal thargon_face_normals[] PROGMEM =
+static const fix8_vector_t thargon_face_normals[] PROGMEM =
 {
+#if 0
 	{ -36,    0,    0},
 	{  20,   -5,    7},
 	{  46,  -42,  -14},
@@ -1599,6 +1837,15 @@ static const Normal thargon_face_normals[] PROGMEM =
 	{  46,   42,  -14},
 	{  20,    5,    7},
 	{  36,    0,    0},
+#else
+{-128,0,0},  //0
+{118,-29,41},  //1
+{92,-84,-28},  //2
+{42,0,-121},  //3
+{92,84,-28},  //4
+{118,29,41},  //5
+{127,0,0},  //6
+#endif
 };
 
 static const char _thargon_name[] PROGMEM = "Thargon";
@@ -1667,8 +1914,9 @@ static const Line constrct_lines[] PROGMEM =
 	{/*18,*/  9,  9, 11, 13},
 };
 
-static const Normal constrct_face_normals[] PROGMEM =
+static const fix8_vector_t constrct_face_normals[] PROGMEM =
 {
+#if 0
 	{   0,   55,   15},
 	{ -24,   75,   20},
 	{  24,   75,   20},
@@ -1679,6 +1927,18 @@ static const Normal constrct_face_normals[] PROGMEM =
 	{  44,   75,    0},
 	{   0,    0, /*-160*/-127},
 	{   0,  -27,    0},
+#else
+{0,123,34},  //0
+{-38,118,32},  //1
+{38,118,32},  //2
+{65,110,0},  //3
+{-65,110,0},  //4
+{-65,110,0},  //5
+{0,127,0},  //6
+{65,110,0},  //7
+{0,0,-128},  //8
+{0,-128,0},  //9
+#endif
 };
 
 static const char _constrct_name[] PROGMEM = "Constrictor";
@@ -1750,14 +2010,23 @@ static const Line cougar_lines[] PROGMEM =
 	{/*20, */ 5,  5, 17, 15},
 };
 
-static const Normal cougar_face_normals[] PROGMEM =
+static const fix8_vector_t cougar_face_normals[] PROGMEM =
 {
+#if 0
 	{ -16,   46,    4},
 	{ -16,  -46,    4},
 	{   0,  -27,    5},
 	{  16,  -46,    4},
 	{  16,   46,    4},
 	{   0,    0,/* -160*/ -127},
+#else
+{-42,120,10},  //0
+{-42,-120,10},  //1
+{0,-126,23},  //2
+{42,-120,10},  //3
+{42,120,10},  //4
+{0,0,-128},  //5
+#endif
 };
 
 static const char _cougar_name[] PROGMEM = "Cougar";
@@ -1779,7 +2048,7 @@ static const Object _cougar PROGMEM = {
 
 const Object* const ships[] PROGMEM = {
   &_cobra, &_cobra1, &_viper, &_gecko, &_orbit, &_transp, &_pythona, &_boa, &_anaconda,
- &_sidewnd, &_mamba, /*&_krait*/&_cobra1, &_adder, &_asp2, &_ferdlce, &_moray, &_thargoid, &_thargon,
+ &_sidewnd, &_mamba, &_krait, &_adder, &_asp2, &_ferdlce, &_moray, &_thargoid, &_thargon,
  &_constrct, &_cougar
 };
 
