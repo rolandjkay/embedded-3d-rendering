@@ -8,18 +8,18 @@ MCU=atmega328p
 BUILD-DIR-MACOS=build/macos
 BUILD-DIR-AVR=build/avr
 
-DEMO-OBJ-FILENAMES=main.o display.o matrix.o vector.o camera.o \
+DEMO-OBJ-FILENAMES=main.o display.o vector.o camera.o fix8_vector.o \
                    simple_renderer.o 3d_model.o errors.o  \
-                   font.o typed_string.o fixed_point.o
+                   font.o typed_string.o fixed_point.o fix8_matrix.o
 
-DEMO-OBJ-FILENAMES-MACOS=event_loop_sdl.o display_impl_sdl.o
-DEMO-OBJ-FILENAMES-AVR=event_loop_avr.o display_impl_ssd1306.o usart.o
+DEMO-OBJ-FILENAMES-MACOS=matrix.o event_loop_sdl.o display_impl_sdl.o
+DEMO-OBJ-FILENAMES-AVR=fix8_matrix.o event_loop_avr.o display_impl_ssd1306.o usart.o
 
 DEMO-OBJ-FILES-MACOS=$(addprefix $(BUILD-DIR-MACOS)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-MACOS))
 DEMO-OBJ-FILES-AVR=$(addprefix $(BUILD-DIR-AVR)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-AVR))
 
 
-all: demo convert-bitmap demo-avr.hex fixed_point_tests
+all: demo convert-bitmap demo-avr.hex fixed-point-tests
 
 debug-make:
 	@echo macos build dir: $(BUILD-DIR-MACOS)
@@ -30,8 +30,8 @@ debug-make:
 # Tests
 #
 #
-fixed-point-tests: fixed-point-tests.c matrix.o vector.o $(BUILD-DIR-MACOS)/fixed_point.o
-	gcc $(CFLAGS) -o $@ matrix.o vector.o $(BUILD-DIR-MACOS)/fixed_point.o $<
+fixed-point-tests: fixed-point-tests.c $(addprefix $(BUILD-DIR-MACOS)/, fix8_matrix.o fix8_vector.o fixed_point.o)
+	gcc $(CFLAGS) -o $@ $(addprefix $(BUILD-DIR-MACOS)/, fix8_matrix.o fix8_vector.o fixed_point.o) fixed-point-tests.c
 
 #
 # Utils
@@ -85,10 +85,17 @@ $(BUILD-DIR-MACOS)/errors.o:	errors.c errors.h
 $(BUILD-DIR-MACOS)/matrix.o:	matrix.c matrix.h
 	gcc $(CFLAGS) -o $@ -c $<
 
+$(BUILD-DIR-MACOS)/fix8_matrix.o:	fix8_matrix.c fix8_matrix.h
+	gcc $(CFLAGS) -o $@ -c $<
+
 $(BUILD-DIR-MACOS)/camera.o:	camera.c camera.h
 	gcc $(CFLAGS) -o $@ -c $<
 
 $(BUILD-DIR-MACOS)/vector.o:	vector.c vector.h
+	gcc $(CFLAGS) -o $@ -c $<
+
+
+$(BUILD-DIR-MACOS)/fix8_vector.o:	fix8_vector.c fix8_vector.h
 	gcc $(CFLAGS) -o $@ -c $<
 
 $(BUILD-DIR-MACOS)/display.o:	display.c display.h
@@ -132,6 +139,7 @@ $(BUILD-DIR-AVR)/display_impl_ssd1306.o:	$(addprefix $(SSD1306_SRC_DIR)/, displa
 $(BUILD-DIR-AVR)/usart.o:	$(addprefix $(ATMEGA328P_SRC_DIR)/, usart.c usart.h)
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
+
 # Common
 #
 $(BUILD-DIR-AVR)/main.o:	main.c
@@ -141,6 +149,9 @@ $(BUILD-DIR-AVR)/display.o:	display.c display.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 $(BUILD-DIR-AVR)/matrix.o:	matrix.c matrix.h
+	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
+
+$(BUILD-DIR-AVR)/fix8_matrix.o:	fix8_matrix.c fix8_matrix.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 $(BUILD-DIR-AVR)/vector.o:	vector.c vector.h

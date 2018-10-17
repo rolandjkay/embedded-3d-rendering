@@ -104,14 +104,16 @@ void display_impl_draw_pixel(DisplayImpl* display, int8_t x, int8_t y)
   }
 }
 
-void display_impl_draw_col_pixel(DisplayImpl* display, int8_t x, int8_t y)
+void display_impl_draw_col_pixel(DisplayImpl* display,
+                                 int8_t x, int8_t y,
+                                 uint8_t colour)
 {
   x += (SDL_SCREEN_WIDTH >> 1);
   y += (SDL_SCREEN_HEIGHT >> 1);
 
   if (x < SDL_SCREEN_WIDTH && x >= 0 && y < SDL_SCREEN_HEIGHT && y >= 0)
   {
-    *(display->_pixels + y * SDL_SCREEN_WIDTH + x) = 0xf0;
+    *(display->_pixels + y * SDL_SCREEN_WIDTH + x) = colour;
   }
 }
 

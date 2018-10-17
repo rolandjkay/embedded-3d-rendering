@@ -20,17 +20,16 @@
  */
 void camera_calc_transforms(Camera* self)
 {
-  matrix_tf_camera_look(&self->_camera_look_transform,
+#ifdef INCLUDE_FLOAT_MATHS
+  matrix_tf_camera_look(&self->_float_camera_look_transform,
                         &self->camera_location,
                         &self->up_vector,
-                        &self->look_point);
-  fix8_matrix_tf_camera_look(&self->_fx_camera_look_transform,
+                        &self->look_vector);
+#endif
+  fix8_matrix_tf_camera_look(&self->_camera_look_transform,
                              &self->camera_location,
                              &self->up_vector,
-                             &self->look_point);
-  vector_subtract(&self->_look_vector,
-                  &self->look_point,
-                  &self->camera_location);
+                             &self->look_vector);
 }
 
 /*

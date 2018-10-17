@@ -19,7 +19,7 @@
 #endif
 
 static Camera camera = {/* location = */  {0,0,257/*257*/},
-                        /* look_point = */ {0,0,0},
+                        /* look_vector = */ {0,0,-128},
                         /* up vector = */  {0,127,0}};
 
 //static const Vector look_point = VECTOR_INIT(0.0, 0.0, 0.0);
@@ -33,12 +33,14 @@ static void update(uint32_t clock)
   // Calc fixed-point rotation matrix
   // - angle is in units of PI.
   fix8_t angle = ((clock % 8192) - 4096) >> 5; // = *128 / 4096
-  fix8_matrix_tf_rotation(&scene.scene_objects[0].fx_rotation_matrix,
+
+  fix8_matrix_tf_rotation(&scene.scene_objects[0].rotation_matrix,
                           angle, 0.0, angle);
 
-  matrix_tf_rotation(&scene.scene_objects[0].rotation_matrix,
+#ifdef INCLUDE_FLOAT_MATHS
+  matrix_tf_rotation(&scene.scene_objects[0].float_rotation_matrix,
                      FIX_TO_FLT(angle) * PI, 0.0, FIX_TO_FLT(angle) * PI);
-                    // 2.*PI*clock/8192.0, 0.0, 2.*PI*clock/8192.0);
+#endif
 
   pgm_ptr_t ship = GET_OBJ((clock / 10000) % countof(ships));
 
@@ -68,8 +70,10 @@ int main( int argc, char* args[] )
     return 255;
   }
 
-  matrix_identity(&scene.scene_objects[0].rotation_matrix);
-  fix8_matrix_identity(&scene.scene_objects[0].fx_rotation_matrix);
+#ifdef INCLUDE_FLOAT_MATHS
+  matrix_identity(&scene.scene_objects[0].float_rotation_matrix);
+#endif
+  fix8_matrix_identity(&scene.scene_objects[0].rotation_matrix);
 
   //sr_init(&renderer, &scene);
 

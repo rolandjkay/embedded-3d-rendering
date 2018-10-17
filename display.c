@@ -78,7 +78,10 @@ void display_draw_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1
 
 #ifndef __AVR
 
-void display_draw_col_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1)
+void display_draw_col_line(Display* self,
+                           int8_t x0, int8_t y0,
+                           int8_t x1, int8_t y1,
+                           uint8_t colour)
 {
     int8_t steep = abs(y1 - y0) > abs(x1 - x0);
     if (steep) {
@@ -110,9 +113,9 @@ void display_draw_col_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_
     do {
 
       if (steep) {
-          display_impl_draw_col_pixel(&self->_impl, y0, x0);
+          display_impl_draw_col_pixel(&self->_impl, y0, x0, colour);
       } else {
-          display_impl_draw_col_pixel(&self->_impl, x0, y0);
+          display_impl_draw_col_pixel(&self->_impl, x0, y0, colour);
       }
       err -= dy;
       if (err < 0) {

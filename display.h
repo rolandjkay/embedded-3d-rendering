@@ -58,8 +58,10 @@ static inline void display_draw_pixel(Display* self, int8_t x, int8_t y)
 }
 
 #ifndef __AVR
-  void display_draw_col_line(Display* self, int8_t x0, int8_t y0, int8_t x1, int8_t y1);
-  //void display_draw_col_pixel(Display* self, int16_t x, int16_t y);
+  void display_draw_col_line(Display* self,
+                             int8_t x0, int8_t y0,
+                             int8_t x1, int8_t y1,
+                             uint8_t colour);
 #endif
 
 /*

@@ -18,7 +18,7 @@ static inline void _project_vertex(int8_vector_t* screen_vertex,
    // Find vertex position relative to the camera.
    vector_subtract(vertex, vertex, &camera->camera_location);
 
-   matrix_left_multiply_vector(camera_get_look_transform(camera), vertex);
+   matrix_left_multiply_vector(&camera->_float_camera_look_transform, vertex);
 
    /*
     * Perspective transform
@@ -43,7 +43,7 @@ static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
    vector_subtract(world_vertex, world_vertex, &camera->camera_location);
 
    // Multiply 16 bit integers with 1.7 fixed-point and return 16 bit ints.
-   fix8_matrix_left_multiply_int16_vector(&camera->_fx_camera_look_transform, world_vertex);
+   fix8_matrix_left_multiply_int16_vector(&camera->_camera_look_transform, world_vertex);
 
    /*
     * Let's choose near_plane_width to be 128 so that our world coordinates
@@ -135,23 +135,10 @@ void sr_render_scene(SimpleRenderer* self,
 //    sr_render_object(self, scene_object, camera, display);
 //  }
     sr_render_object(self, &scene->scene_objects[0], camera, display);
+#ifdef INCLUDE_FLOAT_MATHS
+    sr_render_object_float(self, &scene->scene_objects[0], camera, display);
+#endif
 }
-
-/*static fix8_vector_t normals = {
-{0,57,29},
-{-19,59,17},
-{19,59,17},
-{-18,59,16},
-{18,59,16},
-{-18,61,0},
-{18,61,0},
-{-33,55,0},
-{33,55,0},
-{0,0,-64},
-{-10,-62,13},
-{0,-63,13},
-{10,-62,13}
-};*/
 
 void sr_render_object(SimpleRenderer* self,
                       const SceneObject* scene_object,
@@ -159,65 +146,38 @@ void sr_render_object(SimpleRenderer* self,
                       Display* display)
 {
 #ifdef __AVR
-  static int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
+  static int8_vector_t screen_vertices[38]; // XXX Maximum of 40 'points'
 #else
   static int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
   screen_vertices[countof(screen_vertices)-1].x = 0x7f;
   screen_vertices[countof(screen_vertices)-1].y = 0x7f;
 #endif
   uint16_t visible = 0;              // XXX Maximum of 16 faces !!!
-  Vector unit_look_vector;
-
-  vector_copy(&unit_look_vector, camera_get_look_vector(camera));
-  vector_normalize(&unit_look_vector);
-
-  ////////////////////////////////////////////////
-  // START FIX8
-  static int8_vector_t fx_screen_vertices[40]; // XXX Maximum of 40 'points'
-
-  uint16_t fx_visible = 0;              // XXX Maximum of 16 faces !!!
-  fix8_vector_t fx_unit_look_vector;
-  fx_unit_look_vector.x = FLT_TO_FIX(unit_look_vector.x);
-  fx_unit_look_vector.y = FLT_TO_FIX(unit_look_vector.y);
-  fx_unit_look_vector.z = FLT_TO_FIX(unit_look_vector.z);
-
-  //fix8_matrix_to_log(&scene_object->fx_rotation_matrix);
-  //matrix_to_log(&scene_object->rotation_matrix);
 
   for (int face_index = 0;
        face_index < GET_OBJ_NUM_FACES(scene_object->object)
-         && face_index < sizeof(fx_visible)<<3; // Bounds check
+         && face_index < sizeof(visible)<<3; // Bounds check
        face_index++)
   {
-    Vector tmp;
-    fix8_vector_t fx_normal;
-
-    Normal _fx_normal;
-    GET_OBJ_NORMAL(scene_object->object, face_index, _fx_normal)
-    tmp.x = _fx_normal.x;
-    tmp.y = _fx_normal.y;
-    tmp.z = _fx_normal.z;
-    vector_normalize(&tmp);
-    fx_normal.x = FLT_TO_FIX(tmp.x);
-    fx_normal.y = FLT_TO_FIX(tmp.y);
-    fx_normal.z = FLT_TO_FIX(tmp.z);
+    fix8_vector_t normal;
+    GET_OBJ_NORMAL(scene_object->object, face_index, normal)
 
     // Apply rotation
-    fix8_matrix_left_multiply_vector(&scene_object->fx_rotation_matrix, &fx_normal);
+    fix8_matrix_left_multiply_vector(&scene_object->rotation_matrix, &normal);
 
     // Is this so that we an force a face to be visible?
-    if ((fx_normal.x == 0) && (fx_normal.y == 0) && (fx_normal.z == 0))
+    if ((normal.x == 0) && (normal.y == 0) && (normal.z == 0))
     {
-      SET_BIT(fx_visible, face_index);
+      SET_BIT(visible, face_index);
     }
     else
     {
       fix8_t cos_angle;
 
-      cos_angle = fix8_vector_normal_dot_product(&fx_normal, &fx_unit_look_vector);
+      cos_angle = fix8_vector_normal_dot_product(&normal, &camera->look_vector);
       if (cos_angle < -0.08)
       {
-        SET_BIT(fx_visible, face_index);
+        SET_BIT(visible, face_index);
       }
     }
   }
@@ -237,7 +197,7 @@ void sr_render_object(SimpleRenderer* self,
     GET_OBJ_POINT(scene_object->object, vertex_index, point)
 
     // Apply rotation to point
-    fix8_matrix_left_multiply_vector(&scene_object->fx_rotation_matrix, &point);
+    fix8_matrix_left_multiply_vector(&scene_object->rotation_matrix, &point);
 
     // Add offset to the current 'point' to get the location vector of the
     // vertex in world space.
@@ -251,7 +211,7 @@ void sr_render_object(SimpleRenderer* self,
     world_vertex.y += point.y;
     world_vertex.z += point.z;
 
-    _fx_project_vertex(&fx_screen_vertices[vertex_index],
+    _fx_project_vertex(&screen_vertices[vertex_index],
                        &world_vertex,
                        camera,
                        display_get_width(display),
@@ -259,16 +219,71 @@ void sr_render_object(SimpleRenderer* self,
   }
 
 
-  // END FIX8
-  ////////////////////////////////////////////////
+  size_t num_lines = GET_OBJ_NUM_LINES(scene_object->object);
+  for (int line_index = 0; line_index < num_lines; ++line_index)
+  {
+    Line line;
+    GET_OBJ_LINE(scene_object->object, line_index, line)
 
+    int8_vector_t* start_vertex = &screen_vertices[line.start_point];
+    int8_vector_t* end_vertex = &screen_vertices[line.end_point];
+
+    // If either of the faces that the lines join is visible, then draw it.
+    if (IS_BIT_SET(visible, line.face1) || IS_BIT_SET(visible, line.face2))
+    {
+      display_draw_line(display, start_vertex->x, start_vertex->y,
+                                 end_vertex->x, end_vertex->y);
+
+     if (line_index == 7)
+     {
+       display_draw_col_line(display, start_vertex->x,
+                                      start_vertex->y,
+                                      end_vertex->x,
+                                      end_vertex->y,
+                                      0b11100000
+                                    );
+     }
+
+   }
+  }
+
+#ifndef __AVR
+  if (screen_vertices[countof(screen_vertices)-1].x != 0x7f ||
+      screen_vertices[countof(screen_vertices)-1].y != 0x7f)
+  {
+    printf("BANG!\n");
+    __builtin_trap();
+  }
+#endif
+}
+
+
+#ifdef INCLUDE_FLOAT_MATHS
+/*
+ * Floating point version of render routine.
+ */
+void sr_render_object_float(SimpleRenderer* self,
+                            const SceneObject* scene_object,
+                            Camera* camera,
+                            Display* display)
+{
+#ifdef __AVR
+  static int8_vector_t screen_vertices[38]; // XXX Maximum of 40 'points'
+#else
+  static int8_vector_t screen_vertices[40]; // XXX Maximum of 40 'points'
+  screen_vertices[countof(screen_vertices)-1].x = 0x7f;
+  screen_vertices[countof(screen_vertices)-1].y = 0x7f;
+#endif
+  uint16_t visible = 0;              // XXX Maximum of 16 faces !!!
+  Vector unit_look_vector;
+
+  unit_look_vector.x = FIX_TO_FLT(camera->look_vector.x);
+  unit_look_vector.y = FIX_TO_FLT(camera->look_vector.y);
+  unit_look_vector.z = FIX_TO_FLT(camera->look_vector.z);
 
   /*
    * Check the visibility of all faces.
    */
-   //usart_write_string_P(PSTR("Checking visibility of "));
-   //usart_write_string_P(GET_OBJ_NAME(object));
-   //usart_transmit('\n');
   for (int face_index = 0;
        face_index < GET_OBJ_NUM_FACES(scene_object->object)
          && face_index < sizeof(visible)<<3; // Bounds check
@@ -276,15 +291,14 @@ void sr_render_object(SimpleRenderer* self,
   {
     Vector normal;
 
-    //vector_copy(&normal, &object->normals[face_index]);
-    Normal _normal;
+    fix8_vector_t _normal;
     GET_OBJ_NORMAL(scene_object->object, face_index, _normal)
-    normal.x = _normal.x;
-    normal.y = _normal.y;
-    normal.z = _normal.z;
+    normal.x = FIX_TO_FLT(_normal.x);
+    normal.y = FIX_TO_FLT(_normal.y);
+    normal.z = FIX_TO_FLT(_normal.z);
 
     // Apply rotation
-    matrix_left_multiply_vector(&scene_object->rotation_matrix, &normal);
+    matrix_left_multiply_vector(&scene_object->float_rotation_matrix, &normal);
 
     // Is this so that we an force a face to be visible?
     if ((normal.x == 0) && (normal.y == 0) && (normal.z == 0))
@@ -294,11 +308,6 @@ void sr_render_object(SimpleRenderer* self,
     else
     {
       float cos_angle;
-
-      // The Elite face normals are not unit vectors.
-      // -- Probably because it's hard to express unit vectors with 8 bit
-      //    integers
-      vector_normalize(&normal);
 
       cos_angle = vector_dot_product(&normal, &unit_look_vector);
       if (cos_angle < -0.08)
@@ -311,7 +320,7 @@ void sr_render_object(SimpleRenderer* self,
   /*
    * Project 3D world vectors to 2D screen vectors.
    */
-  //uint8_t num_points = GET_OBJ_NUM_POINTS(scene_object->object);
+  uint8_t num_points = GET_OBJ_NUM_POINTS(scene_object->object);
   for (int vertex_index = 0; vertex_index < num_points; ++vertex_index)
   {
     Point point;
@@ -319,15 +328,12 @@ void sr_render_object(SimpleRenderer* self,
 
     GET_OBJ_POINT(scene_object->object, vertex_index, point)
 
-    world_vertex.x = point.x; //object->points[vertex_index].x;
-    world_vertex.y = point.y; //object->points[vertex_index].y;
-    world_vertex.z = point.z; //object->points[vertex_index].z;
-
-    //snprintf(buf, 30, "~%d,%d,%d\n", (int)point.x,  (int)point.y,  (int)point.z);
-    //usart_write_string(buf);
+    world_vertex.x = point.x;
+    world_vertex.y = point.y;
+    world_vertex.z = point.z;
 
     // Apply rotation
-    matrix_left_multiply_vector(&scene_object->rotation_matrix, &world_vertex);
+    matrix_left_multiply_vector(&scene_object->float_rotation_matrix, &world_vertex);
 
     // Apply translation
     world_vertex.x += scene_object->location.x;
@@ -341,12 +347,7 @@ void sr_render_object(SimpleRenderer* self,
                     display_get_height(display));
   }
 
-  //usart_write_string_P(PSTR("Drawing lines "));
   size_t num_lines = GET_OBJ_NUM_LINES(scene_object->object);
-  //char buf[5];
-  //snprintf(buf, 4, "%d", num_lines);
-  //usart_write_string(buf);
-  //usart_transmit('\n');
   for (int line_index = 0; line_index < num_lines; ++line_index)
   {
     Line line;
@@ -354,27 +355,21 @@ void sr_render_object(SimpleRenderer* self,
 
     int8_vector_t* start_vertex = &screen_vertices[line.start_point];
     int8_vector_t* end_vertex = &screen_vertices[line.end_point];
-    //Vector* start_vertex = &screen_vertices[object->lines[line_index].start_point];
-    //Vector* end_vertex = &screen_vertices[object->lines[line_index].end_point];
-
-    //snprintf(buf, 30, ">>>%f,%f,%f\n", start_vertex->x, start_vertex->y, start_vertex->z);
-    //usart_write_string(buf);
 
     // If either of the faces that the lines join is visible, then draw it.
-//    if (visible[object->lines[line_index].face1]
-//        || visible[object->lines[line_index].face2])
     if (IS_BIT_SET(visible, line.face1) || IS_BIT_SET(visible, line.face2))
     {
-      display_draw_line(display, start_vertex->x, start_vertex->y,
-                                 end_vertex->x, end_vertex->y);
+      display_draw_col_line(display, start_vertex->x, start_vertex->y,
+                                     end_vertex->x, end_vertex->y, 0xf0);
 
-     if (line_index == 3)
+/*     if (line_index == 3)
      {
        display_draw_col_line(display, screen_vertices[line.start_point].x,
                                       screen_vertices[line.start_point].y,
                                       screen_vertices[line.end_point].x,
                                       screen_vertices[line.end_point].y);
      }
+  */
    }
   }
 
@@ -387,3 +382,4 @@ void sr_render_object(SimpleRenderer* self,
   }
 #endif
 }
+#endif

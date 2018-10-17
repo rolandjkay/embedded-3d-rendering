@@ -27,4 +27,11 @@ void sr_render_object(SimpleRenderer* self,
                       Camera* camera,
                       Display* display);
 
+#ifdef INCLUDE_FLOAT_MATHS
+void sr_render_object_float(SimpleRenderer* self,
+                            const SceneObject* object,
+                            Camera* camera,
+                            Display* display);
+#endif
+
 #endif

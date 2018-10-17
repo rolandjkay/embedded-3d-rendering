@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <math.h>
 #include "fixed_point.h"
-#include "matrix.h"
-#include "vector.h"
+#include "fix8_matrix.h"
+#include "fix8_vector.h"
 #include "defs.h"
 
 
@@ -61,6 +62,15 @@ static void fix8_x_int16_mul_test()
   printf("-256 x -1 = %d\n", result);
 }
 
+/*static void fix16_sqrt_test()
+{
+  printf("In\tOut\t\tIn\t\tOut\t\tCorrect\n");
+  printf("%d\t%d\t\t%f\t%f\t%f\n", 64,   int16_sqrt(64), 64., int16_sqrt(64)/1.,8.); //112
+  printf("%d\t%d\t\t%f\t%f\t%f\n", 8192, int16_sqrt(8192), 8192/16384., int16_sqrt(8192)/128., sqrt(8192/16384.)); //112
+  printf("%d\t%d\t\t%f\t%f\t%f\n", 72,   int16_sqrt(11422), 11422/16384., int16_sqrt(11422)/128., sqrt(11422/16384.)); // 96
+}*/
+
+
 /*
  * Test the fixed-point maths routines
  */
@@ -70,6 +80,6 @@ static void fix8_x_int16_mul_test()
    //rotation_test();
    //cosine_test();
    //sine_test();
-   fix8_x_int16_mul_test();
+   //fix8_x_int16_mul_test();
    return 0;
  }
