@@ -9,6 +9,7 @@
  * Project a vector onto the canvas.
  * - NB: Corrupts 'vertex'.
  */
+#if INCLUDE_FLOAT_MATHS
 static inline void _project_vertex(int8_vector_t* screen_vertex,
                                    Vector* vertex,
                                    const Camera* camera,
@@ -32,6 +33,7 @@ static inline void _project_vertex(int8_vector_t* screen_vertex,
    screen_vertex->x = (vertex->x / 2. * display_width) /*+ display_width / 2.0*/;
    screen_vertex->y = -(vertex->y / 2. * display_width) /*+ display_height / 2.0*/;
 }
+#endif
 
 static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
                                       int16_vector_t* world_vertex,
@@ -68,21 +70,6 @@ static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
      */
   screen_vertex->x = (world_vertex->x << 7) / world_vertex->z /*+ 64*/;
   screen_vertex->y = -(world_vertex->y << 7) / world_vertex->z /*+ 32*/;
-
-   /*
-    * Perspective transform
-    */
-  /*  #define _NEAR_PLANE 6
-    #define _NEAR_PLANE_WIDTH 6
-    vertex->x <<= (_NEAR_PLANE - _NEAR_PLANE_WIDTH + 1)
-    vertex->y <<= (_NEAR_PLANE - _NEAR_PLANE_WIDTH + 1)
-    vertex->x /= -vertex->z;
-    vertex->y /= -vertex->z;
-
-   // Projection places view at [-1,-1] -> [+1,+1]
-   register uint8_t half_display = display_width >> 1;
-   screen_vertex->x = (vertex->x / 2. * display_width) + (display_width >> 1);
-   screen_vertex->y = -(vertex->y / 2. * display_width) + (display_height >> 2);*/
 }
 
 /*
@@ -234,6 +221,7 @@ void sr_render_object(SimpleRenderer* self,
       display_draw_line(display, start_vertex->x, start_vertex->y,
                                  end_vertex->x, end_vertex->y);
 
+#ifndef __AVR
      if (line_index == 7)
      {
        display_draw_col_line(display, start_vertex->x,
@@ -243,6 +231,7 @@ void sr_render_object(SimpleRenderer* self,
                                       0b11100000
                                     );
      }
+#endif
 
    }
   }

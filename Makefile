@@ -8,12 +8,12 @@ MCU=atmega328p
 BUILD-DIR-MACOS=build/macos
 BUILD-DIR-AVR=build/avr
 
-DEMO-OBJ-FILENAMES=main.o display.o vector.o camera.o fix8_vector.o \
+DEMO-OBJ-FILENAMES=main.o display.o camera.o fix8_vector.o \
                    simple_renderer.o 3d_model.o errors.o  \
                    font.o typed_string.o fixed_point.o fix8_matrix.o
 
-DEMO-OBJ-FILENAMES-MACOS=matrix.o event_loop_sdl.o display_impl_sdl.o
-DEMO-OBJ-FILENAMES-AVR=fix8_matrix.o event_loop_avr.o display_impl_ssd1306.o usart.o
+DEMO-OBJ-FILENAMES-MACOS=matrix.o vector.o event_loop_sdl.o display_impl_sdl.o
+DEMO-OBJ-FILENAMES-AVR=event_loop_avr.o display_impl_ssd1306.o usart.o
 
 DEMO-OBJ-FILES-MACOS=$(addprefix $(BUILD-DIR-MACOS)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-MACOS))
 DEMO-OBJ-FILES-AVR=$(addprefix $(BUILD-DIR-AVR)/, $(DEMO-OBJ-FILENAMES) $(DEMO-OBJ-FILENAMES-AVR))
@@ -148,13 +148,13 @@ $(BUILD-DIR-AVR)/main.o:	main.c
 $(BUILD-DIR-AVR)/display.o:	display.c display.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
-$(BUILD-DIR-AVR)/matrix.o:	matrix.c matrix.h
+$(BUILD-DIR-AVR)/fixed_point.o:	fixed_point.c fixed_point.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 $(BUILD-DIR-AVR)/fix8_matrix.o:	fix8_matrix.c fix8_matrix.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
-$(BUILD-DIR-AVR)/vector.o:	vector.c vector.h
+$(BUILD-DIR-AVR)/fix8_vector.o:	fix8_vector.c fix8_vector.h
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 $(BUILD-DIR-AVR)/camera.o:	camera.c camera.h
@@ -181,8 +181,8 @@ $(BUILD-DIR-AVR)/bbc_micro_font.o:	bitmaps_ssd1306/bbc_micro_font.c bitmaps_ssd1
 	$(AVR-CC) $(AVR-CFLAGS) -mmcu=$(MCU) -o $@ -c $<
 
 demo-avr.elf:	$(DEMO-OBJ-FILES-AVR) $(BUILD-DIR-AVR)/bbc_micro_font.o
-	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf build/avr/main.o build/avr/usart.o build/avr/3d_model.o build/avr/errors.o build/avr/display.o build/avr/display_impl_ssd1306.o build/avr/vector.o build/avr/matrix.o build/avr/simple_renderer.o build/avr/camera.o  build/avr/event_loop_avr.o build/avr/typed_string.o build/avr/font.o build/avr/bbc_micro_font.o
- # $(DEMO-OBJ-FILES-AVR)
+	echo $(DEMO-OBJ-FILES-AVR)
+	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf $(DEMO-OBJ-FILES-AVR)
 
 demo-avr.hex:	demo-avr.elf
 	$(AVR-OBJCOPY)  -j .text -j .data -O ihex $< $@

@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void fix8_matrix_tf_camera_look(fix8_matrix_t* dst,
                                 const int16_vector_t* camera_location,
