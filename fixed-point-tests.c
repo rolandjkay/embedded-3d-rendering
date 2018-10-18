@@ -62,6 +62,21 @@ static void fix8_x_int16_mul_test()
   printf("-256 x -1 = %d\n", result);
 }
 
+static void mult_overflow_test()
+{
+  fix8_t result = fix8_mul(-128, 127);
+
+  printf("-1 x -1 = %f\n", result / 128.0);
+
+  for (int i = -128; i <128; ++i) {
+    for (int j = -128; j < 128; ++j) {
+      int16_t r = (int16_t)i * (int16_t)j ;
+      if (((r>>1) & 0x4000) ^ (r & 0x4000))
+        printf("%f x %f = %f: %x\n", i/128.f, j/128.f, r / 128.0f / 128.f, r);
+    }
+  }
+}
+
 /*static void fix16_sqrt_test()
 {
   printf("In\tOut\t\tIn\t\tOut\t\tCorrect\n");
@@ -77,6 +92,7 @@ static void fix8_x_int16_mul_test()
  int main()
  {
    printf("%d %hhd\n", (int)FLT_TO_FIX(0.25), fix8_cos(FLT_TO_FIX(0.25)));
+   mult_overflow_test();
    //rotation_test();
    //cosine_test();
    //sine_test();
