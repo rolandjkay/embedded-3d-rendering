@@ -5,11 +5,12 @@
 
 // http://www.kmjn.org/notes/3d_rendering_intro.html
 
+
 /*
  * Project a vector onto the canvas.
  * - NB: Corrupts 'vertex'.
  */
-#if INCLUDE_FLOAT_MATHS
+#ifdef INCLUDE_FLOAT_MATHS
 static inline void _project_vertex(int8_vector_t* screen_vertex,
                                    Vector* vertex,
                                    const Camera* camera,
@@ -162,7 +163,7 @@ void sr_render_object(SimpleRenderer* self,
       fix8_t cos_angle;
 
       cos_angle = fix8_vector_normal_dot_product(&normal, &camera->look_vector);
-      if (cos_angle < -0.08)
+      if (cos_angle < -10 /*-0.08*/)
       {
         SET_BIT(visible, face_index);
       }
@@ -222,13 +223,13 @@ void sr_render_object(SimpleRenderer* self,
                                  end_vertex->x, end_vertex->y);
 
 #ifndef __AVR
-     if (line_index == 7)
+     if (line_index == 18)
      {
        display_draw_col_line(display, start_vertex->x,
                                       start_vertex->y,
                                       end_vertex->x,
                                       end_vertex->y,
-                                      0b11100000
+                                      0b00011111
                                     );
      }
 #endif
@@ -248,6 +249,73 @@ void sr_render_object(SimpleRenderer* self,
 
 
 #ifdef INCLUDE_FLOAT_MATHS
+
+
+/*
+ * Used to plot normals; excluded on AVR.
+ */
+#ifndef __AVR
+static void calc_face_mid_point(Point* dst,
+                                pgm_ptr_t object,
+                                int face_index)
+{
+  int x = 0, y = 0, z = 0, n = 0;
+
+  // We need all of the points belonging to lines that reference the face
+  size_t num_lines = GET_OBJ_NUM_LINES(object);
+  for (int line_index = 0; line_index < num_lines; ++line_index)
+  {
+    Line line;
+    GET_OBJ_LINE(object, line_index, line);
+
+    if (line.face1 == face_index || line.face2 == face_index)
+    {
+      // Get unrotated start point
+      fix8_vector_t point;
+      GET_OBJ_POINT(object, line.start_point, point)
+
+      x += point.x;
+      y += point.y;
+      z += point.z;
+      ++n;
+
+      // Get unrotated start point
+      GET_OBJ_POINT(object, line.end_point, point)
+
+      x += point.x;
+      y += point.y;
+      z += point.z;
+      ++n;
+    }
+  }
+
+  dst->x = x / n;
+  dst->y = y / n;
+  dst->z = z / n;
+ }
+#endif
+
+
+/*
+ * Translate an object point (as a Vector) into a world vertex, by taking into account
+ * the rotation and translation of the object.
+ */
+static inline void
+object_point_to_world_vertex_float(Vector* world_vertex,
+                                   const Vector* ship_vertex,
+                                   const SceneObject* scene_object)
+{
+  vector_copy(world_vertex, ship_vertex);
+
+  // Apply rotation
+  matrix_left_multiply_vector(&scene_object->float_rotation_matrix, world_vertex);
+
+  // Apply translation
+  world_vertex->x += scene_object->location.x;
+  world_vertex->y += scene_object->location.y;
+  world_vertex->z += scene_object->location.z;
+}
+
 /*
  * Floating point version of render routine.
  */
@@ -317,9 +385,7 @@ void sr_render_object_float(SimpleRenderer* self,
 
     GET_OBJ_POINT(scene_object->object, vertex_index, point)
 
-    world_vertex.x = point.x;
-    world_vertex.y = point.y;
-    world_vertex.z = point.z;
+    vector_copy(&world_vertex, &point);
 
     // Apply rotation
     matrix_left_multiply_vector(&scene_object->float_rotation_matrix, &world_vertex);
@@ -351,16 +417,54 @@ void sr_render_object_float(SimpleRenderer* self,
       display_draw_col_line(display, start_vertex->x, start_vertex->y,
                                      end_vertex->x, end_vertex->y, 0xf0);
 
-/*     if (line_index == 3)
+    /* if (line_index == 18)
      {
        display_draw_col_line(display, screen_vertices[line.start_point].x,
                                       screen_vertices[line.start_point].y,
                                       screen_vertices[line.end_point].x,
-                                      screen_vertices[line.end_point].y);
-     }
-  */
+                                      screen_vertices[line.end_point].y,
+                                      0b00011111);
+     }*/
+
    }
   }
+
+#ifndef __AVR
+  // Render normals
+  size_t num_faces = GET_OBJ_NUM_FACES(scene_object->object);
+  for (int face_index = 0; face_index <num_faces; ++face_index)
+  {
+    Point face_mid_point;
+    Vector start_world_vertex, end_world_vertex, face_mid_vertex, normal_end_vertex;
+
+    if (face_index != 2/* && face_index != 9*/) continue;
+
+    calc_face_mid_point(&face_mid_point, scene_object->object, face_index);
+    vector_copy(&face_mid_vertex, &face_mid_point);
+
+    object_point_to_world_vertex_float(&start_world_vertex,
+                                       &face_mid_vertex,
+                                       scene_object);
+
+    fix8_vector_t normal;
+    GET_OBJ_NORMAL(scene_object->object, face_index, normal);
+
+    // NB: Cannot add normal to a ship 'Point' because we will likely overflow
+    // Have to use Vector instead.
+    vector_add(&normal_end_vertex, &normal, &face_mid_point);
+
+    object_point_to_world_vertex_float(&end_world_vertex,
+                                       &normal_end_vertex,
+                                       scene_object);
+
+
+    int8_vector_t start, end;
+    _project_vertex(&start, &start_world_vertex, camera, display_get_width(display), display_get_height(display));
+    _project_vertex(&end, &end_world_vertex, camera, display_get_width(display), display_get_height(display));
+
+    display_draw_col_line(display, start.x, start.y, end.x, end.y, 0xf0);
+  }
+#endif
 
 #ifndef __AVR
   if (screen_vertices[countof(screen_vertices)-1].x != 0x7f ||
