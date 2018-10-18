@@ -51,6 +51,7 @@ void fix8_vector_normalize(fix8_vector_t* self);
 // to have a 'subtract' macro which is indendent of the underlying type; like
 // a templated C++ function.
 #define vector_subtract(dst, u, v) { (dst)->x = (u)->x - (v)->x;  (dst)->y = (u)->y - (v)->y; (dst)->z = (u)->z - (v)->z;}
+#define vector_add(dst, u, v) { (dst)->x = (u)->x + (v)->x;  (dst)->y = (u)->y + (v)->y; (dst)->z = (u)->z + (v)->z;}
 #define vector_copy(dst, src) { (dst)->x = (src)->x; (dst)->y = (src)->y; (dst)->z = (src)->z; }
 
 
