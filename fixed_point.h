@@ -33,6 +33,13 @@ typedef int8_t fix8_t;
  */
 static inline fix8_t fix8_mul(fix8_t a, fix8_t b)
 {
+  // -1 x -1 are the only possible operands that overflow. To avoid the
+  // result -1 x -1 = -1, we explicitly return 127/128.
+  if (a == -128 && b == -128)
+  {
+    return 127;
+  }
+
   int16_t r = (int16_t)a * (int16_t)b;
   return r >> 7;
 }
