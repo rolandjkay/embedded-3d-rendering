@@ -30,8 +30,10 @@ static Display display = DISPLAY_INIT;
 static TypedString ship_name_animator;
 static void update(uint32_t clock)
 {
+  //clock = 2400;
   // Calc fixed-point rotation matrix
   // - angle is in units of PI.
+
   fix8_t angle = ((clock % 8192) - 4096) >> 5; // = *128 / 4096
 
   fix8_matrix_tf_rotation(&scene.scene_objects[0].rotation_matrix,
@@ -42,16 +44,19 @@ static void update(uint32_t clock)
                      FIX_TO_FLT(angle) * PI, 0.0, FIX_TO_FLT(angle) * PI);
 #endif
 
-  pgm_ptr_t ship = GET_OBJ((clock / 10000) % countof(ships));
+  pgm_ptr_t ship = GET_OBJ((clock / 16384) % countof(ships));
+  //pgm_ptr_t ship = GET_OBJ(SHIP_BOA);
 
+  //usart_write_string("HELLO\n");
+  //return;
   scene.scene_objects[0].object = ship;
-  typed_string_init(&ship_name_animator, GET_OBJ_NAME(ship), 350, 0, 0);
+  typed_string_init(&ship_name_animator, GET_OBJ_NAME(ship), 9/*512*/, 0, 0);
 
   camera_calc_transforms(&camera);
 
   display_cls(&display);
   sr_render_scene(&renderer, &scene, &camera, &display);
-//  typed_string_render(&ship_name_animator, &display, clock % 10000);
+  typed_string_render(&ship_name_animator, &display, clock % 16384);
 
   display_show(&display);
 }
@@ -66,7 +71,9 @@ int main( int argc, char* args[] )
 
   if (display_init(&display) < 0)
   {
+#ifndef __AVR
     fprintf(stderr, "Failed to initialize display %d", get_error());
+#endif
     return 255;
   }
 
