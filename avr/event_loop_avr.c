@@ -21,13 +21,13 @@ void event_loop_run(EventLoopUpdateFunc* update_func)
   // This is the world's mose useless event loop.
   while (true)
   {
-    if ((clock / 1000) % 2)
+    if ((clock >> 10) & 1)
       PIN_HIGH(PORTC, PORTC5);       // PC0 = High = Vcc
     else
       PIN_LOW(PORTC, PORTC5);       // PC0 = High = Vcc
 
     update_func(clock);
     _delay_ms(100);                // wait 100 milliseconds
-    clock+=100;
+    clock+=160;
   }
 }
