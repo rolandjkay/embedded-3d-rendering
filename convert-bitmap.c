@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
                        "#  include \"../macos/pgmspace.h\"\n"
                        "#endif\n"
                        "\n"
-                       "\nconst unsigned char %s[%zu] PROGMEM;\n\n",
+                       "\nextern const unsigned char %s[%zu] PROGMEM;\n\n",
                        arguments.symbol_name,
                        array_size);
   fprintf(header_file, "#endif\n");
