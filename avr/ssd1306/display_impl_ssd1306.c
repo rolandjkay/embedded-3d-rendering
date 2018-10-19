@@ -130,9 +130,12 @@ int display_impl_init(DisplayImpl* self)
   return 0; // No error.
 }
 
-void display_impl_draw_pixel(DisplayImpl* self, int16_t x, int16_t y)
+void display_impl_draw_pixel(DisplayImpl* self, int8_t x, int8_t y)
 {
-  if (x >= SSD1306_LCDWIDTH || y >= SSD1306_LCDHEIGHT) { return; }
+  x += (SSD1306_LCDWIDTH >> 1);
+  y += (SSD1306_LCDHEIGHT >> 1);
+
+  if (x >= SSD1306_LCDWIDTH || y >= SSD1306_LCDHEIGHT || x<0 || y<0) { return; }
 
   self->_screen_buffer[x + ((y>>3)<<7)] |= 1 << (y & 0b00000111);
 }

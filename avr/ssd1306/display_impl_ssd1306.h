@@ -34,7 +34,7 @@ static inline void display_impl_cls(DisplayImpl* self)
   memset(&self->_screen_buffer[0], 0, sizeof(self->_screen_buffer));
 }
 
-void display_impl_draw_pixel(DisplayImpl* self, int16_t x, int16_t y);
+void display_impl_draw_pixel(DisplayImpl* self, int8_t x, int8_t y);
 //uint8_t display_impl_pixel_colour(Display* self, int16_t x, int16_t y);
 
 void display_impl_show(DisplayImpl* self);
