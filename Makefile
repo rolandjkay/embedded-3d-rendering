@@ -1,7 +1,8 @@
 CFLAGS=-std=c99 -gdwarf-2
 AVR-CFLAGS=-std=c99 -Os
-AVR-CFLAGS-ELF=-std=c99
+AVR-CFLAGS-ELF=-std=c99 # -Wl,-Map,avr.map
 AVR-CC=avr-gcc
+AVR-AS=avr-as
 AVR-OBJCOPY=avr-objcopy
 MCU=atmega328p
 
@@ -26,6 +27,8 @@ debug-make:
 	@echo macos obect files:
 	@echo ------------------
 	@echo $(DEMO-OBJ-FILES-MACOS)
+
+
 #
 # Tests
 #
@@ -72,6 +75,8 @@ clean:
 	-rm $(DEMO-OBJ-FILES-MACOS)  $(DEMO-OBJ-FILES-AVR)
 	-rm bitmaps_ssd1306/*.c
 	-rm demo demo-avr.elf demo-avr.hex
+	-rm convert-bitmap
+	-rm *.lst *.s
 
 $(BUILD-DIR-MACOS)/main.o:		main.c
 	gcc $(CFLAGS) -o $@ -c $<
@@ -182,10 +187,21 @@ $(BUILD-DIR-AVR)/bbc_micro_font.o:	bitmaps_ssd1306/bbc_micro_font.c bitmaps_ssd1
 
 demo-avr.elf:	$(DEMO-OBJ-FILES-AVR) $(BUILD-DIR-AVR)/bbc_micro_font.o
 	echo $(DEMO-OBJ-FILES-AVR)
-	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf $(DEMO-OBJ-FILES-AVR)
+	$(AVR-CC) $(AVR-CFLAGS-ELF) -mmcu=$(MCU) -o demo-avr.elf $(DEMO-OBJ-FILES-AVR) $(BUILD-DIR-AVR)/bbc_micro_font.o
 
 demo-avr.hex:	demo-avr.elf
 	$(AVR-OBJCOPY)  -j .text -j .data -O ihex $< $@
 
 upload-demo-avr:	demo-avr.hex
 	avrdude -c arduino -P /dev/cu.usbmodem14121 -p ATMEGA328P -b 115200 -U flash:w:demo-avr.hex
+
+
+# Mixed C + asm
+#
+
+
+simple_renderer.lst:	simple_renderer.c
+	# create assembler code:
+	$(AVR-CC) -mmcu=$(MCU) -S -fverbose-asm -g $(AVR-CFLAGS) simple_renderer.c -o simple_renderer.s
+	# create asm interlaced with source lines:
+	$(AVR-AS) -mmcu=$(MCU) -alhnd simple_renderer.s > simple_renderer.lst
