@@ -2052,7 +2052,11 @@ static const Object _cougar PROGMEM = {
 const Object* const ships[] PROGMEM = {
   &_cobra, &_cobra1, &_viper, &_gecko, &_orbit, &_transp, &_pythona, &_boa, &_anaconda,
  &_sidewnd, &_mamba, &_krait, &_adder, &_asp2, &_ferdlce, &_moray, &_thargoid, &_thargon,
- &_constrct, &_cougar
+ &_constrct, &_cougar,
+
+ // padding up to 32
+ &_cobra, &_cobra1, &_viper, &_gecko, &_orbit, &_transp, &_pythona, &_boa, &_anaconda,
+ &_sidewnd, &_mamba, &_krait,
 };
 
 const Object* const misc[] PROGMEM = {&_missile};

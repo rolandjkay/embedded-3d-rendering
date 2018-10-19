@@ -67,7 +67,8 @@ typedef struct
   pgm_ptr_t normals;
 } Object;
 
-extern const Object* const ships[20] PROGMEM;
+// Keeping length of ships a power of two removes need to modulus lib function
+extern const Object* const ships[32] PROGMEM;
 extern const Object* const misc[1] PROGMEM;
 
 #define SHIP_COBRA 0
@@ -115,16 +116,16 @@ extern const Object* const misc[1] PROGMEM;
 
 #define GET_OBJ_NORMAL(handle, index, dst) { \
   pgm_ptr_t normals = GET_OBJ_PROP_PTR(handle, normals);  \
-  dst.x = pgm_read_byte(normals + index*3); \
-  dst.y = pgm_read_byte(normals + index*3 + 1); \
-  dst.z = pgm_read_byte(normals + index*3 + 2); \
+  dst.x = pgm_read_byte(normals + ((uint8_t)index)*3); \
+  dst.y = pgm_read_byte(normals + ((uint8_t)index)*3 + 1); \
+  dst.z = pgm_read_byte(normals + ((uint8_t)index)*3 + 2); \
 }
 
 #define GET_OBJ_POINT(handle, index, dst) { \
   pgm_ptr_t points = GET_OBJ_PROP_PTR(handle, points);  \
-  dst.x = pgm_read_byte(points + index*3); \
-  dst.y = pgm_read_byte(points + index*3 + 1); \
-  dst.z = pgm_read_byte(points + index*3 + 2); \
+  dst.x = pgm_read_byte(points + ((uint8_t)index)*3); \
+  dst.y = pgm_read_byte(points + ((uint8_t)index)*3 + 1); \
+  dst.z = pgm_read_byte(points + ((uint8_t)index)*3 + 2); \
 }
 
 #define GET_OBJ_LINE(handle, index, dst) { \
