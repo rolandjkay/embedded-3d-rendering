@@ -69,8 +69,11 @@ static inline void _fx_project_vertex(int8_vector_t* screen_vertex,
        Note that we're using NEAR_PLANE of 128 (should be -128), so we
        divide by z not -z.
      */
+  // This is calling __divmodhi4  :(
   screen_vertex->x = (world_vertex->x << 7) / world_vertex->z /*+ 64*/;
   screen_vertex->y = -(world_vertex->y << 7) / world_vertex->z /*+ 32*/;
+
+
 }
 
 /*
@@ -191,7 +194,7 @@ void sr_render_object(SimpleRenderer* self,
     // vertex in world space.
     // - Types are a bit funny here. However, adding a fix8_t to an int16_t
     //   effectively left shifts the fix8_t by the number of bits in the
-    //   fractional part. So, if there were 7 fractional its, we scale from
+    //   fractional part. So, if there were 7 fractional bits, we scale from
     //   (-1,+1) to (-128,+128). Thus, the size of a ship in world space is
     //   exactly 256, which is exactly the same as it would be if we consider
     //   the 'points' to be 8 bit integers in world space.
