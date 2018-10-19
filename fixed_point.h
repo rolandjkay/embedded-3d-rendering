@@ -44,6 +44,34 @@ static inline fix8_t fix8_mul(fix8_t a, fix8_t b)
   return r >> 7;
 }
 
+// https://www.avrfreaks.net/forum/16-x-16-bit-multiply-32-bit-result
+// I don't know if this is better than the lib function :~
+#define MultiS8X16to24(longRes, charIn1, intIn2) \
+__asm volatile ( \
+"clr r16 \n\t" \
+"mulSU %A1, %A2 \n\t" \
+"sbrc r1, 7 \n\t" \
+"ser r16 \n\t" \
+"movw %A0, r0 \n\t" \
+"mov %C0, r16 \n\t" \
+"mov %D0, r16 \n\t" \
+"clr r16 \n\t" \
+"muls %A1, %B2 \n\t" \
+"sbrc r1, 7 \n\t" \
+"ser r16 \n\t" \
+"add %B0, r0 \n\t" \
+"adc %C0, r1 \n\t" \
+"adc %D0, r16 \n\t" \
+"clr r1 \n\t" \
+: \
+"=&r" (longRes) \
+: \
+"a" (charIn1), \
+"a" (intIn2) \
+: \
+"r16" \
+)
+
 /*
  * Multiply a 16 bit integer by a 1.7 fixed-point numbers to yield a 16 bit
  * integer result.
@@ -52,7 +80,13 @@ static inline int16_t fix8_x_int16_mul(fix8_t a, int16_t b)
 {
   // 16.0 x 1.7 yields 17.7 -> ie. a 24 bit intermediate result, before we
   // shift left. Therefore, we must store the result in a 32 bit int.
-  int32_t r = (int32_t)a * b;
+  int32_t r;
+
+#ifndef __AVR
+  r = (int16_t)a * b;
+#else
+  MultiS8X16to24(r, a, b);
+#endif
   // r is 17.7; shift off the fractional bits to leave an integer
   return (int16_t)(r >> 7);
 }
